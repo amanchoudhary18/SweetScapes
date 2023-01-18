@@ -5,10 +5,10 @@ const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
-    // username which the user sets for himself
-    username: {
+    // name
+    name: {
       type: String,
-      unique: true,
+      required: true,
     },
     // password stored in hash form
     password: {
@@ -28,13 +28,56 @@ const userSchema = new mongoose.Schema(
     // mobile number assosciated
     mobileNumber: {
       type: Number,
-      unique: true,
       maxLength: 10,
       validate(value) {
         if (!validator.isMobilePhone(`${value}`)) {
           throw new Error("Enter valid mobile number");
         }
       },
+    },
+
+    // username which the user sets for himself
+    username: {
+      type: String,
+      required: true,
+    },
+
+    // age
+    age: {
+      type: String,
+    },
+
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Others"],
+    },
+    avatar: {
+      type: String,
+    },
+    birthday: {
+      type: String,
+    },
+
+    location: {
+      latitude: {
+        type: String,
+      },
+      longitude: {
+        type: String,
+      },
+    },
+    isPaired: {
+      type: Boolean,
+      default: false,
+    },
+    isSubscribed: {
+      type: Boolean,
+      default: false,
+    },
+    pairedWith: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
     token: {
       type: String,
@@ -48,7 +91,7 @@ const userSchema = new mongoose.Schema(
 // generates authentication token and stores it and then updates the document
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-  const token = jwt.sign({ _id: user.id.toString() }, "bespoke"); // adding user id to payload of the token which would be decoded after verify method is called
+  const token = jwt.sign({ _id: user.id.toString() }, process.env.JWT_SECRET); // adding user id to payload of the token which would be decoded after verify method is called
   user.token = token;
   await user.save();
   return token;
