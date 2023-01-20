@@ -4,54 +4,45 @@ const bcrypt = require("bcryptjs");
 const generateOTP = require("../utils/generateOTP");
 const userAuth = require("../middleware/userAuth");
 const Paircode = require("../models/paircode.model");
-const {sendotp} = require("../utils/sendOTP");
+const { sendotp } = require("../utils/sendOTP");
 const router = express.Router();
-const OtpModel = require("../models/otp.model")
+const OtpModel = require("../models/otp.model");
+const generateUsername = require("../utils/generateUsername");
 
 // sign up route
 router.post("/register", async (req, res) => {
   const userBody = req.body;
-  const existingUsernameUser = await User.findOne({
-    username: userBody.username,
-  });
   const existingMobileUser = await User.findOne({
     mobileNumber: userBody.mobileNumber,
   });
-
+  const user = new User(userBody);
   if (userBody.mobileNumber) {
-    const user = new User(userBody);
-
     if (!existingMobileUser) {
-      if (!existingUsernameUser) {
-        try {
-          otp = generateOTP(4);
-          // await sendotp(user.mobileNumber, otp);
-          var otpModel={otp:otp, status: true, owner: user}
-          const otpDb= new OtpModel(otpModel)
-          otpsave = await otpDb.save()
-          setTimeout(async () => {
-            console.log("executing otp timeout")
-            const otpupdate= await OtpModel.findOneAndUpdate(
-               { _id: otpsave._id },
-               { otp: otp, status: false}
-             );
-            console.log(otpupdate)
-          }, 100000);
-          if (otpsave) res.status(200).send({message: "otp sent", otpId:otpsave._id})
-          else res.send({
+      try {
+        otp = generateOTP(4);
+        // await sendotp(user.mobileNumber, otp);
+        var otpModel = { otp: otp, status: true, owner: user };
+        const otpDb = new OtpModel(otpModel);
+        otpsave = await otpDb.save();
+        setTimeout(async () => {
+          console.log("executing otp timeout");
+          const otpupdate = await OtpModel.findOneAndUpdate(
+            { _id: otpsave._id },
+            { otp: otp, status: false }
+          );
+          console.log(otpupdate);
+        }, 100000);
+        if (otpsave)
+          res.status(200).send({ message: "otp sent", otpId: otpsave._id });
+        else
+          res.send({
             status: "otp not sent",
-            message : otpsave
-          })
-        } catch (err) {
-          res.status(200).send({
-            status: "Failed here",
-            message: err.message,
+            message: otpsave,
           });
-        }
-      } else {
+      } catch (err) {
         res.status(200).send({
-          status: "Failed",
-          message: "Username already taken",
+          status: "Failed here",
+          message: err.message,
         });
       }
     } else {
@@ -159,26 +150,25 @@ router.post("/matchPairCode", userAuth, async (req, res) => {
 });
 
 router.post("/otpVerification", async (req, res) => {
-  const otp = req.body.otpEntered
-  const otpId = req.body.otpId
+  const otp = req.body.otpEntered;
+  const otpId = req.body.otpId;
   const userBody = req.body.user;
-  const user = new User(userBody);
 
-  const otpDB = await OtpModel.findById(otpId)
-  if (otpDB.otp == otp && otpDB.status)
-  {
-    if (user.username) await user.save();
+  const otpDB = await OtpModel.findById(otpId);
+  if (otpDB.otp == otp && otpDB.status) {
+    const username = generateUsername(userBody);
+    userBody.username = username;
+    const user = new User(userBody);
+    await user.save();
     const token = await user.generateAuthToken();
     res.status(200).send({
       status: "Successful",
       user,
       token,
     });
-  } 
-  else
-  {
-    res.status(400).send({message:"wrong otp entered"});
-    console.log("wrong otp entered")
+  } else {
+    res.status(400).send({ message: "wrong otp entered" });
+    console.log("wrong otp entered");
   }
 });
 module.exports = router;

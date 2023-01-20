@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema(
     // mobile number assosciated
     mobileNumber: {
       type: Number,
+      required: true,
       maxLength: 10,
       validate(value) {
         if (!validator.isMobilePhone(`${value}`)) {
@@ -36,10 +37,9 @@ const userSchema = new mongoose.Schema(
       },
     },
 
-    // username which the user sets for himself
+    // auto-generated username
     username: {
       type: String,
-      required: true,
     },
 
     // age
