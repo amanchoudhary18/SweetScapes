@@ -4,7 +4,9 @@ const bcrypt = require("bcryptjs");
 const generateOTP = require("../utils/generateOTP");
 const userAuth = require("../middleware/userAuth");
 const Paircode = require("../models/paircode.model");
+const {sendotp} = require("../utils/sendOTP");
 const router = express.Router();
+const OtpModel = require("../models/otp.model")
 
 // sign up route
 router.post("/register", async (req, res) => {
@@ -22,13 +24,24 @@ router.post("/register", async (req, res) => {
     if (!existingMobileUser) {
       if (!existingUsernameUser) {
         try {
-          if (user.username) await user.save();
-          const token = await user.generateAuthToken();
-          res.status(200).send({
-            status: "Successful",
-            user,
-            token,
-          });
+          otp = generateOTP(4);
+          // await sendotp(user.mobileNumber, otp);
+          var otpModel={otp:otp, status: true, owner: user}
+          const otpDb= new OtpModel(otpModel)
+          otpsave = await otpDb.save()
+          setTimeout(async () => {
+            console.log("executing otp timeout")
+            const otpupdate= await OtpModel.findOneAndUpdate(
+               { _id: otpsave._id },
+               { otp: otp, status: false}
+             );
+            console.log(otpupdate)
+          }, 100000);
+          if (otpsave) res.status(200).send({message: "otp sent", otpId:otpsave._id})
+          else res.send({
+            status: "otp not sent",
+            message : otpsave
+          })
         } catch (err) {
           res.status(200).send({
             status: "Failed here",
@@ -145,13 +158,27 @@ router.post("/matchPairCode", userAuth, async (req, res) => {
   res.send({ userA, userB });
 });
 
-router.post("/sendotp", async (req, res) => {
-  const response = await fast2sms.sendMessage({
-    authorization: process.env.FAST2SMS_APIKEY,
-    message: req.body.message,
-    number: req.body.number,
-  });
+router.post("/otpVerification", async (req, res) => {
+  const otp = req.body.otpEntered
+  const otpId = req.body.otpId
+  const userBody = req.body.user;
+  const user = new User(userBody);
 
-  res.send(response);
+  const otpDB = await OtpModel.findById(otpId)
+  if (otpDB.otp == otp && otpDB.status)
+  {
+    if (user.username) await user.save();
+    const token = await user.generateAuthToken();
+    res.status(200).send({
+      status: "Successful",
+      user,
+      token,
+    });
+  } 
+  else
+  {
+    res.status(400).send({message:"wrong otp entered"});
+    console.log("wrong otp entered")
+  }
 });
 module.exports = router;

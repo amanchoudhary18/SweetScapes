@@ -2,7 +2,6 @@ require("dotenv").config({ path: "./config/.env" });
 const express = require("express");
 const mongoose = require("mongoose");
 const axios = require("axios");
-const fast2sms = require("fast-two-sms");
 
 mongoose.connect(process.env.MONGODB_URI, () => {
   console.log("Connected to MongoDB");

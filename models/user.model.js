@@ -76,7 +76,6 @@ const userSchema = new mongoose.Schema(
     },
     pairedWith: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
       ref: "User",
     },
     token: {
