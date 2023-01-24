@@ -21,14 +21,14 @@ router.post("/register", async (req, res) => {
       try {
         otp = generateOTP(4);
         // await sendotp(user.mobileNumber, otp);
-        var otpModel = { otp: otp, status: true, owner: user };
+        var otpModel = { otp: otp, status: true, user: user };
         const otpDb = new OtpModel(otpModel);
         otpsave = await otpDb.save();
         setTimeout(async () => {
           console.log("executing otp timeout");
           const otpupdate = await OtpModel.findOneAndUpdate(
             { _id: otpsave._id },
-            { otp: otp, status: false }
+            { otp: otp, status: false, user: user }
           );
           console.log(otpupdate);
         }, 100000);
@@ -152,12 +152,12 @@ router.post("/matchPairCode", userAuth, async (req, res) => {
 router.post("/otpVerification", async (req, res) => {
   const otp = req.body.otpEntered;
   const otpId = req.body.otpId;
-  const userBody = req.body.user;
-
+  
   const otpDB = await OtpModel.findById(otpId);
   if (otpDB.otp == otp && otpDB.status) {
-    const username = generateUsername(userBody);
-    userBody.username = username;
+    const userBody = otpDB.user;
+    // const username = generateUsername(userBody);
+    // userBody.username = username;
     const user = new User(userBody);
     await user.save();
     const token = await user.generateAuthToken();
