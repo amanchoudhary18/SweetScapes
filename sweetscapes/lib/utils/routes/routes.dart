@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sweetscapes/utils/routes/routes_name.dart';
 import 'package:sweetscapes/view/home_screen.dart';
-import 'package:sweetscapes/view/login_screen.dart';
+import 'package:sweetscapes/view/login_view.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -11,7 +11,7 @@ class Routes {
             builder: (BuildContext context) => const HomeScreen());
       case RoutesName.login:
         return MaterialPageRoute(
-            builder: (BuildContext context) => const LoginScreen());
+            builder: (BuildContext context) => LoginView());
       default:
         return MaterialPageRoute(
           builder: (_) {
