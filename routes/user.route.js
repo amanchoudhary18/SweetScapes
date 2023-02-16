@@ -71,10 +71,9 @@ router.post("/login", async (req, res) => {
       if (user) {
         const isMatch = await bcrypt.compare(userBody.password, user.password);
         console.log(isMatch);
+        const token = await user.generateAuthToken();
         if (isMatch) {
-          res
-            .status(200)
-            .send({ status: "Successful", user, token: user.token });
+          res.status(200).send({ status: "Successful", user, token });
         } else {
           res.status(200).send({
             status: "Failed",
@@ -152,12 +151,12 @@ router.post("/matchPairCode", userAuth, async (req, res) => {
 router.post("/otpVerification", async (req, res) => {
   const otp = req.body.otpEntered;
   const otpId = req.body.otpId;
-  
+
   const otpDB = await OtpModel.findById(otpId);
   if (otpDB.otp == otp && otpDB.status) {
     const userBody = otpDB.user;
-    // const username = generateUsername(userBody);
-    // userBody.username = username;
+    const username = generateUsername(userBody);
+    userBody.username = username;
     const user = new User(userBody);
     await user.save();
     const token = await user.generateAuthToken();
@@ -169,6 +168,19 @@ router.post("/otpVerification", async (req, res) => {
   } else {
     res.status(400).send({ message: "wrong otp entered" });
     console.log("wrong otp entered");
+  }
+});
+
+router.post("/logout", userAuth, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((token) => {
+      return token.token !== req.token;
+    });
+    await req.user.save();
+
+    res.send();
+  } catch (e) {
+    res.status(500).send();
   }
 });
 module.exports = router;

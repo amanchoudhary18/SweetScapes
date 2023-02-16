@@ -78,9 +78,14 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    token: {
-      type: String,
-    },
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
@@ -88,11 +93,14 @@ const userSchema = new mongoose.Schema(
 );
 
 // generates authentication token and stores it and then updates the document
+
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
-  const token = jwt.sign({ _id: user.id.toString() }, process.env.JWT_SECRET); // adding user id to payload of the token which would be decoded after verify method is called
-  user.token = token;
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
+
+  user.tokens = user.tokens.concat({ token });
   await user.save();
+
   return token;
 };
 
@@ -101,7 +109,7 @@ userSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
   delete userObject.password;
-  delete userObject.token;
+  delete userObject.tokens;
   return userObject;
 };
 
