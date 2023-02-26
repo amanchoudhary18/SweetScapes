@@ -78,11 +78,12 @@ class LoginView extends StatelessWidget {
                   title: 'LOGIN',
                   onPress: () {
                     Map data = {
-                      'email': 'eve.holt@reqres.in',
-                      'password': 'cityslicka',
+                      'mobileNumber': _phoneController.text.toString().trim(),
+                      'password': _passwordController.text.toString().trim(),
                     };
                     authViewModel.loginUrl(data, context);
                   },
+                  loading: authViewModel.loading,
                 ),
               ),
             ],

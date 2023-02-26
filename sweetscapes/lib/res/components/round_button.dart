@@ -3,7 +3,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 class RoundButton extends StatelessWidget {
-  const RoundButton({super.key, required this.title, this.loading = false, required this.onPress});
+  const RoundButton(
+      {super.key,
+      required this.title,
+      this.loading = false,
+      required this.onPress});
 
   final String title;
   final bool loading;
@@ -20,7 +24,13 @@ class RoundButton extends StatelessWidget {
           color: Colors.greenAccent,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Center(child: loading? const CircularProgressIndicator(color: Colors.white,): Text(title)),
+        child: Center(
+          child: loading
+              ? const CircularProgressIndicator(
+                  color: Colors.white,
+                )
+              : Text(title),
+        ),
       ),
     );
   }
