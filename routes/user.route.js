@@ -21,14 +21,14 @@ router.post("/register", async (req, res) => {
       try {
         otp = generateOTP(4);
         // await sendotp(user.mobileNumber, otp);
-        var otpModel = { otp: otp, status: true, user: user };
+        var otpModel = { otp: otp, status: true, owner: user };
         const otpDb = new OtpModel(otpModel);
         otpsave = await otpDb.save();
         setTimeout(async () => {
           console.log("executing otp timeout");
           const otpupdate = await OtpModel.findOneAndUpdate(
             { _id: otpsave._id },
-            { otp: otp, status: false, user: user }
+            { otp: otp, status: false }
           );
           console.log(otpupdate);
         }, 100000);
@@ -71,9 +71,10 @@ router.post("/login", async (req, res) => {
       if (user) {
         const isMatch = await bcrypt.compare(userBody.password, user.password);
         console.log(isMatch);
-        const token = await user.generateAuthToken();
         if (isMatch) {
-          res.status(200).send({ status: "Successful", user, token });
+          res
+            .status(200)
+            .send({ status: "Successful", user, token: user.token });
         } else {
           res.status(200).send({
             status: "Failed",
@@ -101,6 +102,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
+//generate pair code
 router.get("/generatePairCode", userAuth, async (req, res) => {
   const gencode = async () => {
     const otp = generateOTP(6);
@@ -131,6 +133,7 @@ router.get("/generatePairCode", userAuth, async (req, res) => {
   });
 });
 
+// match pair code
 router.post("/matchPairCode", userAuth, async (req, res) => {
   const paircode = req.body.paircode;
   const pairbody = await Paircode.findOne({ paircode });
@@ -148,13 +151,14 @@ router.post("/matchPairCode", userAuth, async (req, res) => {
   res.send({ userA, userB });
 });
 
+// otp verification
 router.post("/otpVerification", async (req, res) => {
   const otp = req.body.otpEntered;
   const otpId = req.body.otpId;
+  const userBody = req.body.user;
 
   const otpDB = await OtpModel.findById(otpId);
   if (otpDB.otp == otp && otpDB.status) {
-    const userBody = otpDB.user;
     const username = generateUsername(userBody);
     userBody.username = username;
     const user = new User(userBody);
@@ -171,16 +175,9 @@ router.post("/otpVerification", async (req, res) => {
   }
 });
 
-router.post("/logout", userAuth, async (req, res) => {
-  try {
-    req.user.tokens = req.user.tokens.filter((token) => {
-      return token.token !== req.token;
-    });
-    await req.user.save();
-
-    res.send();
-  } catch (e) {
-    res.status(500).send();
-  }
+// get mydata
+router.get("/mydata", userAuth, async (req, res) => {
+  res.send(req.user);
 });
+
 module.exports = router;
