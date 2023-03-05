@@ -1,0 +1,1 @@
+enum DateType {DINEOUT, WORKSHOP, OUTING}

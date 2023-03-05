@@ -1,5 +1,6 @@
 import 'package:sweetscapes/data/network/BaseApiServices.dart';
 import 'package:sweetscapes/data/network/NetworkApiServices.dart';
+import 'package:sweetscapes/model/signup_otp_model.dart';
 import 'package:sweetscapes/model/user_model.dart';
 import 'package:sweetscapes/res/app_url.dart';
 
@@ -16,10 +17,20 @@ class AuthRepository {
     }
   }
 
-  Future<UserModel> signupUrl(dynamic data) async {
+  Future<SignUpOTPModel> signupUrl(dynamic data) async {
     try {
       dynamic response =
           await _apiServices.getPostApiResponse(AppUrl.signupUrl, data);
+      return response = SignUpOTPModel.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UserModel> verifyOtpUrl(dynamic data) async {
+    try {
+      dynamic response =
+          await _apiServices.getPostApiResponse(AppUrl.verifyOtpUrl, data);
       return response = UserModel.fromJson(response);
     } catch (e) {
       rethrow;
