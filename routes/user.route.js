@@ -31,4 +31,7 @@ router.post("/matchPairCode", userAuth, UserController.matchPairCode);
 // otp verification
 router.post("/otpVerification", UserController.otpverification);
 
+// logout
+router.post("/logout", userAuth, UserController.logout);
+
 module.exports = router;

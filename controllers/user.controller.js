@@ -72,10 +72,10 @@ exports.login = async (req, res) => {
       if (user) {
         const isMatch = await bcrypt.compare(userBody.password, user.password);
         console.log(isMatch);
+
+        const token = await user.generateAuthToken();
         if (isMatch) {
-          res
-            .status(200)
-            .send({ status: "Successful", user, token: user.token });
+          res.status(200).send({ status: "Successful", user, token });
         } else {
           res.status(200).send({
             status: "Failed",
@@ -125,7 +125,43 @@ exports.update = async (req, res) => {
       if (gender) user.gender = gender;
       if (avatar) user.avatar = avatar;
       if (birthday) user.birthday = birthday;
-      if (preferences) user.preferences = preferences;
+
+      if (preferences) {
+        if (preferences.Dine) {
+          //Dining Preferences
+          if (preferences.Dine.Fine_Dining)
+            user.preferences.Dine.Fine_Dining = true;
+          if (preferences.Dine.Decent_Dining)
+            user.preferences.Dine.Decent_Dining = true;
+          if (preferences.Dine.Dhabas) user.preferences.Dine.Dhabas = true;
+          if (preferences.Dine.Home_Delivery)
+            user.preferences.Dine.Home_Delivery = true;
+          if (preferences.Dine.Take_Away)
+            user.preferences.Dine.Take_Away = true;
+          if (preferences.Dine.Home_Made)
+            user.preferences.Dine.Home_Made = true;
+          if (preferences.Dine.Cafes) user.preferences.Dine.Cafes = true;
+        }
+
+        // Outing Preferences
+        if (preferences.Outing) {
+          if (preferences.Outing.Hills_Lakes)
+            user.preferences.Outing.Hills_Lakes = true;
+          if (preferences.Outing.Dams_Waterfalls)
+            user.preferences.Outing.Dams_Waterfalls = true;
+          if (preferences.Outing.Malls) user.preferences.Outing.Malls = true;
+          if (preferences.Outing.Movie) user.preferences.Outing.Movie = true;
+          if (preferences.Outing.Park) user.preferences.Outing.Park = true;
+          if (preferences.Outing.Picnics)
+            user.preferences.Outing.Picnics = true;
+          if (preferences.Outing.Clubbing)
+            user.preferences.Outing.Clubbing = true;
+          if (preferences.Outing.Night_Out)
+            user.preferences.Outing.Night_Out = true;
+          if (preferences.Outing.Window_Shopping)
+            user.preferences.Outing.Window_Shopping = true;
+        }
+      }
 
       user.save();
       res.send({ status: "Successful", user });
@@ -199,4 +235,18 @@ exports.matchPairCode = async (req, res) => {
   );
 
   res.send({ status: "Successful", userA, userB });
+};
+
+//logout
+exports.logout = async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((token) => {
+      return token.token !== req.token;
+    });
+    await req.user.save();
+
+    res.send();
+  } catch (e) {
+    res.status(500).send();
+  }
 };
