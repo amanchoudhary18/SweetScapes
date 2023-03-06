@@ -108,6 +108,34 @@ exports.mydata = async (req, res) => {
   res.send(req.user);
 };
 
+// update user data function
+exports.update = async (req, res) => {
+  const { name, email, mobileNumber, gender, avatar, birthday, preferences } =
+    req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404);
+    throw new Error("User Not Found");
+  } else {
+    try {
+      if (name) user.name = name;
+      if (email) user.email = email;
+      if (mobileNumber) user.mobileNumber = mobileNumber;
+      if (gender) user.gender = gender;
+      if (avatar) user.avatar = avatar;
+      if (birthday) user.birthday = birthday;
+      if (preferences) user.preferences = preferences;
+
+      user.save();
+      res.send({ status: "Successful", user });
+    } catch (error) {
+      res.send({ status: "Failed", message: error.message });
+      console.log(error);
+    }
+  }
+};
+
 // otp-verification function
 exports.otpverification = async (req, res) => {
   const otp = req.body.otpEntered;

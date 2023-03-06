@@ -58,6 +58,81 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
 
+    // User Preferences
+    preferences: {
+      // Dining Preferences
+      Dine: {
+        Fine_Dining: {
+          type: Boolean,
+          default: false,
+        },
+        Decent_Dining: {
+          type: Boolean,
+          default: false,
+        },
+        Dhabas: {
+          type: Boolean,
+          default: false,
+        },
+        Home_Delivery: {
+          type: Boolean,
+          default: false,
+        },
+        Take_Away: {
+          type: Boolean,
+          default: false,
+        },
+        Home_Made: {
+          type: Boolean,
+          default: false,
+        },
+        Cafes: {
+          type: Boolean,
+          default: false,
+        },
+      },
+
+      // Outing Preferences
+      Outing: {
+        Hills_Lakes: {
+          type: Boolean,
+          default: false,
+        },
+        Dams_Waterfalls: {
+          type: Boolean,
+          default: false,
+        },
+        Malls: {
+          type: Boolean,
+          default: false,
+        },
+        Movie: {
+          type: Boolean,
+          default: false,
+        },
+        Park: {
+          type: Boolean,
+          default: false,
+        },
+        Picnics: {
+          type: Boolean,
+          default: false,
+        },
+        Clubbing: {
+          type: Boolean,
+          default: false,
+        },
+        Night_Out: {
+          type: Boolean,
+          default: false,
+        },
+        Window_Shopping: {
+          type: Boolean,
+          default: false,
+        },
+      },
+    },
+
     location: {
       latitude: {
         type: String,
@@ -66,14 +141,17 @@ const userSchema = new mongoose.Schema(
         type: String,
       },
     },
+
     isPaired: {
       type: Boolean,
       default: false,
     },
+
     isSubscribed: {
       type: Boolean,
       default: false,
     },
+
     pairedWith: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
