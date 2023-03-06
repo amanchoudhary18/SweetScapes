@@ -30,15 +30,19 @@ exports.register = async (req, res) => {
           console.log(otpupdate);
         }, 100000);
         if (otpsave)
-          res.status(200).send({ message: "otp sent", otpId: otpsave._id });
+          res.status(200).send({
+            status: "Successful",
+            message: "otp sent",
+            otpId: otpsave._id,
+          });
         else
           res.send({
-            status: "otp not sent",
+            status: "Failed",
             message: otpsave,
           });
       } catch (err) {
         res.status(200).send({
-          status: "Failed here",
+          status: "Failed",
           message: err.message,
         });
       }
@@ -112,8 +116,6 @@ exports.otpverification = async (req, res) => {
 
   const otpDB = await OtpModel.findById(otpId);
   if (otpDB.otp == otp && otpDB.status) {
-    const username = generateUsername(userBody);
-    userBody.username = username;
     const user = new User(userBody);
     await user.save();
     const token = await user.generateAuthToken();
@@ -123,21 +125,14 @@ exports.otpverification = async (req, res) => {
       token,
     });
   } else {
-    res.status(400).send({ message: "wrong otp entered" });
+    res.status(400).send({ status: "Failed", message: "wrong otp entered" });
     console.log("wrong otp entered");
   }
 };
 
 //generate paircode function
 exports.generatePairCode = async (req, res) => {
-  const gencode = async () => {
-    const otp = generateOTP(6);
-    const existingOtp = await Paircode.find({ paircode: otp });
-    if (existingOtp) gencode();
-    else return otp;
-  };
-
-  const genPairCode = gencode();
+  const genPairCode = generateOTP(6);
   console.log(genPairCode);
   const paircodebody = {
     owner: req.user,
@@ -145,28 +140,29 @@ exports.generatePairCode = async (req, res) => {
   };
 
   const paircode = new Paircode(paircodebody);
+  console.log(paircode);
   await paircode.save();
 
   setTimeout(async () => {
     console.log("Deleted the Paircode ");
     await Paircode.findByIdAndDelete({ _id: paircode._id });
-  }, 30000);
+  }, 100000);
 
   res.json({
-    status: true,
-    data: null,
-    msg: `Paircode generated ${gencode}`,
+    status: "Successful",
+    code: genPairCode,
   });
 };
 
 // match pair code
 exports.matchPairCode = async (req, res) => {
   const paircode = req.body.paircode;
-  const pairbody = await Paircode.findOne({ paircode });
 
+  const pairbody = await Paircode.findOne({ paircode });
+  console.log(pairbody);
   const userA = await User.findOneAndUpdate(
     { _id: pairbody.owner },
-    { pairedWith: req.user }
+    { pairedWith: req.user, isPaired: true }
   );
 
   const userB = await User.findOneAndUpdate(
@@ -174,5 +170,5 @@ exports.matchPairCode = async (req, res) => {
     { pairedWith: pairbody.owner, isPaired: true }
   );
 
-  res.send({ userA, userB });
+  res.send({ status: "Successful", userA, userB });
 };
