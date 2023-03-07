@@ -9,6 +9,7 @@ const generateUsername = require("../utils/generateUsername");
 //register function
 exports.register = async (req, res) => {
   const userBody = req.body;
+ 
   const existingMobileUser = await User.findOne({
     mobileNumber: userBody.mobileNumber,
   });
@@ -18,7 +19,7 @@ exports.register = async (req, res) => {
       try {
         otp = generateOTP(4);
         // await sendotp(user.mobileNumber, otp);
-        var otpModel = { otp: otp, status: true, owner: user };
+        var otpModel = { otp: otp, status: true,mobileNumber:user.mobileNumber };
         const otpDb = new OtpModel(otpModel);
         otpsave = await otpDb.save();
         setTimeout(async () => {
@@ -110,7 +111,7 @@ exports.mydata = async (req, res) => {
 
 // update user data function
 exports.update = async (req, res) => {
-  const { name, email, mobileNumber, gender, avatar, birthday, preferences } =
+  const { name, password,email, mobileNumber, gender, avatar, birthday, preferences } =
     req.body;
 
   console.log(req.body);
@@ -122,6 +123,7 @@ exports.update = async (req, res) => {
   } else {
     try {
       if (name) user.name = name;
+      if(password) user.password = password;
       if (email) user.email = email;
       if (mobileNumber) user.mobileNumber = mobileNumber;
       if (gender) user.gender = gender;
@@ -189,21 +191,27 @@ exports.update = async (req, res) => {
 exports.otpverification = async (req, res) => {
   const otp = req.body.otpEntered;
   const otpId = req.body.otpId;
-  const userBody = req.body.user;
+  
 
   const otpDB = await OtpModel.findById(otpId);
+  const mobileNumber = otpDB.mobileNumber;
+
   if (otpDB.otp == otp && otpDB.status) {
-    const user = new User(userBody);
+    const user = new User({mobileNumber});
     await user.save();
     const token = await user.generateAuthToken();
-    res.status(200).send({
+   
+    res.status(200).send(
+      {
       status: "Successful",
+      message:"Mobile number verified",
       user,
-      token,
+      token
     });
+
   } else {
-    res.status(400).send({ status: "Failed", message: "wrong otp entered" });
-    console.log("wrong otp entered");
+    res.status(400).send({ status: "Failed", message: "Wrong OTP entered" });
+
   }
 };
 

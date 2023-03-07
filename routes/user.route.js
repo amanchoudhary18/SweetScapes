@@ -13,6 +13,9 @@ const UserController = require("../controllers/user.controller");
 // sign up route
 router.post("/register", UserController.register);
 
+// otp verification
+router.post("/otpVerification", UserController.otpverification);
+
 // login route
 router.post("/login", UserController.login);
 
@@ -27,9 +30,6 @@ router.get("/generatePairCode", userAuth, UserController.generatePairCode);
 
 // match pair code
 router.post("/matchPairCode", userAuth, UserController.matchPairCode);
-
-// otp verification
-router.post("/otpVerification", UserController.otpverification);
 
 // logout
 router.post("/logout", userAuth, UserController.logout);

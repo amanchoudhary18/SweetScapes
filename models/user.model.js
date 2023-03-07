@@ -8,12 +8,10 @@ const userSchema = new mongoose.Schema(
     // name
     name: {
       type: String,
-      required: true,
     },
     // password stored in hash form
     password: {
       type: String,
-      required: true,
     },
     // email assosciated
     email: {
