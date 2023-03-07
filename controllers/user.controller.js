@@ -9,7 +9,7 @@ const generateUsername = require("../utils/generateUsername");
 //register function
 exports.register = async (req, res) => {
   const userBody = req.body;
- 
+
   const existingMobileUser = await User.findOne({
     mobileNumber: userBody.mobileNumber,
   });
@@ -19,7 +19,11 @@ exports.register = async (req, res) => {
       try {
         otp = generateOTP(4);
         // await sendotp(user.mobileNumber, otp);
-        var otpModel = { otp: otp, status: true,mobileNumber:user.mobileNumber };
+        var otpModel = {
+          otp: otp,
+          status: true,
+          mobileNumber: user.mobileNumber,
+        };
         const otpDb = new OtpModel(otpModel);
         otpsave = await otpDb.save();
         setTimeout(async () => {
@@ -111,8 +115,17 @@ exports.mydata = async (req, res) => {
 
 // update user data function
 exports.update = async (req, res) => {
-  const { name, password,email, mobileNumber, gender, avatar, birthday, preferences } =
-    req.body;
+  const {
+    name,
+    password,
+    email,
+    mobileNumber,
+    gender,
+    avatar,
+    birthday,
+    preferences,
+    location,
+  } = req.body;
 
   console.log(req.body);
 
@@ -123,12 +136,17 @@ exports.update = async (req, res) => {
   } else {
     try {
       if (name) user.name = name;
-      if(password) user.password = password;
+      if (password) user.password = password;
       if (email) user.email = email;
       if (mobileNumber) user.mobileNumber = mobileNumber;
       if (gender) user.gender = gender;
       if (avatar) user.avatar = avatar;
       if (birthday) user.birthday = birthday;
+
+      if (location) {
+        user.location.latitude = location.latitude;
+        user.location.longitude = location.longitude;
+      }
 
       if (preferences) {
         if (preferences.Dine) {
@@ -191,27 +209,23 @@ exports.update = async (req, res) => {
 exports.otpverification = async (req, res) => {
   const otp = req.body.otpEntered;
   const otpId = req.body.otpId;
-  
 
   const otpDB = await OtpModel.findById(otpId);
   const mobileNumber = otpDB.mobileNumber;
 
   if (otpDB.otp == otp && otpDB.status) {
-    const user = new User({mobileNumber});
+    const user = new User({ mobileNumber });
     await user.save();
     const token = await user.generateAuthToken();
-   
-    res.status(200).send(
-      {
-      status: "Successful",
-      message:"Mobile number verified",
-      user,
-      token
-    });
 
+    res.status(200).send({
+      status: "Successful",
+      message: "Mobile number verified",
+      user,
+      token,
+    });
   } else {
     res.status(400).send({ status: "Failed", message: "Wrong OTP entered" });
-
   }
 };
 
