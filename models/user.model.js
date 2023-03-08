@@ -63,30 +63,37 @@ const userSchema = new mongoose.Schema(
         Fine_Dining: {
           type:Number,
           required: true,
+          default:0,
         },
         Decent_Dining: {
           type:Number,
           required: true,
+          default:0,
         },
         Dhabas: {
           type:Number,
           required: true,
+          default:0,
         },
         Home_Delivery: {
           type:Number,
           required: true,
+          default:0,
         },
         Take_Away: {
           type:Number,
           required: true,
+          default:0,
         },
         Home_Made: {
           type:Number,
           required: true,
+          default:0,
         },
         Cafes: {
           type:Number,
           required: true,
+          default:0,
         },
       },
   
@@ -95,38 +102,47 @@ const userSchema = new mongoose.Schema(
         Hills_Lakes: {
           type:Number,
           required: true,
+          default:0,
         },
         Dams_Waterfalls: {
           type:Number,
           required: true,
+          default:0,
         },
         Malls: {
           type:Number,
           required: true,
+          default:0,
         },
         Movie: {
           type:Number,
           required: true,
+          default:0,
         },
         Park: {
           type:Number,
           required: true,
+          default:0,
         },
         Picnics: {
           type:Number,
           required: true,
+          default:0,
         },
         Clubbing: {
           type:Number,
           required: true,
+          default:0,
         },
         Night_Out: {
           type:Number,
           required: true,
+          default:0,
         },
         Window_Shopping: {
           type:Number,
           required: true,
+          default:0,
         },
       },
     },
