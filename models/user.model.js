@@ -61,87 +61,71 @@ const userSchema = new mongoose.Schema(
       // Dining Preferences
       Dine: {
         Fine_Dining: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Decent_Dining: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Dhabas: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Home_Delivery: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Take_Away: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Home_Made: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Cafes: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
       },
-
+  
       // Outing Preferences
       Outing: {
         Hills_Lakes: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Dams_Waterfalls: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Malls: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Movie: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Park: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Picnics: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Clubbing: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Night_Out: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
         Window_Shopping: {
-          type: Boolean,
-          default: false,
+          type:Number,
           required: true,
         },
       },
