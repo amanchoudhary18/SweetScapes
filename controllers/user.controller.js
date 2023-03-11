@@ -5,6 +5,7 @@ const Paircode = require("../models/paircode.model");
 const { sendotp } = require("../utils/sendOTP");
 const OtpModel = require("../models/otp.model");
 const generateUsername = require("../utils/generateUsername");
+const generateAge = require("../utils/generateAge");
 
 //register function
 exports.register = async (req, res) => {
@@ -141,11 +142,18 @@ exports.update = async (req, res) => {
       if (mobileNumber) user.mobileNumber = mobileNumber;
       if (gender) user.gender = gender;
       if (avatar) user.avatar = avatar;
-      if (birthday) user.birthday = birthday;
+      if (birthday) {
+        user.birthday = birthday;
+        user.age = generateAge(birthday);
+      }
 
       if (location) {
         user.location.latitude = location.latitude;
         user.location.longitude = location.longitude;
+      }
+
+      if (user.name && user.mobileNumber && user.birthday) {
+        user.username = generateUsername(user);
       }
 
       if (preferences) {
