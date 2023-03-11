@@ -47,7 +47,6 @@ const userSchema = new mongoose.Schema(
 
     gender: {
       type: String,
-      enum: ["Male", "Female", "Others"],
     },
     avatar: {
       type: String,
@@ -61,88 +60,88 @@ const userSchema = new mongoose.Schema(
       // Dining Preferences
       Dine: {
         Fine_Dining: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Decent_Dining: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Dhabas: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Home_Delivery: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Take_Away: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Home_Made: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Cafes: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
       },
-  
+
       // Outing Preferences
       Outing: {
         Hills_Lakes: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Dams_Waterfalls: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Malls: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Movie: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Park: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Picnics: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Clubbing: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Night_Out: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
         Window_Shopping: {
-          type:Number,
+          type: Number,
           required: true,
-          default:0,
+          default: 0,
         },
       },
     },

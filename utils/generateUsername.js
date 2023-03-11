@@ -5,10 +5,13 @@ function getFirstWord(str) {
 }
 
 const generateUsername = (userBody) => {
+  const epoch_birthday = new Date(0);
+  epoch_birthday.setUTCSeconds(userBody.birthday);
+
   const username =
     getFirstWord(userBody.name).toLowerCase() +
     userBody.mobileNumber.toString().substring(0, 2) +
-    userBody.mobileNumber.toString().substring(8, 10);
+    String(epoch_birthday.getDate()).padStart(2, "0");
 
   return username;
 };

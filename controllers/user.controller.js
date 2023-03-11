@@ -142,10 +142,7 @@ exports.update = async (req, res) => {
       if (mobileNumber) user.mobileNumber = mobileNumber;
       if (gender) user.gender = gender;
       if (avatar) user.avatar = avatar;
-      if (birthday) {
-        user.birthday = birthday;
-        user.age = generateAge(birthday);
-      }
+      if (birthday) user.birthday = birthday;
 
       if (location) {
         user.location.latitude = location.latitude;
