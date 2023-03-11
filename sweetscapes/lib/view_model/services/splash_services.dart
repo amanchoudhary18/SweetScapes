@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sweetscapes/data/app_exceptions.dart';
 import 'package:sweetscapes/model/user_model.dart';
+import 'package:sweetscapes/utils/routes/routes_arguments.dart';
 import 'package:sweetscapes/utils/routes/routes_name.dart';
+import 'package:sweetscapes/view/home_screen.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
 class SplashServices {
@@ -15,10 +17,17 @@ class SplashServices {
       }
       if (value.token == null || value.token == '') {
         await Future.delayed(const Duration(seconds: 2));
-        Navigator.pushNamed(context, RoutesName.login);
+        Navigator.popAndPushNamed(
+          context,
+          RoutesName.login,
+        );
       } else {
         await Future.delayed(const Duration(seconds: 2));
-        Navigator.pushNamed(context, RoutesName.home);
+        Navigator.popAndPushNamed(
+          context,
+          RoutesName.home,
+          arguments: HomeScreenArguments(showInitialDialogBox: true),
+        );
       }
     }).onError((error, stackTrace) {
       if (kDebugMode) {

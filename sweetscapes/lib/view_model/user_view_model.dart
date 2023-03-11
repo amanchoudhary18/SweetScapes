@@ -7,6 +7,7 @@ class UserViewModel with ChangeNotifier {
   Future<bool> saveUser(UserModel user) async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     sp.setString('token', user.token.toString());
+    sp.setBool('isSubscribed', user.user!.isSubscribed!);
     notifyListeners();
     return true;
   }
@@ -16,6 +17,9 @@ class UserViewModel with ChangeNotifier {
 
     return UserModel(
       token: sp.getString('token'),
+      user: User(
+        isSubscribed: sp.getBool('isSubscribed'),
+      ),
     );
 
   }

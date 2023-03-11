@@ -1,0 +1,1 @@
+enum Genders {MALE, FEMALE, OTHERS}

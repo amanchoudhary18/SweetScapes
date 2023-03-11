@@ -110,23 +110,6 @@ class LoginView extends StatelessWidget {
                   height: 20,
                 ),
                 TextFormField(
-                  controller: _nameSignUpController,
-                  keyboardType: TextInputType.name,
-                  focusNode: _nameSignUpNode,
-                  decoration: const InputDecoration(
-                    icon: Icon(
-                      Icons.person_2_outlined,
-                    ),
-                    hintText: 'Enter your Name',
-                    labelText: 'Full Name',
-                  ),
-                  onFieldSubmitted: (value) => Utils.fieldFocusChange(
-                    context,
-                    _nameSignUpNode,
-                    _phoneSignUpNode,
-                  ),
-                ),
-                TextFormField(
                   controller: _phoneSignUpController,
                   keyboardType: TextInputType.phone,
                   focusNode: _phoneSignUpNode,
@@ -143,46 +126,13 @@ class LoginView extends StatelessWidget {
                     _passwordSignUpNode,
                   ),
                 ),
-                ValueListenableBuilder(
-                  valueListenable: _obscureSignupPassword,
-                  builder: (context, value, child) {
-                    return TextFormField(
-                      controller: _passwordSignUpController,
-                      obscureText: _obscureSignupPassword.value,
-                      obscuringCharacter: '~',
-                      focusNode: _passwordSignUpNode,
-                      decoration: InputDecoration(
-                        icon: const Icon(
-                          Icons.password_rounded,
-                        ),
-                        hintText: 'Enter your Password',
-                        labelText: 'Password',
-                        suffix: InkWell(
-                          onTap: () {
-                            _obscureSignupPassword.value =
-                                !_obscureSignupPassword.value;
-                          },
-                          child: Icon(_obscureSignupPassword.value
-                              ? Icons.visibility_off_rounded
-                              : Icons.visibility_rounded),
-                        ),
-                      ),
-                    );
-                  },
-                ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: RoundButton(
-                    title: 'SIGNUP',
+                    title: 'SEND OTP',
                     onPress: () {
-                      Map data = {
-                        'name': _nameSignUpController.text.toString().trim(),
-                        'mobileNumber':
-                            _phoneSignUpController.text.toString().trim(),
-                        'password':
-                            _passwordSignUpController.text.toString().trim(),
-                      };
-                      authViewModel.signUp(data, context);
+                      authViewModel.signUp(_phoneSignUpController.text.toString().trim(),
+                          context);
                     },
                     loading: authViewModel.signUploading,
                   ),
@@ -212,7 +162,8 @@ class LoginView extends StatelessWidget {
                   child: RoundButton(
                     title: 'VERIFY OTP',
                     onPress: () {
-                      authViewModel.verifyOtp(_otpController.text.toString().trim(), context);
+                      authViewModel.verifyOtp(
+                          _otpController.text.toString().trim(), context);
                     },
                     loading: authViewModel.verifyOtploading,
                   ),

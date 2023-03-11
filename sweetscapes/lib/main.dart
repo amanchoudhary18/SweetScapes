@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sweetscapes/utils/routes/routes.dart';
 import 'package:sweetscapes/utils/routes/routes_name.dart';
 import 'package:sweetscapes/view_model/auth_view_model.dart';
+import 'package:sweetscapes/view_model/date_suggestion/date_suggestion_viewmodel.dart';
 import 'package:sweetscapes/view_model/home_screen_view_model.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => UserViewModel()),
         ChangeNotifierProvider(create: (_) => HomeScreenViewModel()),
+        ChangeNotifierProvider(create: (_) => DateSuggestionViewModel()),
       ],
       child: MaterialApp(
       title: 'SweetScapes',

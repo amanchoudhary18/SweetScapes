@@ -1,11 +1,26 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:sweetscapes/data/app_exceptions.dart';
 import 'package:sweetscapes/data/network/BaseApiServices.dart';
 import 'package:http/http.dart' as http;
 
+import '../../model/user_model.dart';
+import '../../view_model/user_view_model.dart';
+
 class NetworkApiServices extends BaseApiServices {
+  String? getToken() {
+    UserViewModel().getUser().then((value) {
+      return value.token.toString();
+    }).onError((error, stackTrace) {
+      if (kDebugMode) {
+        print(error.toString());
+      }
+      return '';
+    });
+  }
+
   @override
   Future getGetApiResponse(String url) async {
     dynamic responseJson;
@@ -25,6 +40,30 @@ class NetworkApiServices extends BaseApiServices {
     try {
       http.Response response = await http
           .post(Uri.parse(url), body: data)
+          .timeout(const Duration(seconds: 5));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+    return responseJson;
+  }
+
+  @override
+  Future getPutApiResponse(String url, dynamic data, String token) async {
+    dynamic responseJson;
+    print(token);
+    final msg = jsonEncode(data);
+    try {
+      http.Response response = await http
+          .put(
+            Uri.parse(url),
+            body: msg,
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            encoding: Encoding.getByName("utf-8"),
+          )
           .timeout(const Duration(seconds: 5));
       responseJson = returnResponse(response);
     } on SocketException {

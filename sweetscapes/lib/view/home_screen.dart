@@ -21,50 +21,55 @@ import '../res/components/SuggestionTile.dart';
 import '../utils/utils.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+  HomeScreen({
+    super.key,
+    this.showInitialDialog = false,
+  });
 
-  final Screens = [
-    DateSuggestionView(),
-    BookingsView(),
-    GiftSuggestionView(),
-    UserProfileView(),
-  ];
+  bool showInitialDialog;
 
   final List<DotNavigationBarItem> navbarItems = [
     /// Home
-          DotNavigationBarItem(
-            icon: Icon(Icons.home),
-            selectedColor: Colors.purple,
-          ),
+    DotNavigationBarItem(
+      icon: Icon(Icons.home),
+      selectedColor: Colors.purple,
+    ),
 
-          /// Likes
-          DotNavigationBarItem(
-            icon: Icon(Icons.collections_bookmark_outlined),
-            selectedColor: Colors.purple,
-          ),
+    /// Likes
+    DotNavigationBarItem(
+      icon: Icon(Icons.collections_bookmark_outlined),
+      selectedColor: Colors.purple,
+    ),
 
-          /// Search
-          DotNavigationBarItem(
-            icon: Icon(Icons.wallet_giftcard_outlined),
-            selectedColor: Colors.purple,
-          ),
+    /// Search
+    DotNavigationBarItem(
+      icon: Icon(Icons.wallet_giftcard_outlined),
+      selectedColor: Colors.purple,
+    ),
 
-          /// Profile
-          DotNavigationBarItem(
-            icon: Icon(Icons.person),
-            selectedColor: Colors.purple,
-          ),
+    /// Profile
+    DotNavigationBarItem(
+      icon: Icon(Icons.person),
+      selectedColor: Colors.purple,
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     final model = Provider.of<HomeScreenViewModel>(context);
 
+    final Screens = [
+      DateSuggestionView(
+        showInitialDialog: showInitialDialog,
+      ),
+      BookingsView(),
+      GiftSuggestionView(),
+      UserProfileView(),
+    ];
+
     return Scaffold(
       extendBody: true,
-
       body: Screens[model.currentScreenIndex],
-
       bottomNavigationBar: DotNavigationBar(
         marginR: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         currentIndex: model.currentScreenIndex,

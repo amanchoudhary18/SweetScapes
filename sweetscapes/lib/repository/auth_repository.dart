@@ -27,10 +27,20 @@ class AuthRepository {
     }
   }
 
-  Future<UserModel> verifyOtpUrl(dynamic data) async {
+  Future<UserModel> verifyOTPUrl(dynamic data) async {
     try {
       dynamic response =
           await _apiServices.getPostApiResponse(AppUrl.verifyOtpUrl, data);
+      return response = UserModel.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UserModel> updateUserDetailsUrl(dynamic data, String token) async {
+    try {
+      dynamic response =
+          await _apiServices.getPutApiResponse(AppUrl.updateUserDetailsUrl, data, token);
       return response = UserModel.fromJson(response);
     } catch (e) {
       rethrow;
