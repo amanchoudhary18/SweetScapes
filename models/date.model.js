@@ -6,89 +6,90 @@ const dateSchema = new mongoose.Schema({
     // Dining Preferences
     Dine: {
       Fine_Dining: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Decent_Dining: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Dhabas: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Home_Delivery: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Take_Away: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Home_Made: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Cafes: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
     },
 
     // Outing Preferences
     Outing: {
       Hills_Lakes: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Dams_Waterfalls: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Malls: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Movie: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Park: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Picnics: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Clubbing: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Night_Out: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
       Window_Shopping: {
-        type: Boolean,
-        default: false,
+        type:Number,
         required: true,
+        default:0,
       },
+     },
     },
 
     // filter parameters
@@ -157,9 +158,16 @@ const dateSchema = new mongoose.Schema({
           mode: {
             type: String,
           },
-          contact: {
-            type: String,
-          },
+          contacts: [
+            {
+              name: {
+                type: String,
+              },
+              number: {
+                type: Number,
+              },
+            },
+          ],
           boarding_point: {
             type: String,
           },
@@ -170,11 +178,13 @@ const dateSchema = new mongoose.Schema({
             type: String,
           },
           price: {
-            type: String,
+            type: Number,
           },
         },
       ],
-      reserved_auto: {
+      reserved_auto: {mode: {
+        type: String,
+      },
         contacts: [
           {
             name: {
@@ -198,7 +208,9 @@ const dateSchema = new mongoose.Schema({
           type: String,
         },
       },
-      two_wheeler: {
+      two_wheeler: {mode: {
+        type: String,
+      },
         contacts: [
           {
             name: {
@@ -222,7 +234,9 @@ const dateSchema = new mongoose.Schema({
           type: String,
         },
       },
-      four_wheeler: {
+      four_wheeler: {mode: {
+        type: String,
+      },
         contacts: [
           {
             name: {
@@ -281,7 +295,7 @@ const dateSchema = new mongoose.Schema({
       },
     ],
 
-    dine: [
+    place: [
       {
         isHighlight: {
           type: Boolean,
@@ -311,7 +325,7 @@ const dateSchema = new mongoose.Schema({
       },
     ],
   },
-});
+);
 
 const Date = mongoose.model("Date", dateSchema);
 
