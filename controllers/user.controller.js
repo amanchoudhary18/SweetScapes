@@ -199,6 +199,8 @@ exports.update = async (req, res) => {
             user.preferences.Outing.Window_Shopping =
               preferences.Outing.Window_Shopping;
         }
+
+        user.isNew = false;
       }
 
       user.save();

@@ -146,6 +146,11 @@ const userSchema = new mongoose.Schema(
       },
     },
 
+    isNew: {
+      type: Boolean,
+      default: true,
+    },
+
     location: {
       latitude: {
         type: String,

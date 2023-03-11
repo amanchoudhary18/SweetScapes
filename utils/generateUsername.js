@@ -6,7 +6,8 @@ function getFirstWord(str) {
 
 const generateUsername = (userBody) => {
   const epoch_birthday = new Date(0);
-  epoch_birthday.setUTCSeconds(userBody.birthday);
+  const birthday = userBody.birthday.slice(0, -3);
+  epoch_birthday.setUTCSeconds(birthday);
 
   const username =
     getFirstWord(userBody.name).toLowerCase() +

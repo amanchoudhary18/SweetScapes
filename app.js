@@ -18,6 +18,7 @@ app.get("/api/v1/home", (req, res) => {
 
 const userRouter = require("./routes/user.route");
 const generateUsername = require("./utils/generateUsername");
+const generateOTP = require("./utils/generateOTP");
 app.use("/api/v1/user", userRouter);
 
 app.listen(process.env.PORT, () => {
