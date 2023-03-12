@@ -12,8 +12,8 @@ import 'package:sweetscapes/utils/utils.dart';
 import 'package:sweetscapes/view_model/services/splash_services.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
-import '../model/body/verify_otp_body.dart';
-import '../utils/routes/routes_arguments.dart';
+import '../../model/body/verify_otp_body.dart';
+import '../../utils/routes/routes_arguments.dart';
 
 class AuthViewModel with ChangeNotifier {
   final _myrepo = AuthRepository();
@@ -68,16 +68,28 @@ class AuthViewModel with ChangeNotifier {
                   userPreference.saveUser(
                     UserModel(
                       token: value.token.toString(),
-                      user: User(isSubscribed: false),
+                      user: User(
+                        isSubscribed: value.user!.isSubscribed!,
+                        isNew: value.user!.isNew!,
+                      ),
                     ),
                   ),
                   userData = ApiResponse.completed(value),
                   Utils.goFlushBar('Login Successful', context),
-                  Navigator.pushNamed(
-                    context,
-                    RoutesName.home,
-                    arguments: HomeScreenArguments(showInitialDialogBox: true),
-                  ),
+                  if (value.user!.isNew! == true)
+                    {
+                      Navigator.pushNamed(
+                        context,
+                        RoutesName.updateTags,
+                      ),
+                    }
+                  else
+                    {
+                      Navigator.pushNamed(
+                        context,
+                        RoutesName.home,
+                      ),
+                    }
                 }
               else
                 {
@@ -164,7 +176,10 @@ class AuthViewModel with ChangeNotifier {
                   userPreference.saveUser(
                     UserModel(
                       token: value.token.toString(),
-                      user: User(isSubscribed: false),
+                      user: User(
+                        isSubscribed: false,
+                        isNew: false,
+                      ),
                     ),
                   ),
                   userData = ApiResponse.completed(value),
@@ -205,8 +220,7 @@ class AuthViewModel with ChangeNotifier {
                   Utils.goFlushBar('Name and Password Set', context),
                   Navigator.pushNamed(
                     context,
-                    RoutesName.home,
-                    arguments: HomeScreenArguments(showInitialDialogBox: true),
+                    RoutesName.updateTags,
                   ),
                 }
               else

@@ -8,6 +8,7 @@ class UserViewModel with ChangeNotifier {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     sp.setString('token', user.token.toString());
     sp.setBool('isSubscribed', user.user!.isSubscribed!);
+    sp.setBool('isNew', user.user!.isNew!);
     notifyListeners();
     return true;
   }
@@ -19,6 +20,7 @@ class UserViewModel with ChangeNotifier {
       token: sp.getString('token'),
       user: User(
         isSubscribed: sp.getBool('isSubscribed'),
+        isNew: sp.getBool('isNew'),
       ),
     );
 

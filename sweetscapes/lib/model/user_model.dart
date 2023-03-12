@@ -26,50 +26,90 @@ class UserModel {
 }
 
 class User {
-  int? mobileNumber;
   Preferences? preferences;
+  Location? location;
+  String? sId;
+  int? mobileNumber;
   bool? isPaired;
   bool? isSubscribed;
-  String? sId;
   String? createdAt;
   String? updatedAt;
   int? iV;
+  String? name;
+  String? birthday;
+  String? gender;
+  String? username;
+  bool? isNew;
+  String? email;
+  String? pairedWith;
+  String? avatar;
 
   User(
-      {this.mobileNumber,
-      this.preferences,
+      {this.preferences,
+      this.location,
+      this.sId,
+      this.mobileNumber,
       this.isPaired,
       this.isSubscribed,
-      this.sId,
       this.createdAt,
       this.updatedAt,
-      this.iV});
+      this.iV,
+      this.name,
+      this.birthday,
+      this.gender,
+      this.username,
+      this.isNew,
+      this.email,
+      this.pairedWith,
+      this.avatar});
 
   User.fromJson(Map<String, dynamic> json) {
-    mobileNumber = json['mobileNumber'];
     preferences = json['preferences'] != null
         ? new Preferences.fromJson(json['preferences'])
         : null;
+    location = json['location'] != null
+        ? new Location.fromJson(json['location'])
+        : null;
+    sId = json['_id'];
+    mobileNumber = json['mobileNumber'];
     isPaired = json['isPaired'];
     isSubscribed = json['isSubscribed'];
-    sId = json['_id'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
+    name = json['name'];
+    birthday = json['birthday'];
+    gender = json['gender'];
+    username = json['username'];
+    isNew = json['isNew'];
+    email = json['email'];
+    pairedWith = json['pairedWith'];
+    avatar = json['avatar'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['mobileNumber'] = this.mobileNumber;
     if (this.preferences != null) {
       data['preferences'] = this.preferences!.toJson();
     }
+    if (this.location != null) {
+      data['location'] = this.location!.toJson();
+    }
+    data['_id'] = this.sId;
+    data['mobileNumber'] = this.mobileNumber;
     data['isPaired'] = this.isPaired;
     data['isSubscribed'] = this.isSubscribed;
-    data['_id'] = this.sId;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
     data['__v'] = this.iV;
+    data['name'] = this.name;
+    data['birthday'] = this.birthday;
+    data['gender'] = this.gender;
+    data['username'] = this.username;
+    data['isNew'] = this.isNew;
+    data['email'] = this.email;
+    data['pairedWith'] = this.pairedWith;
+    data['avatar'] = this.avatar;
     return data;
   }
 }
@@ -184,6 +224,25 @@ class Outing {
     data['Clubbing'] = this.clubbing;
     data['Night_Out'] = this.nightOut;
     data['Window_Shopping'] = this.windowShopping;
+    return data;
+  }
+}
+
+class Location {
+  String? latitude;
+  String? longitude;
+
+  Location({this.latitude, this.longitude});
+
+  Location.fromJson(Map<String, dynamic> json) {
+    latitude = json['latitude'];
+    longitude = json['longitude'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['latitude'] = this.latitude;
+    data['longitude'] = this.longitude;
     return data;
   }
 }

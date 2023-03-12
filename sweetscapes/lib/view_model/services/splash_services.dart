@@ -21,12 +21,17 @@ class SplashServices {
           context,
           RoutesName.login,
         );
+      } else if (value.user!.isNew! == true) {
+        await Future.delayed(const Duration(seconds: 2));
+        Navigator.popAndPushNamed(
+          context,
+          RoutesName.updateTags,
+        );
       } else {
         await Future.delayed(const Duration(seconds: 2));
         Navigator.popAndPushNamed(
           context,
           RoutesName.home,
-          arguments: HomeScreenArguments(showInitialDialogBox: true),
         );
       }
     }).onError((error, stackTrace) {

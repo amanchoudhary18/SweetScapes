@@ -23,10 +23,7 @@ import '../utils/utils.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({
     super.key,
-    this.showInitialDialog = false,
   });
-
-  bool showInitialDialog;
 
   final List<DotNavigationBarItem> navbarItems = [
     /// Home
@@ -59,9 +56,7 @@ class HomeScreen extends StatelessWidget {
     final model = Provider.of<HomeScreenViewModel>(context);
 
     final Screens = [
-      DateSuggestionView(
-        showInitialDialog: showInitialDialog,
-      ),
+      DateSuggestionView(),
       BookingsView(),
       GiftSuggestionView(),
       UserProfileView(),

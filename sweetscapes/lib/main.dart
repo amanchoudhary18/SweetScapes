@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sweetscapes/utils/routes/routes.dart';
 import 'package:sweetscapes/utils/routes/routes_name.dart';
-import 'package:sweetscapes/view_model/auth_view_model.dart';
-import 'package:sweetscapes/view_model/date_suggestion/date_suggestion_viewmodel.dart';
+import 'package:sweetscapes/view_model/onboarding/auth_view_model.dart';
+import 'package:sweetscapes/view_model/onboarding/updateTags_viewmodel.dart';
 import 'package:sweetscapes/view_model/home_screen_view_model.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => UserViewModel()),
         ChangeNotifierProvider(create: (_) => HomeScreenViewModel()),
-        ChangeNotifierProvider(create: (_) => DateSuggestionViewModel()),
+        ChangeNotifierProvider(create: (_) => UpdateTagsViewModel()),
       ],
       child: MaterialApp(
       title: 'SweetScapes',

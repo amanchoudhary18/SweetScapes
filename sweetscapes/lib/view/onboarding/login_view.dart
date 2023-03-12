@@ -7,7 +7,7 @@ import 'package:sweetscapes/res/components/round_button.dart';
 import 'package:sweetscapes/utils/routes/routes_name.dart';
 import 'package:sweetscapes/utils/utils.dart';
 import 'package:provider/provider.dart';
-import 'package:sweetscapes/view_model/auth_view_model.dart';
+import 'package:sweetscapes/view_model/onboarding/auth_view_model.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key});
@@ -67,7 +67,7 @@ class LoginView extends StatelessWidget {
                   valueListenable: _obscureLoginPassword,
                   builder: (context, value, child) {
                     return TextFormField(
-                      controller: _passwordLoginController,
+                      controller: _passwordLoginController,    
                       obscureText: _obscureLoginPassword.value,
                       obscuringCharacter: '~',
                       focusNode: _passwordLoginNode,

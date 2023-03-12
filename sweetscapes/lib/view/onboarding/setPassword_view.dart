@@ -3,9 +3,9 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
 
-import '../res/components/round_button.dart';
-import '../utils/utils.dart';
-import '../view_model/auth_view_model.dart';
+import '../../res/components/round_button.dart';
+import '../../utils/utils.dart';
+import '../../view_model/onboarding/auth_view_model.dart';
 
 class SetupPasswordView extends StatelessWidget {
   SetupPasswordView({super.key});
