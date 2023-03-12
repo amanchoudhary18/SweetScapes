@@ -153,56 +153,215 @@ exports.update = async (req, res) => {
         user.username = generateUsername(user);
       }
 
-      if (preferences) {
+      iif (preferences) {
         if (preferences.Dine) {
           console.log(preferences.Dine);
           //Dining Preferences
           if (preferences.Dine.Fine_Dining !== undefined)
-            user.preferences.Dine.Fine_Dining = preferences.Dine.Fine_Dining;
+            user.preferences.Dine.Fine_Dining = preferences.Dine.Fine_Dining
+              ? 1
+              : 0
+              ? 1
+              : 0;
           if (preferences.Dine.Decent_Dining !== undefined)
-            user.preferences.Dine.Decent_Dining =
-              preferences.Dine.Decent_Dining;
+            user.preferences.Dine.Decent_Dining = preferences.Dine.Decent_Dining
+              ? 1
+              : 0;
           if (preferences.Dine.Dhabas !== undefined)
-            user.preferences.Dine.Dhabas = preferences.Dine.Dhabas;
+            user.preferences.Dine.Dhabas = preferences.Dine.Dhabas ? 1 : 0;
           if (preferences.Dine.Home_Delivery !== undefined)
-            user.preferences.Dine.Home_Delivery =
-              preferences.Dine.Home_Delivery;
+            user.preferences.Dine.Home_Delivery = preferences.Dine.Home_Delivery
+              ? 1
+              : 0;
           if (preferences.Dine.Take_Away !== undefined)
-            user.preferences.Dine.Take_Away = preferences.Dine.Take_Away;
+            user.preferences.Dine.Take_Away = preferences.Dine.Take_Away
+              ? 1
+              : 0;
           if (preferences.Dine.Home_Made !== undefined)
-            user.preferences.Dine.Home_Made = preferences.Dine.Home_Made;
+            user.preferences.Dine.Home_Made = preferences.Dine.Home_Made
+              ? 1
+              : 0;
           if (preferences.Dine.Cafes !== undefined)
-            user.preferences.Dine.Cafes = preferences.Dine.Cafes;
+            user.preferences.Dine.Cafes = preferences.Dine.Cafes ? 1 : 0;
         }
 
         // Outing Preferences
         if (preferences.Outing !== undefined) {
           if (preferences.Outing.Hills_Lakes !== undefined)
-            user.preferences.Outing.Hills_Lakes =
-              preferences.Outing.Hills_Lakes;
+            user.preferences.Outing.Hills_Lakes = preferences.Outing.Hills_Lakes
+              ? 1
+              : 0;
           if (preferences.Outing.Dams_Waterfalls !== undefined)
-            user.preferences.Outing.Dams_Waterfalls =
-              preferences.Outing.Dams_Waterfalls;
+            user.preferences.Outing.Dams_Waterfalls = preferences.Outing
+              .Dams_Waterfalls
+              ? 1
+              : 0;
           if (preferences.Outing.Malls !== undefined)
-            user.preferences.Outing.Malls = preferences.Outing.Malls;
+            user.preferences.Outing.Malls = preferences.Outing.Malls ? 1 : 0;
           if (preferences.Outing.Movie !== undefined)
-            user.preferences.Outing.Movie = preferences.Outing.Movie;
+            user.preferences.Outing.Movie = preferences.Outing.Movie ? 1 : 0;
           if (preferences.Outing.Park !== undefined)
-            user.preferences.Outing.Park = preferences.Outing.Park;
+            user.preferences.Outing.Park = preferences.Outing.Park ? 1 : 0;
           if (preferences.Outing.Picnics !== undefined)
-            user.preferences.Outing.Picnics = preferences.Outing.Picnics;
+            user.preferences.Outing.Picnics = preferences.Outing.Picnics
+              ? 1
+              : 0;
           if (preferences.Outing.Clubbing !== undefined)
-            user.preferences.Outing.Clubbing = preferences.Outing.Clubbing;
+            user.preferences.Outing.Clubbing = preferences.Outing.Clubbing
+              ? 1
+              : 0;
           if (preferences.Outing.Night_Out !== undefined)
-            user.preferences.Outing.Night_Out = preferences.Outing.Night_Out;
+            user.preferences.Outing.Night_Out = preferences.Outing.Night_Out
+              ? 1
+              : 0;
           if (preferences.Outing.Window_Shopping !== undefined)
-            user.preferences.Outing.Window_Shopping =
-              preferences.Outing.Window_Shopping;
+            user.preferences.Outing.Window_Shopping = preferences.Outing
+              .Window_Shopping
+              ? 1
+              : 0;
         }
 
         user.isNew = false;
       }
 
+      user.save();
+      res.send({ status: "Successful", user });
+    } catch (error) {
+      res.send({ status: "Failed", message: error.message });
+      console.log(error);
+    }
+  }
+};
+
+//update birthday and gender and send preferences
+exports.updateInitial = async (req, res) => {
+  const { gender, birthday } = req.body;
+
+  console.log(req.body);
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404);
+    throw new Error("User Not Found");
+  } else {
+    try {
+      if (gender) user.gender = gender;
+      if (birthday) user.birthday = birthday;
+
+      const dining = [
+        "Fine Dining",
+        "Decent Dining",
+        "Dhabas",
+        "Home Delivery",
+        "Take Away",
+        "Home-made",
+        "Cafes",
+      ];
+      const outing = [
+        [
+          "Hills, Lakes",
+          "Dams, Waterfalls",
+          "Malls",
+          "Movie",
+          "Park",
+          "Picnics",
+          "Clubbing",
+          "Night Out",
+          "Window Shopping",
+        ],
+      ];
+      user.save();
+      res.send({ status: "Successful", dining, outing });
+    } catch (error) {
+      res.send({ status: "Failed", message: error.message });
+      console.log(error);
+    }
+  }
+};
+
+//set preferences
+exports.setInitialPreferences = async (req, res) => {
+  const { preferences } = req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404);
+    throw new Error("User Not Found");
+  } else {
+    try {
+      if (preferences) {
+        if (preferences.Dine) {
+          console.log(preferences.Dine);
+          //Dining Preferences
+          if (preferences.Dine.Fine_Dining !== undefined)
+            user.preferences.Dine.Fine_Dining = preferences.Dine.Fine_Dining
+              ? 1
+              : 0
+              ? 1
+              : 0;
+          if (preferences.Dine.Decent_Dining !== undefined)
+            user.preferences.Dine.Decent_Dining = preferences.Dine.Decent_Dining
+              ? 1
+              : 0;
+          if (preferences.Dine.Dhabas !== undefined)
+            user.preferences.Dine.Dhabas = preferences.Dine.Dhabas ? 1 : 0;
+          if (preferences.Dine.Home_Delivery !== undefined)
+            user.preferences.Dine.Home_Delivery = preferences.Dine.Home_Delivery
+              ? 1
+              : 0;
+          if (preferences.Dine.Take_Away !== undefined)
+            user.preferences.Dine.Take_Away = preferences.Dine.Take_Away
+              ? 1
+              : 0;
+          if (preferences.Dine.Home_Made !== undefined)
+            user.preferences.Dine.Home_Made = preferences.Dine.Home_Made
+              ? 1
+              : 0;
+          if (preferences.Dine.Cafes !== undefined)
+            user.preferences.Dine.Cafes = preferences.Dine.Cafes ? 1 : 0;
+        }
+
+        // Outing Preferences
+        if (preferences.Outing !== undefined) {
+          if (preferences.Outing.Hills_Lakes !== undefined)
+            user.preferences.Outing.Hills_Lakes = preferences.Outing.Hills_Lakes
+              ? 1
+              : 0;
+          if (preferences.Outing.Dams_Waterfalls !== undefined)
+            user.preferences.Outing.Dams_Waterfalls = preferences.Outing
+              .Dams_Waterfalls
+              ? 1
+              : 0;
+          if (preferences.Outing.Malls !== undefined)
+            user.preferences.Outing.Malls = preferences.Outing.Malls ? 1 : 0;
+          if (preferences.Outing.Movie !== undefined)
+            user.preferences.Outing.Movie = preferences.Outing.Movie ? 1 : 0;
+          if (preferences.Outing.Park !== undefined)
+            user.preferences.Outing.Park = preferences.Outing.Park ? 1 : 0;
+          if (preferences.Outing.Picnics !== undefined)
+            user.preferences.Outing.Picnics = preferences.Outing.Picnics
+              ? 1
+              : 0;
+          if (preferences.Outing.Clubbing !== undefined)
+            user.preferences.Outing.Clubbing = preferences.Outing.Clubbing
+              ? 1
+              : 0;
+          if (preferences.Outing.Night_Out !== undefined)
+            user.preferences.Outing.Night_Out = preferences.Outing.Night_Out
+              ? 1
+              : 0;
+          if (preferences.Outing.Window_Shopping !== undefined)
+            user.preferences.Outing.Window_Shopping = preferences.Outing
+              .Window_Shopping
+              ? 1
+              : 0;
+        }
+
+        user.isNew = false;
+      }
+      if (user.name && user.mobileNumber && user.birthday) {
+        user.username = generateUsername(user);
+      }
       user.save();
       res.send({ status: "Successful", user });
     } catch (error) {

@@ -25,6 +25,16 @@ router.get("/mydata", userAuth, UserController.mydata);
 // update data
 router.put("/update", userAuth, UserController.update);
 
+//update birthday and gender and send preferences
+router.put("/updateInitial", userAuth, UserController.updateInitial);
+
+//set initial preferences
+router.put(
+  "/setInitialPreferences",
+  userAuth,
+  UserController.setInitialPreferences
+);
+
 //generate pair code
 router.get("/generatePairCode", userAuth, UserController.generatePairCode);
 
