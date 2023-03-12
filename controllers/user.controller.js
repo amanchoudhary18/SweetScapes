@@ -153,7 +153,7 @@ exports.update = async (req, res) => {
         user.username = generateUsername(user);
       }
 
-      iif (preferences) {
+      if (preferences) {
         if (preferences.Dine) {
           console.log(preferences.Dine);
           //Dining Preferences
