@@ -258,17 +258,15 @@ exports.updateInitial = async (req, res) => {
         "Cafes",
       ];
       const outing = [
-        [
-          "Hills, Lakes",
-          "Dams, Waterfalls",
-          "Malls",
-          "Movie",
-          "Park",
-          "Picnics",
-          "Clubbing",
-          "Night Out",
-          "Window Shopping",
-        ],
+        "Hills, Lakes",
+        "Dams, Waterfalls",
+        "Malls",
+        "Movie",
+        "Park",
+        "Picnics",
+        "Clubbing",
+        "Night Out",
+        "Window Shopping",
       ];
       user.save();
       res.send({ status: "Successful", dining, outing });
