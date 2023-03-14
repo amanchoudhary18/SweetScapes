@@ -94,6 +94,11 @@ const userSchema = new mongoose.Schema(
           required: true,
           default: 0,
         },
+        Streetfood: {
+          type: Number,
+          required: true,
+          default: 0,
+        },
       },
 
       // Outing Preferences
