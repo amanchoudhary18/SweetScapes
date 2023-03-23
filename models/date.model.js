@@ -306,6 +306,12 @@ const dateSchema = new mongoose.Schema({
       isHighlight: {
         type: Boolean,
       },
+      boarding_point: {
+        type: String,
+      },
+      tag: {
+        type: String,
+      },
       hotel_name: {
         type: String,
       },
@@ -319,9 +325,11 @@ const dateSchema = new mongoose.Schema({
           },
         },
       ],
-      menu: {
-        type: String,
-      },
+      menu: [
+        {
+          type: String,
+        },
+      ],
       description: {
         type: String,
       },
@@ -331,6 +339,9 @@ const dateSchema = new mongoose.Schema({
       price_per_head: {
         type: Number,
       },
+      map_link: {
+        type: String,
+      },
     },
   ],
 
@@ -338,6 +349,12 @@ const dateSchema = new mongoose.Schema({
     {
       isHighlight: {
         type: Boolean,
+      },
+      boarding_point: {
+        type: String,
+      },
+      tag: {
+        type: String,
       },
       place_name: {
         type: String,
@@ -360,6 +377,9 @@ const dateSchema = new mongoose.Schema({
       },
       price_per_head: {
         type: Number,
+      },
+      map_link: {
+        type: String,
       },
     },
   ],
