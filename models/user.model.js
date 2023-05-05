@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
     // email assosciated
     email: {
       type: String,
+      required: true,
       trim: true,
       validate(value) {
         if (!validator.isEmail(value)) {
@@ -26,7 +27,6 @@ const userSchema = new mongoose.Schema(
     // mobile number assosciated
     mobileNumber: {
       type: Number,
-      required: true,
       maxLength: 10,
       validate(value) {
         if (!validator.isMobilePhone(`${value}`)) {

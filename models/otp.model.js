@@ -9,10 +9,10 @@ const otpModel = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
-  mobileNumber:{
-    type: Number,
+  email: {
+    type: String,
     required: true,
-  }
+  },
 });
 
 const OtpModel = mongoose.model("Otp", otpModel);

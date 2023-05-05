@@ -11,68 +11,74 @@ const generateAge = require("../utils/generateAge");
 exports.register = async (req, res) => {
   const userBody = req.body;
 
-  const existingMobileUser = await User.findOne({
-    mobileNumber: userBody.mobileNumber,
-  });
-  const user = new User(userBody);
-  if (userBody.mobileNumber) {
-    if (!existingMobileUser) {
-      try {
-        otp = generateOTP(4);
-        // await sendotp(user.mobileNumber, otp);
-        var otpModel = {
-          otp: otp,
-          status: true,
-          mobileNumber: user.mobileNumber,
-        };
-        const otpDb = new OtpModel(otpModel);
-        otpsave = await otpDb.save();
-        setTimeout(async () => {
-          console.log("executing otp timeout");
-          const otpupdate = await OtpModel.findOneAndUpdate(
-            { _id: otpsave._id },
-            { otp: otp, status: false }
-          );
-          console.log(otpupdate);
-        }, 100000);
-        if (otpsave)
+  if (!userBody.email.includes("@bitmesra.ac.in")) {
+    res
+      .status(200)
+      .send({ status: "Failed", message: "Enter your institute email id" });
+  } else {
+    const existingEmailUser = await User.findOne({
+      email: userBody.email,
+    });
+    const user = new User(userBody);
+    if (userBody.email) {
+      if (!existingEmailUser) {
+        try {
+          otp = generateOTP(4);
+          // await sendotp(user.mobileNumber, otp);
+          var otpModel = {
+            otp: otp,
+            status: true,
+            email: user.email,
+          };
+          const otpDb = new OtpModel(otpModel);
+          otpsave = await otpDb.save();
+          setTimeout(async () => {
+            console.log("executing otp timeout");
+            const otpupdate = await OtpModel.findOneAndUpdate(
+              { _id: otpsave._id },
+              { otp: otp, status: false }
+            );
+            console.log(otpupdate);
+          }, 100000);
+          if (otpsave)
+            res.status(200).send({
+              status: "Successful",
+              message: "otp sent",
+              otpId: otpsave._id,
+            });
+          else
+            res.send({
+              status: "Failed",
+              message: otpsave,
+            });
+        } catch (err) {
           res.status(200).send({
-            status: "Successful",
-            message: "otp sent",
-            otpId: otpsave._id,
-          });
-        else
-          res.send({
             status: "Failed",
-            message: otpsave,
+            message: err.message,
           });
-      } catch (err) {
+        }
+      } else {
         res.status(200).send({
           status: "Failed",
-          message: err.message,
+          message: "Email is already in use",
         });
       }
     } else {
       res.status(200).send({
         status: "Failed",
-        message: "Mobile number is already in use",
+        message: "Send a email or password in request.",
       });
     }
-  } else {
-    res.status(200).send({
-      status: "Failed",
-      message: "Send a mobile number or password in request.",
-    });
   }
 };
 
 // login function
 exports.login = async (req, res) => {
   const userBody = req.body;
-  if (userBody.mobileNumber) {
+  if (userBody.email) {
     try {
       const user = await User.findOne({
-        mobileNumber: userBody.mobileNumber,
+        email: userBody.email,
       });
       console.log(user);
       if (user) {
@@ -104,7 +110,7 @@ exports.login = async (req, res) => {
   } else {
     res.status(200).send({
       status: "Failed",
-      message: "Enter valid mobile number",
+      message: "Enter valid email",
     });
   }
 };
@@ -149,9 +155,9 @@ exports.update = async (req, res) => {
         user.location.longitude = location.longitude;
       }
 
-      if (user.name && user.mobileNumber && user.birthday) {
-        user.username = generateUsername(user);
-      }
+      // if (user.name && user.mobileNumber && user.birthday) {
+      //   user.username = generateUsername(user);
+      // }
 
       if (preferences) {
         if (preferences.Dine) {
@@ -357,9 +363,9 @@ exports.setInitialPreferences = async (req, res) => {
 
         user.isNew = false;
       }
-      if (user.name && user.mobileNumber && user.birthday) {
-        user.username = generateUsername(user);
-      }
+      // if (user.name && user.mobileNumber && user.birthday) {
+      //   user.username = generateUsername(user);
+      // }
       user.save();
       res.send({ status: "Successful", user });
     } catch (error) {
@@ -375,16 +381,16 @@ exports.otpverification = async (req, res) => {
   const otpId = req.body.otpId;
 
   const otpDB = await OtpModel.findById(otpId);
-  const mobileNumber = otpDB.mobileNumber;
+  const email = otpDB.email;
 
   if (otpDB.otp == otp && otpDB.status) {
-    const user = new User({ mobileNumber });
+    const user = new User({ email });
     await user.save();
     const token = await user.generateAuthToken();
 
     res.status(200).send({
       status: "Successful",
-      message: "Mobile number verified",
+      message: "Email verified",
       user,
       token,
     });
