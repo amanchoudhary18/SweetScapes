@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sweetscapes/app/routes/router.gr.dart';
 import 'package:sweetscapes/data/response/api_response.dart';
 import 'package:sweetscapes/model/body/signup_body.dart';
 import 'package:sweetscapes/model/signup_otp_model.dart';
@@ -9,6 +11,7 @@ import 'package:sweetscapes/model/body/verify_otp_body.dart';
 import 'package:sweetscapes/repository/auth_repository.dart';
 import 'package:sweetscapes/utils/routes/routes_name.dart';
 import 'package:sweetscapes/utils/utils.dart';
+import 'package:sweetscapes/view/onboarding/updateTags_view.dart';
 import 'package:sweetscapes/view_model/services/splash_services.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
@@ -69,7 +72,6 @@ class AuthViewModel with ChangeNotifier {
                     UserModel(
                       token: value.token.toString(),
                       user: User(
-                        isSubscribed: value.user!.isSubscribed!,
                         isNew: value.user!.isNew!,
                       ),
                     ),
@@ -78,17 +80,11 @@ class AuthViewModel with ChangeNotifier {
                   Utils.goFlushBar('Login Successful', context),
                   if (value.user!.isNew! == true)
                     {
-                      Navigator.pushNamed(
-                        context,
-                        RoutesName.updateTags,
-                      ),
+                      AutoRouter.of(context).push(UpdateTagsViewRoute()),
                     }
                   else
                     {
-                      Navigator.pushNamed(
-                        context,
-                        RoutesName.home,
-                      ),
+                      AutoRouter.of(context).push(HomeScreenRoute()),
                     }
                 }
               else
@@ -112,11 +108,15 @@ class AuthViewModel with ChangeNotifier {
   // otp.User user = otp.User();
   SignupBody signupBody = SignupBody();
 
-  Future<void> signUp(String mobileNumber, BuildContext context) async {
-    signupBody.mobileNumber = mobileNumber;
+  Future<void> signUp(String email, BuildContext context) async {
+    signupBody.email = email;
 
     dynamic data = signupBody.toJson();
     signUpOTPData = ApiResponse.loading();
+
+    if (kDebugMode) {
+      print("Here after button press");
+    }
 
     setSignUpLoading(true);
     _myrepo
@@ -170,21 +170,19 @@ class AuthViewModel with ChangeNotifier {
         .verifyOTPUrl(otpData)
         .then((value) => {
               setverifyOtpLoading(false),
-              print(value.message.toString()),
               if (value.status.toString() == 'Successful')
                 {
                   userPreference.saveUser(
                     UserModel(
                       token: value.token.toString(),
                       user: User(
-                        isSubscribed: false,
                         isNew: false,
                       ),
                     ),
                   ),
                   userData = ApiResponse.completed(value),
                   Utils.goFlushBar('SignUp Successful', context),
-                  Navigator.pushNamed(context, RoutesName.setPassword),
+                  AutoRouter.of(context).push(SetupPasswordViewRoute()),
                 }
               else
                 {
@@ -218,10 +216,7 @@ class AuthViewModel with ChangeNotifier {
                 {
                   userData = ApiResponse.completed(value),
                   Utils.goFlushBar('Name and Password Set', context),
-                  Navigator.pushNamed(
-                    context,
-                    RoutesName.updateTags,
-                  ),
+                  AutoRouter.of(context).push(UpdateTagsViewRoute()),
                 }
               else
                 {

@@ -1,15 +1,15 @@
 class SignupBody {
-  String? mobileNumber;
+  String? email;
 
-  SignupBody({this.mobileNumber});
+  SignupBody({this.email});
 
   SignupBody.fromJson(Map<String, dynamic> json) {
-    mobileNumber = json['mobileNumber'];
+    email = json['email'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['mobileNumber'] = this.mobileNumber;
+    data['email'] = this.email;
     return data;
   }
 }

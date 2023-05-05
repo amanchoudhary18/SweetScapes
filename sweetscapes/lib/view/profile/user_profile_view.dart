@@ -1,10 +1,13 @@
+import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
-import '../../utils/routes/routes_name.dart';
+import '../../app/routes/router.gr.dart';
 import '../../view_model/user_view_model.dart';
 
+@RoutePage()
 class UserProfileView extends StatelessWidget {
   UserProfileView({super.key});
 
@@ -18,7 +21,7 @@ class UserProfileView extends StatelessWidget {
           child: Text('Logout'),
           onPressed: () {
             userViewModel.remove();
-            Navigator.pushNamed(context, RoutesName.login);
+            AutoRouter.of(context).push(LoginViewRoute());
           },
         ),
       ),

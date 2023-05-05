@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -9,25 +10,24 @@ import 'package:sweetscapes/utils/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:sweetscapes/view_model/onboarding/auth_view_model.dart';
 
+@RoutePage()
 class LoginView extends StatelessWidget {
   LoginView({super.key});
 
   ValueNotifier<bool> _obscureLoginPassword = ValueNotifier<bool>(true);
 
-  TextEditingController _phoneLoginController = TextEditingController();
+  TextEditingController _emailLoginController = TextEditingController();
   TextEditingController _passwordLoginController = TextEditingController();
 
-  FocusNode _phoneLoginNode = FocusNode();
+  FocusNode _emailLoginNode = FocusNode();
   FocusNode _passwordLoginNode = FocusNode();
 
   ValueNotifier<bool> _obscureSignupPassword = ValueNotifier<bool>(true);
 
-  TextEditingController _nameSignUpController = TextEditingController();
-  TextEditingController _phoneSignUpController = TextEditingController();
+  TextEditingController _emailSignUpController = TextEditingController();
   TextEditingController _passwordSignUpController = TextEditingController();
 
-  FocusNode _nameSignUpNode = FocusNode();
-  FocusNode _phoneSignUpNode = FocusNode();
+  FocusNode _emailSignUpNode = FocusNode();
   FocusNode _passwordSignUpNode = FocusNode();
 
   TextEditingController _otpController = TextEditingController();
@@ -47,19 +47,19 @@ class LoginView extends StatelessWidget {
             child: Column(
               children: [
                 TextFormField(
-                  controller: _phoneLoginController,
+                  controller: _emailLoginController,
                   keyboardType: TextInputType.phone,
-                  focusNode: _phoneLoginNode,
+                  focusNode: _emailLoginNode,
                   decoration: const InputDecoration(
                     icon: Icon(
-                      Icons.phone_rounded,
+                      Icons.email_rounded,
                     ),
-                    hintText: 'Enter your Phone Number',
-                    labelText: 'Phone Number',
+                    hintText: 'Enter your mailID',
+                    labelText: 'Institute Mail ID',
                   ),
                   onFieldSubmitted: (value) => Utils.fieldFocusChange(
                     context,
-                    _phoneLoginNode,
+                    _emailLoginNode,
                     _passwordLoginNode,
                   ),
                 ),
@@ -96,8 +96,8 @@ class LoginView extends StatelessWidget {
                     title: 'LOGIN',
                     onPress: () {
                       Map data = {
-                        'mobileNumber':
-                            _phoneLoginController.text.toString().trim(),
+                        'email':
+                            _emailLoginController.text.toString().trim(),
                         'password':
                             _passwordLoginController.text.toString().trim(),
                       };
@@ -110,19 +110,19 @@ class LoginView extends StatelessWidget {
                   height: 20,
                 ),
                 TextFormField(
-                  controller: _phoneSignUpController,
-                  keyboardType: TextInputType.phone,
-                  focusNode: _phoneSignUpNode,
+                  controller: _emailSignUpController,
+                  keyboardType: TextInputType.emailAddress,
+                  focusNode: _emailSignUpNode,
                   decoration: const InputDecoration(
                     icon: Icon(
-                      Icons.phone_rounded,
+                      Icons.email_rounded,
                     ),
-                    hintText: 'Enter your Phone Number',
-                    labelText: 'Phone Number',
+                    hintText: 'Enter your mailID',
+                    labelText: 'Institute Mail ID',
                   ),
                   onFieldSubmitted: (value) => Utils.fieldFocusChange(
                     context,
-                    _phoneSignUpNode,
+                    _emailSignUpNode,
                     _passwordSignUpNode,
                   ),
                 ),
@@ -131,7 +131,7 @@ class LoginView extends StatelessWidget {
                   child: RoundButton(
                     title: 'SEND OTP',
                     onPress: () {
-                      authViewModel.signUp(_phoneSignUpController.text.toString().trim(),
+                      authViewModel.signUp(_emailSignUpController.text.toString().trim(),
                           context);
                     },
                     loading: authViewModel.signUploading,
@@ -153,7 +153,7 @@ class LoginView extends StatelessWidget {
                   ),
                   onFieldSubmitted: (value) => Utils.fieldFocusChange(
                     context,
-                    _phoneSignUpNode,
+                    _emailSignUpNode,
                     _passwordSignUpNode,
                   ),
                 ),

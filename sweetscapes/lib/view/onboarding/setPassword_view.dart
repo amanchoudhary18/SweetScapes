@@ -1,3 +1,4 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -7,6 +8,7 @@ import '../../res/components/round_button.dart';
 import '../../utils/utils.dart';
 import '../../view_model/onboarding/auth_view_model.dart';
 
+@RoutePage()
 class SetupPasswordView extends StatelessWidget {
   SetupPasswordView({super.key});
 

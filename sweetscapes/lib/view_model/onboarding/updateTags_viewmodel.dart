@@ -1,6 +1,10 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sweetscapes/app/routes/router.gr.dart';
+import 'package:sweetscapes/data/response/api_response.dart';
+import 'package:sweetscapes/model/body/set_preferences_body.dart' as spd;
 import 'package:sweetscapes/repository/user_repository.dart';
 import 'package:sweetscapes/res/enums/DateType.dart';
 import 'package:sweetscapes/res/enums/Genders.dart';
@@ -15,11 +19,11 @@ class UpdateTagsViewModel with ChangeNotifier {
   List<String> dineChipText = [
     "Fine Dining",
     "Decent Dining",
-    "Dhabas",
+    "Dhaba",
     "Home Delivery",
     "Take Away",
     "Home-made",
-    "Cafes",
+    "Cafe",
   ];
 
   List<bool> dineSelectedChips = [
@@ -33,12 +37,12 @@ class UpdateTagsViewModel with ChangeNotifier {
   ];
 
   List<String> outingChipText = [
-    "Hills, Lakes",
-    "Dams, Waterfalls",
-    "Malls",
+    "Hill, Lake",
+    "Dam, Waterfall",
+    "Mall",
     "Movie",
     "Park",
-    "Picnics",
+    "Picnic",
     "Clubbing",
     "Night Out",
     "Window Shopping",
@@ -55,8 +59,6 @@ class UpdateTagsViewModel with ChangeNotifier {
     false,
     false,
   ];
-
-  bool showDialogHere = true;
 
   final _myRepo = UserRepository();
   int _onboardingState = 0;
@@ -79,11 +81,6 @@ class UpdateTagsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateShowDialogHere(bool value) {
-    showDialogHere = value;
-    notifyListeners();
-  }
-
   void updateonboardingState(int value) {
     _onboardingState = value;
     notifyListeners();
@@ -97,7 +94,22 @@ class UpdateTagsViewModel with ChangeNotifier {
     }
   }
 
+  Future<bool> onWillPop() async {
+    updateonboardingState(0);
+    notifyListeners();
+    return true;
+  }
+
+  bool _nextLoading = false;
+  bool get nextLoading => _nextLoading;
+
+  setNextLoading(bool value) {
+    _nextLoading = value;
+    notifyListeners();
+  }
+
   void submitBasicDetails(BuildContext context) async {
+    setNextLoading(true);
     final userPreference = Provider.of<UserViewModel>(context, listen: false);
     UserModel loggedInUser = await userPreference.getUser();
     String token = loggedInUser.token.toString();
@@ -114,6 +126,7 @@ class UpdateTagsViewModel with ChangeNotifier {
     _myRepo
         .updateUserDetailsUrl(data, token)
         .then((value) => {
+              setNextLoading(false),
               if (value.status.toString() == 'Successful')
                 {
                   Utils.goFlushBar('Birthday and Gender Updated', context),
@@ -126,9 +139,42 @@ class UpdateTagsViewModel with ChangeNotifier {
             })
         .onError(
           (error, stackTrace) => {
+            setNextLoading(false),
             Utils.goErrorFlush(error.toString(), context),
           },
         );
+  }
+
+  // spd.SetPreferences_Body setPreferences_Body = spd.SetPreferences_Body();
+
+  spd.Dine dineObject = spd.Dine(
+    fineDining: false,
+    decentDining: false,
+    dhabas: false,
+    homeDelivery: false,
+    takeAway: false,
+    homeMade: false,
+    cafes: false,
+  );
+
+  spd.Outing outingObject = spd.Outing(
+    hillsLakes: false,
+    damsWaterfalls: false,
+    malls: false,
+    movie: false,
+    park: false,
+    picnics: false,
+    clubbing: false,
+    nightOut: false,
+    windowShopping: false,
+  );
+
+  late spd.Preferences preferences;
+  late spd.SetPreferences_Body setPreferences_Body;
+
+  UpdateTagsViewModel() {
+    preferences = spd.Preferences(dine: dineObject, outing: outingObject);
+    setPreferences_Body = spd.SetPreferences_Body(preferences: preferences);
   }
 
   void submitPreferences(BuildContext context) async {
@@ -136,31 +182,44 @@ class UpdateTagsViewModel with ChangeNotifier {
     UserModel loggedInUser = await userPreference.getUser();
     String token = loggedInUser.token.toString();
 
-    String userBday = _userBirthDay.millisecondsSinceEpoch.toString();
-    String userGen = (_userGender == Genders.MALE)
-        ? 'Male'
-        : (_userGender == Genders.FEMALE)
-            ? 'Female'
-            : 'Others';
+    setPreferences_Body.preferences!.dine!.fineDining = dineSelectedChips[0];
+    setPreferences_Body.preferences!.dine!.decentDining = dineSelectedChips[1];
+    setPreferences_Body.preferences!.dine!.dhabas = dineSelectedChips[2];
+    setPreferences_Body.preferences!.dine!.homeDelivery = dineSelectedChips[3];
+    setPreferences_Body.preferences!.dine!.takeAway = dineSelectedChips[4];
+    setPreferences_Body.preferences!.dine!.homeMade = dineSelectedChips[5];
+    setPreferences_Body.preferences!.dine!.cafes = dineSelectedChips[6];
 
-    Map data = {'birthday': userBday, 'gender': userGen};
+    setPreferences_Body.preferences!.outing!.hillsLakes =
+        outingSelectedChips[0];
+    setPreferences_Body.preferences!.outing!.damsWaterfalls =
+        outingSelectedChips[1];
+    setPreferences_Body.preferences!.outing!.malls = outingSelectedChips[2];
+    setPreferences_Body.preferences!.outing!.movie = outingSelectedChips[3];
+    setPreferences_Body.preferences!.outing!.park = outingSelectedChips[4];
+    setPreferences_Body.preferences!.outing!.picnics = outingSelectedChips[5];
+    setPreferences_Body.preferences!.outing!.clubbing = outingSelectedChips[6];
+    setPreferences_Body.preferences!.outing!.nightOut = outingSelectedChips[7];
+    setPreferences_Body.preferences!.outing!.windowShopping =
+        outingSelectedChips[8];
+
+    dynamic data = setPreferences_Body.toJson();
 
     _myRepo
-        .updateUserDetailsUrl(data, token)
+        .setInitialPreferences(data, token)
         .then((value) => {
               if (value.status.toString() == 'Successful')
                 {
+                  updateonboardingState(0),
                   Utils.goFlushBar('Preferences Updated', context),
                   userPreference.saveUser(
                     UserModel(
-                      token: value.token.toString(),
                       user: User(
-                        isSubscribed: value.user!.isSubscribed!,
-                        isNew: value.user!.isNew!,
+                        isNew: false,
                       ),
                     ),
                   ),
-                  updateShowDialogHere(false),
+                  AutoRouter.of(context).push(HomeScreenRoute()),
                 }
               else
                 {

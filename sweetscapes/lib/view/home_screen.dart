@@ -1,3 +1,4 @@
+import 'package:auto_route/annotations.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,6 +21,7 @@ import 'package:sweetscapes/view_model/user_view_model.dart';
 import '../res/components/SuggestionTile.dart';
 import '../utils/utils.dart';
 
+@RoutePage()
 class HomeScreen extends StatelessWidget {
   HomeScreen({
     super.key,
@@ -67,6 +69,7 @@ class HomeScreen extends StatelessWidget {
       body: Screens[model.currentScreenIndex],
       bottomNavigationBar: DotNavigationBar(
         marginR: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        borderRadius: 10,
         currentIndex: model.currentScreenIndex,
         onTap: model.updateIndex,
         dotIndicatorColor: Colors.purple,

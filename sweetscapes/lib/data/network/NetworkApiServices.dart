@@ -39,7 +39,10 @@ class NetworkApiServices extends BaseApiServices {
     dynamic responseJson;
     try {
       http.Response response = await http
-          .post(Uri.parse(url), body: data)
+          .post(
+            Uri.parse(url), 
+            body: data
+            )
           .timeout(const Duration(seconds: 5));
       responseJson = returnResponse(response);
     } on SocketException {
@@ -51,7 +54,29 @@ class NetworkApiServices extends BaseApiServices {
   @override
   Future getPutApiResponse(String url, dynamic data, String token) async {
     dynamic responseJson;
-    print(token);
+    final msg = jsonEncode(data);
+    try {
+      http.Response response = await http
+          .put(
+            Uri.parse(url),
+            body: msg,
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            encoding: Encoding.getByName("utf-8"),
+          )
+          .timeout(const Duration(seconds: 5));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+    return responseJson;
+  }
+
+  @override
+  Future userPostApiResponse(String url, dynamic data, String token) async {
+    dynamic responseJson;
     final msg = jsonEncode(data);
     try {
       http.Response response = await http
@@ -87,4 +112,5 @@ class NetworkApiServices extends BaseApiServices {
             'Error occured with status code: ${response.statusCode}');
     }
   }
+
 }

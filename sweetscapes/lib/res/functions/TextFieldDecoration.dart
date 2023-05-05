@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class TextFieldDecoration {
   static BoxDecoration textFieldDecoration() {
     return BoxDecoration(
-      borderRadius: BorderRadius.circular(40),
+      borderRadius: BorderRadius.circular(10),
       border: Border.all(
         color: Colors.white,
       ),

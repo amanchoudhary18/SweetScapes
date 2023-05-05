@@ -1,3 +1,5 @@
+import 'package:sweetscapes/model/response/update_initial_response.dart';
+
 import '../data/network/BaseApiServices.dart';
 import '../data/network/NetworkApiServices.dart';
 import '../model/user_model.dart';
@@ -10,6 +12,26 @@ class UserRepository {
     try {
       dynamic response = await _apiServices.getPutApiResponse(
           AppUrl.updateUserDetailsUrl, data, token);
+      return response = UserModel.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UpdateInitial_Response> updateInitialDetails(dynamic data, String token) async {
+    try {
+      dynamic response = await _apiServices.getPutApiResponse(
+          AppUrl.updateInitialUrl, data, token);
+      return response = UpdateInitial_Response.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UserModel> setInitialPreferences(dynamic data, String token) async {
+    try {
+      dynamic response = await _apiServices.userPostApiResponse(
+          AppUrl.setInitialPreferences, data, token);
       return response = UserModel.fromJson(response);
     } catch (e) {
       rethrow;
