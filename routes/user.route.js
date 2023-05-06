@@ -10,6 +10,9 @@ const OtpModel = require("../models/otp.model");
 const generateUsername = require("../utils/generateUsername");
 const UserController = require("../controllers/user.controller");
 
+//google login
+router.post("/googlelogin", UserController.googlelogin);
+
 // sign up route
 router.post("/register", UserController.register);
 

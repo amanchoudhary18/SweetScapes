@@ -455,3 +455,28 @@ exports.logout = async (req, res) => {
     res.status(500).send();
   }
 };
+
+//google login
+exports.googlelogin = async (req, res) => {
+  const userBody = req.body;
+  const existingEmail = await User.findOne({ email: userBody.email });
+
+  if (existingEmail) {
+    const user = await User.findOne({ email: userBody.email });
+    const token = await user.generateAuthToken();
+    res.status(200).send({
+      status: "Successful",
+      user,
+      token,
+    });
+  } else {
+    const user = new User({ email: userBody.email, name: userBody.name });
+    await user.save();
+    const token = await user.generateAuthToken();
+    res.status(200).send({
+      status: "Successful",
+      user,
+      token,
+    });
+  }
+};
