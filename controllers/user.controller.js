@@ -470,13 +470,17 @@ exports.googlelogin = async (req, res) => {
       token,
     });
   } else {
-    const user = new User({ email: userBody.email, name: userBody.name });
-    await user.save();
-    const token = await user.generateAuthToken();
-    res.status(200).send({
-      status: "Successful",
-      user,
-      token,
-    });
+    if (userBody.email.includes("@bitmesra.ac.in")) {
+      const user = new User({ email: userBody.email, name: userBody.name });
+      await user.save();
+      const token = await user.generateAuthToken();
+      res.status(200).send({
+        status: "Successful",
+        user,
+        token,
+      });
+    } else {
+      res.send({ status: "Failed", message: "Enter your institute email id" });
+    }
   }
 };
