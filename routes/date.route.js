@@ -86,10 +86,8 @@ router.get("/dates", userAuth, async (req, res) => {
       // });
 
       // return updatedDate;
+      res.status(200).send({ status: "Successful", date: updatedDate });
     });
-
-    // console.log(up.length);
-    res.status(200).send({ status: "Successful", date: updatedDate });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
