@@ -88,8 +88,8 @@ router.get("/dates", userAuth, async (req, res) => {
       // return updatedDate;
     });
 
-    console.log(dateData.length);
-    res.status(200).send({ status: "Successful", dateData });
+    // console.log(up.length);
+    res.status(200).send({ status: "Successful", date: updatedDate });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
@@ -107,6 +107,7 @@ router.get("/dates", userAuth, async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const date = await DateModel.findById(req.params.id);
+    console.log(date);
     const {
       tags,
       area,
@@ -184,7 +185,7 @@ router.get("/:id", async (req, res) => {
       },
     };
 
-    res.status(200).send({ status: "Successful", updatedDate });
+    res.status(200).send({ status: "Successful", date: updatedDate });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
