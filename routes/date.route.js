@@ -146,6 +146,12 @@ router.get("/:id", async (req, res) => {
       return a.boarding_time.localeCompare(b.boarding_time);
     });
 
+    // Contacts
+    const busContacts = date.travel.bus.contacts;
+    const reservedAutoContacts = date.travel.reserved_auto.contacts;
+    const twoWheelerContacts = date.travel.two_wheeler.contacts;
+    const fourWheelerContacts = date.travel.four_wheeler.contacts;
+
     const updatedDate = {
       tags,
       area,
@@ -157,11 +163,11 @@ router.get("/:id", async (req, res) => {
       detailed_content,
       images,
       itenary: {
-        bus: busMerge,
-        reserved_auto: autoMerge,
-        two_wheeler: twoMerge,
-        four_wheeler: fourMerge,
-        personal: personalMerge,
+        bus: { route: busMerge, contacts: busContacts },
+        reserved_auto: { route: autoMerge, contacts: reservedAutoContacts },
+        two_wheeler: { route: twoMerge, contacts: twoWheelerContacts },
+        four_wheeler: { route: fourMerge, contacts: fourWheelerContacts },
+        personal: { route: personalMerge },
       },
     };
 

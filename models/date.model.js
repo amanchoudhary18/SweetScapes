@@ -209,6 +209,9 @@ const dateSchema = new mongoose.Schema({
           duration: {
             type: Number,
           },
+          status: {
+            type: Number,
+          },
         },
       ],
     },
@@ -244,6 +247,9 @@ const dateSchema = new mongoose.Schema({
             type: String,
           },
           duration: {
+            type: Number,
+          },
+          status: {
             type: Number,
           },
         },
@@ -284,6 +290,9 @@ const dateSchema = new mongoose.Schema({
           duration: {
             type: Number,
           },
+          status: {
+            type: Number,
+          },
         },
       ],
     },
@@ -322,6 +331,9 @@ const dateSchema = new mongoose.Schema({
           duration: {
             type: Number,
           },
+          status: {
+            type: Number,
+          },
         },
       ],
     },
@@ -343,6 +355,9 @@ const dateSchema = new mongoose.Schema({
           type: String,
         },
         duration: {
+          type: Number,
+        },
+        status: {
           type: Number,
         },
       },
@@ -394,6 +409,9 @@ const dateSchema = new mongoose.Schema({
       website_link: {
         type: String,
       },
+      status: {
+        type: Number,
+      },
     },
   ],
 
@@ -437,6 +455,9 @@ const dateSchema = new mongoose.Schema({
       },
       website_link: {
         type: String,
+      },
+      status: {
+        type: Number,
       },
     },
   ],
