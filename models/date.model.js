@@ -175,146 +175,156 @@ const dateSchema = new mongoose.Schema({
   ],
 
   travel: {
-    bus: [
-      {
-        going: {
-          type: Boolean,
-        },
-        mode: {
-          type: String,
-        },
-        contacts: [
-          {
-            name: {
-              type: String,
-            },
-            number: {
-              type: String,
-            },
+    bus: {
+      contacts: [
+        {
+          name: {
+            type: String,
           },
-        ],
-        boarding_point: {
-          type: String,
-        },
-        drop_point: {
-          type: String,
-        },
-        boarding_time: {
-          type: String,
-        },
-        price: {
-          type: Number,
-        },
-        duration: {
-          type: Number,
-        },
-      },
-    ],
-    reserved_auto: [
-      {
-        going: {
-          type: Boolean,
-        },
-        mode: {
-          type: String,
-        },
-        contacts: [
-          {
-            name: {
-              type: String,
-            },
-            number: {
-              type: String,
-            },
+          number: {
+            type: String,
           },
-        ],
-        boarding_point: {
-          type: String,
         },
-        drop_point: {
-          type: String,
-        },
-        boarding_time: {
-          type: String,
-        },
-        price: {
-          type: String,
-        },
-        duration: {
-          type: Number,
-        },
-      },
-    ],
-    two_wheeler: [
-      {
-        mode: {
-          type: String,
-        },
-        going: {
-          type: Boolean,
-        },
-        contacts: [
-          {
-            name: {
-              type: String,
-            },
-            number: {
-              type: String,
-            },
+      ],
+      details: [
+        {
+          going: {
+            type: Boolean,
           },
-        ],
-        boarding_point: {
-          type: String,
-        },
-        drop_point: {
-          type: String,
-        },
-        boarding_time: {
-          type: String,
-        },
-        price: {
-          type: String,
-        },
-        duration: {
-          type: Number,
-        },
-      },
-    ],
-    four_wheeler: [
-      {
-        going: {
-          type: Boolean,
-        },
-        mode: {
-          type: String,
-        },
-        contacts: [
-          {
-            name: {
-              type: String,
-            },
-            number: {
-              type: String,
-            },
+          mode: {
+            type: String,
           },
-        ],
-        boarding_point: {
-          type: String,
+          boarding_point: {
+            type: String,
+          },
+          drop_point: {
+            type: String,
+          },
+          boarding_time: {
+            type: String,
+          },
+          price: {
+            type: Number,
+          },
+          duration: {
+            type: Number,
+          },
         },
-        drop_point: {
-          type: String,
+      ],
+    },
+    reserved_auto: {
+      contacts: [
+        {
+          name: {
+            type: String,
+          },
+          number: {
+            type: String,
+          },
         },
-        boarding_time: {
-          type: String,
+      ],
+      details: [
+        {
+          going: {
+            type: Boolean,
+          },
+          mode: {
+            type: String,
+          },
+          boarding_point: {
+            type: String,
+          },
+          drop_point: {
+            type: String,
+          },
+          boarding_time: {
+            type: String,
+          },
+          price: {
+            type: String,
+          },
+          duration: {
+            type: Number,
+          },
         },
-        price: {
-          type: String,
+      ],
+    },
+    two_wheeler: {
+      contacts: [
+        {
+          name: {
+            type: String,
+          },
+          number: {
+            type: String,
+          },
         },
-        duration: {
-          type: Number,
+      ],
+      details: [
+        {
+          mode: {
+            type: String,
+          },
+          going: {
+            type: Boolean,
+          },
+
+          boarding_point: {
+            type: String,
+          },
+          drop_point: {
+            type: String,
+          },
+          boarding_time: {
+            type: String,
+          },
+          price: {
+            type: String,
+          },
+          duration: {
+            type: Number,
+          },
         },
-      },
-    ],
+      ],
+    },
+    four_wheeler: {
+      contacts: [
+        {
+          name: {
+            type: String,
+          },
+          number: {
+            type: String,
+          },
+        },
+      ],
+      details: [
+        {
+          going: {
+            type: Boolean,
+          },
+          mode: {
+            type: String,
+          },
+
+          boarding_point: {
+            type: String,
+          },
+          drop_point: {
+            type: String,
+          },
+          boarding_time: {
+            type: String,
+          },
+          price: {
+            type: String,
+          },
+          duration: {
+            type: Number,
+          },
+        },
+      ],
+    },
     personal: [
       {
         going: {
