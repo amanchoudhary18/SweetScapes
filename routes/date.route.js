@@ -80,12 +80,12 @@ router.get("/dates", userAuth, async (req, res) => {
         tags,
       };
 
-      updatedDate.sort(function (a, b) {
-        if (a.likeness < b.likeness) return -1;
-        else return 1;
-      });
+      // updatedDate.sort(function (a, b) {
+      //   if (a.likeness < b.likeness) return -1;
+      //   else return 1;
+      // });
 
-      return updatedDate;
+      // return updatedDate;
     });
 
     console.log(dateData.length);
@@ -104,7 +104,7 @@ router.get("/dates", userAuth, async (req, res) => {
 //   }
 // });
 
-router.get("/:id", userAuth, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const date = await DateModel.findById(req.params.id);
     const {
