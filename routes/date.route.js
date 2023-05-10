@@ -32,23 +32,24 @@ router.get("/dates", userAuth, async (req, res) => {
 
       // Dining
       const likeness =
-        tags.Dine.Fine_Dining * userPreferences.Dine.Fine_Dining +
-        tags.Dine.Decent_Dining * userPreferences.Dine.Decent_Dining +
-        tags.Dine.Dhabas * userPreferences.Dine.Dhabas +
-        tags.Dine.Home_Delivery * userPreferences.Dine.Home_Delivery +
-        tags.Dine.Take_Away * userPreferences.Dine.Take_Away +
-        tags.Dine.Home_Made * userPreferences.Dine.Home_Made +
-        tags.Dine.Cafes * userPreferences.Dine.Cafes +
-        tags.Dine.Streetfood * userPreferences.Dine.Streetfood +
-        tags.Outing.Hills_Lakes * userPreferences.Outing.Hills_Lakes +
-        tags.Outing.Dams_Waterfalls * userPreferences.Outing.Dams_Waterfalls +
-        tags.Outing.Malls * userPreferences.Outing.Malls +
-        tags.Outing.Movie * userPreferences.Outing.Movie +
-        tags.Outing.Park * userPreferences.Outing.Park +
-        tags.Outing.Picnics * userPreferences.Outing.Picnics +
-        tags.Outing.Clubbing * userPreferences.Outing.Clubbing +
-        tags.Outing.Window_Shopping * userPreferences.Outing.Window_Shopping +
-        tags.Outing.Night_Out * userPreferences.Outing.Night_Out;
+        (tags.Dine.Fine_Dining * userPreferences.Dine.Fine_Dining +
+          tags.Dine.Decent_Dining * userPreferences.Dine.Decent_Dining +
+          tags.Dine.Dhabas * userPreferences.Dine.Dhabas +
+          tags.Dine.Home_Delivery * userPreferences.Dine.Home_Delivery +
+          tags.Dine.Take_Away * userPreferences.Dine.Take_Away +
+          tags.Dine.Home_Made * userPreferences.Dine.Home_Made +
+          tags.Dine.Cafes * userPreferences.Dine.Cafes +
+          tags.Dine.Streetfood * userPreferences.Dine.Streetfood +
+          tags.Outing.Hills_Lakes * userPreferences.Outing.Hills_Lakes +
+          tags.Outing.Dams_Waterfalls * userPreferences.Outing.Dams_Waterfalls +
+          tags.Outing.Malls * userPreferences.Outing.Malls +
+          tags.Outing.Movie * userPreferences.Outing.Movie +
+          tags.Outing.Park * userPreferences.Outing.Park +
+          tags.Outing.Picnics * userPreferences.Outing.Picnics +
+          tags.Outing.Clubbing * userPreferences.Outing.Clubbing +
+          tags.Outing.Window_Shopping * userPreferences.Outing.Window_Shopping +
+          tags.Outing.Night_Out * userPreferences.Outing.Night_Out) /
+        17;
 
       const updatedDate = {
         likeness,
