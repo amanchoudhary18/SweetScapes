@@ -30,44 +30,25 @@ router.get("/dates", userAuth, async (req, res) => {
         _id,
       } = date;
 
-      let dineCount = 0;
-      let outingCount = 0;
-
       // Dining
-      if (tags.Dine.Fine_Dining === userPreferences.Dine.Fine_Dining)
-        dineCount++;
-      if (tags.Dine.Decent_Dining === userPreferences.Dine.Decent_Dining)
-        dineCount++;
-      if (tags.Dine.Dhabas === userPreferences.Dine.Dhabas) dineCount++;
-      if (tags.Dine.Home_Delivery === userPreferences.Dine.Home_Delivery)
-        dineCount++;
-      if (tags.Dine.Take_Away === userPreferences.Dine.Take_Away) dineCount++;
-      if (tags.Dine.Home_Made === userPreferences.Dine.Home_Made) dineCount++;
-      if (tags.Dine.Cafes === userPreferences.Dine.Cafes) dineCount++;
-      if (tags.Dine.Streetfood === userPreferences.Dine.Streetfood) dineCount++;
-
-      // Outing
-      if (tags.Outing.Hills_Lakes === userPreferences.Outing.Hills_Lakes)
-        outingCount++;
-      if (
-        tags.Outing.Dams_Waterfalls === userPreferences.Outing.Dams_Waterfalls
-      )
-        outingCount++;
-      if (tags.Outing.Malls === userPreferences.Outing.Malls) outingCount++;
-      if (tags.Outing.Movie === userPreferences.Outing.Movie) outingCount++;
-      if (tags.Outing.Park === userPreferences.Outing.Park) outingCount++;
-      if (tags.Outing.Picnics === userPreferences.Outing.Picnics) outingCount++;
-      if (tags.Outing.Clubbing === userPreferences.Outing.Clubbing)
-        outingCount++;
-      if (
-        tags.Outing.Window_Shopping === userPreferences.Outing.Window_Shopping
-      )
-        outingCount++;
-      if (tags.Outing.Night_Out === userPreferences.Outing.Night_Out)
-        outingCount++;
-
-      // Calculate likeness
-      const likeness = dineCount + outingCount;
+      const likeness =
+        tags.Dine.Fine_Dining * userPreferences.Dine.Fine_Dining +
+        tags.Dine.Decent_Dining * userPreferences.Dine.Decent_Dining +
+        tags.Dine.Dhabas * userPreferences.Dine.Dhabas +
+        tags.Dine.Home_Delivery * userPreferences.Dine.Home_Delivery +
+        tags.Dine.Take_Away * userPreferences.Dine.Take_Away +
+        tags.Dine.Home_Made * userPreferences.Dine.Home_Made +
+        tags.Dine.Cafes * userPreferences.Dine.Cafes +
+        tags.Dine.Streetfood * userPreferences.Dine.Streetfood +
+        tags.Outing.Hills_Lakes * userPreferences.Outing.Hills_Lakes +
+        tags.Outing.Dams_Waterfalls * userPreferences.Outing.Dams_Waterfalls +
+        tags.Outing.Malls * userPreferences.Outing.Malls +
+        tags.Outing.Movie * userPreferences.Outing.Movie +
+        tags.Outing.Park * userPreferences.Outing.Park +
+        tags.Outing.Picnics * userPreferences.Outing.Picnics +
+        tags.Outing.Clubbing * userPreferences.Outing.Clubbing +
+        tags.Outing.Window_Shopping * userPreferences.Outing.Window_Shopping +
+        tags.Outing.Night_Out * userPreferences.Outing.Night_Out;
 
       const updatedDate = {
         likeness,
