@@ -23,6 +23,7 @@
     "nodemon": "^2.0.21",
     "passport": "^0.6.0",
     "passport-google-oauth2": "^0.2.0",
+    "path": "^0.12.7",
     "sendotp": "^1.2.9",
     "unirest": "^0.6.0",
     "validator": "^13.7.0"

@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const axios = require("axios");
 const generateAge = require("./utils/generateAge");
+const path = require("path");
 
 mongoose.connect(process.env.MONGODB_URI, () => {
   console.log("Connected to MongoDB");
@@ -11,7 +12,7 @@ mongoose.connect(process.env.MONGODB_URI, () => {
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(express.static(path.join(__dirname + "/public")));
 app.get("/api/v1/home", (req, res) => {
   res.send("Welcome to MyBespoke !");
 });
