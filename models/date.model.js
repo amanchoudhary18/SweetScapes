@@ -102,7 +102,22 @@ const dateSchema = new mongoose.Schema({
     type: String,
   },
   people_count: {
-    type: Number,
+    ["2"]: {
+      type: Boolean,
+      default: false,
+    },
+    ["3-6"]: {
+      type: Boolean,
+      default: false,
+    },
+    ["7-10"]: {
+      type: Boolean,
+      default: false,
+    },
+    [">10"]: {
+      type: Boolean,
+      default: false,
+    },
   },
   availability: {
     monday: {
@@ -153,7 +168,9 @@ const dateSchema = new mongoose.Schema({
 
   images: [
     {
-      type: String,
+      image: {
+        type: String,
+      },
     },
   ],
 
@@ -228,77 +245,98 @@ const dateSchema = new mongoose.Schema({
         },
       },
     ],
-    two_wheeler: {
-      mode: {
-        type: String,
-      },
-      going: {
-        type: Boolean,
-      },
-      contacts: [
-        {
-          name: {
-            type: String,
-          },
-          number: {
-            type: String,
-          },
+    two_wheeler: [
+      {
+        mode: {
+          type: String,
         },
-      ],
-      boarding_point: {
-        type: String,
-      },
-      drop_point: {
-        type: String,
-      },
-      boarding_time: {
-        type: String,
-      },
-      price: {
-        type: String,
-      },
-      duration: {
-        type: Number,
-      },
-    },
-    four_wheeler: {
-      going: {
-        type: Boolean,
-      },
-      mode: {
-        type: String,
-      },
-      contacts: [
-        {
-          name: {
-            type: String,
-          },
-          number: {
-            type: String,
-          },
+        going: {
+          type: Boolean,
         },
-      ],
-      boarding_point: {
-        type: String,
+        contacts: [
+          {
+            name: {
+              type: String,
+            },
+            number: {
+              type: String,
+            },
+          },
+        ],
+        boarding_point: {
+          type: String,
+        },
+        drop_point: {
+          type: String,
+        },
+        boarding_time: {
+          type: String,
+        },
+        price: {
+          type: String,
+        },
+        duration: {
+          type: Number,
+        },
       },
-      drop_point: {
-        type: String,
+    ],
+    four_wheeler: [
+      {
+        going: {
+          type: Boolean,
+        },
+        mode: {
+          type: String,
+        },
+        contacts: [
+          {
+            name: {
+              type: String,
+            },
+            number: {
+              type: String,
+            },
+          },
+        ],
+        boarding_point: {
+          type: String,
+        },
+        drop_point: {
+          type: String,
+        },
+        boarding_time: {
+          type: String,
+        },
+        price: {
+          type: String,
+        },
+        duration: {
+          type: Number,
+        },
       },
-      boarding_time: {
-        type: String,
+    ],
+    personal: [
+      {
+        going: {
+          type: Boolean,
+        },
+        mode: {
+          type: String,
+        },
+        boarding_point: {
+          type: String,
+        },
+        drop_point: {
+          type: String,
+        },
+        boarding_time: {
+          type: String,
+        },
+        duration: {
+          type: Number,
+        },
       },
-      price: {
-        type: String,
-      },
-      duration: {
-        type: Number,
-      },
-    },
-    personal: {
-      duration: {
-        type: Number,
-      },
-    },
+    ],
   },
 
   dine: [
@@ -315,21 +353,19 @@ const dateSchema = new mongoose.Schema({
       hotel_name: {
         type: String,
       },
-      contacts: [
-        {
-          name: {
-            type: String,
-          },
-          number: {
-            type: String,
-          },
-        },
-      ],
-      menu: [
-        {
+      contact: {
+        name: {
           type: String,
         },
-      ],
+        number: {
+          type: String,
+        },
+      },
+
+      menu: {
+        type: String,
+      },
+
       description: {
         type: String,
       },
@@ -340,6 +376,12 @@ const dateSchema = new mongoose.Schema({
         type: Number,
       },
       map_link: {
+        type: String,
+      },
+      boarding_time: {
+        type: String,
+      },
+      website_link: {
         type: String,
       },
     },
@@ -359,16 +401,15 @@ const dateSchema = new mongoose.Schema({
       place_name: {
         type: String,
       },
-      contacts: [
-        {
-          name: {
-            type: String,
-          },
-          number: {
-            type: String,
-          },
+      contact: {
+        name: {
+          type: String,
         },
-      ],
+        number: {
+          type: String,
+        },
+      },
+
       description: {
         type: String,
       },
@@ -379,6 +420,12 @@ const dateSchema = new mongoose.Schema({
         type: Number,
       },
       map_link: {
+        type: String,
+      },
+      boarding_time: {
+        type: String,
+      },
+      website_link: {
         type: String,
       },
     },
