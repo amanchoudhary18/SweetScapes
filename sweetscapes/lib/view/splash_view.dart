@@ -28,7 +28,7 @@ class _SplashViewState extends State<SplashView> {
       body: SafeArea(
         child: Center(
           child: Text(
-            'Splash Screen',
+            'SweetScapes',
             style: Theme.of(context).textTheme.headlineLarge,
           ),
         ),
