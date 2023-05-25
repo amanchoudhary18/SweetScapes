@@ -62,14 +62,14 @@ router.get("/dates", userAuth, async (req, res) => {
         tags,
       };
 
-      // updatedDate.sort(function (a, b) {
-      //   if (a.likeness < b.likeness) return -1;
-      //   else return 1;
-      // });
-
-      // return updatedDate;
-      res.status(200).send({ status: "Successful", date: updatedDate });
+      return updatedDate;
     });
+    dateData.sort(function (a, b) {
+      if (a.likeness < b.likeness) return -1;
+      else return 1;
+    });
+
+    res.status(200).send({ status: "Successful", date: dateData });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
@@ -84,7 +84,7 @@ router.get("/dates", userAuth, async (req, res) => {
 //   }
 // });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", userAuth, async (req, res) => {
   try {
     const date = await DateModel.findById(req.params.id);
     console.log(date);
