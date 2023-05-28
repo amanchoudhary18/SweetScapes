@@ -96,6 +96,16 @@ class AuthViewModel with ChangeNotifier {
                         }
                       else
                         {
+                          userPreference.saveUser(
+                            UserModel(
+                              token: value.token.toString(),
+                              user: User(
+                                isNew: value.user!.isNew!,
+                              ),
+                            ),
+                          ),
+                          userData = ApiResponse.completed(value),
+                          Utils.goFlushBar('LogIn Successful', context),
                           AutoRouter.of(context).push(HomeScreenRoute()),
                         }
                     }
