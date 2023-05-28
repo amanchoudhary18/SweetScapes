@@ -47,6 +47,10 @@ dependencies:
   auto_route: ^6.4.0
   stacked_services: ^1.0.2
 
+  #google auth
+  google_sign_in: ^6.1.0
+  firebase_core: ^2.11.0
+
 
 dev_dependencies:
   flutter_lints: ^2.0.0

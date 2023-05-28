@@ -10,8 +10,6 @@ import 'package:sweetscapes/res/enums/DateType.dart';
 import 'package:sweetscapes/res/enums/Genders.dart';
 
 import '../../model/user_model.dart';
-import '../../utils/routes/routes_arguments.dart';
-import '../../utils/routes/routes_name.dart';
 import '../../utils/utils.dart';
 import '../user_view_model.dart';
 

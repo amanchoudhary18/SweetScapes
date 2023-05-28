@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "466234181727",
+    "project_id": "sweetscapes-dfb26",
+    "storage_bucket": "sweetscapes-dfb26.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466234181727:android:d80466e7308263184133ea",
+        "android_client_info": {
+          "package_name": "com.example.sweetscapes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "466234181727-tjb8ppvrlab5uddjf37gastnuu5b0rse.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtHE5tI4r2CPKofYfY2ZDiCDFfGVvfMhU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "466234181727-tjb8ppvrlab5uddjf37gastnuu5b0rse.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

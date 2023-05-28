@@ -10,7 +10,6 @@ import 'package:sweetscapes/model/user_model.dart';
 import 'package:sweetscapes/res/components/round_button.dart';
 import 'package:sweetscapes/res/enums/DateType.dart';
 import 'package:sweetscapes/res/functions/TextFieldDecoration.dart';
-import 'package:sweetscapes/utils/routes/routes_name.dart';
 import 'package:sweetscapes/view/bookings/bookings_view.dart';
 import 'package:sweetscapes/view/date%20suggestions/date_suggestion_view.dart';
 import 'package:sweetscapes/view/gifts/gift_suggestion_view.dart';

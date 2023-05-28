@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sweetscapes/utils/routes/routes.dart';
-import 'package:sweetscapes/utils/routes/routes_name.dart';
 import 'package:sweetscapes/view/date%20suggestions/date_suggestion_viewmodel.dart';
 import 'package:sweetscapes/view_model/onboarding/auth_view_model.dart';
 import 'package:sweetscapes/view_model/onboarding/updateTags_viewmodel.dart';

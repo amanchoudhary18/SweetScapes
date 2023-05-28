@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:sweetscapes/res/components/round_button.dart';
-import 'package:sweetscapes/utils/routes/routes_name.dart';
 import 'package:sweetscapes/utils/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:sweetscapes/view_model/onboarding/auth_view_model.dart';
@@ -48,7 +47,7 @@ class LoginView extends StatelessWidget {
               children: [
                 TextFormField(
                   controller: _emailLoginController,
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.emailAddress,
                   focusNode: _emailLoginNode,
                   decoration: const InputDecoration(
                     icon: Icon(
@@ -67,7 +66,7 @@ class LoginView extends StatelessWidget {
                   valueListenable: _obscureLoginPassword,
                   builder: (context, value, child) {
                     return TextFormField(
-                      controller: _passwordLoginController,    
+                      controller: _passwordLoginController,
                       obscureText: _obscureLoginPassword.value,
                       obscuringCharacter: '~',
                       focusNode: _passwordLoginNode,
@@ -96,8 +95,7 @@ class LoginView extends StatelessWidget {
                     title: 'LOGIN',
                     onPress: () {
                       Map data = {
-                        'email':
-                            _emailLoginController.text.toString().trim(),
+                        'email': _emailLoginController.text.toString().trim(),
                         'password':
                             _passwordLoginController.text.toString().trim(),
                       };
@@ -131,7 +129,8 @@ class LoginView extends StatelessWidget {
                   child: RoundButton(
                     title: 'SEND OTP',
                     onPress: () {
-                      authViewModel.signUp(_emailSignUpController.text.toString().trim(),
+                      authViewModel.signUp(
+                          _emailSignUpController.text.toString().trim(),
                           context);
                     },
                     loading: authViewModel.signUploading,
@@ -166,6 +165,73 @@ class LoginView extends StatelessWidget {
                           _otpController.text.toString().trim(), context);
                     },
                     loading: authViewModel.verifyOtploading,
+                  ),
+                ),
+                SizedBox(
+                  height: 80,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      authViewModel.googleAuthLogIn(context);
+                    },
+                    child: Container(
+                      width: 300,
+                      height: 60,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            height: 40,
+                            child: Image.asset(
+                              'assets/images/google.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5.0,
+                          ),
+                          Text('Log-in with Google'),
+                        ],
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      authViewModel.googleAuthSignIn(context);
+                    },
+                    child: Container(
+                      width: 300,
+                      height: 60,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            height: 40,
+                            child: Image.asset(
+                              'assets/images/google.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5.0,
+                          ),
+                          Text('Sign-in with Google'),
+                        ],
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                   ),
                 ),
               ],

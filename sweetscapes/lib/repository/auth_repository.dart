@@ -7,6 +7,16 @@ import 'package:sweetscapes/res/app_url.dart';
 class AuthRepository {
   final BaseApiServices _apiServices = NetworkApiServices();
 
+  Future<UserModel> gAuthUrl(dynamic data) async {
+    try {
+      dynamic response =
+          await _apiServices.getPostApiResponse(AppUrl.gAuthUrl, data);
+      return response = UserModel.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<UserModel> loginUrl(dynamic data) async {
     try {
       dynamic response =

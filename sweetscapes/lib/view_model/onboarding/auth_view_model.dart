@@ -1,22 +1,22 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:sweetscapes/app/routes/router.gr.dart';
 import 'package:sweetscapes/data/response/api_response.dart';
+import 'package:sweetscapes/model/body/gauth_body.dart';
 import 'package:sweetscapes/model/body/signup_body.dart';
 import 'package:sweetscapes/model/signup_otp_model.dart';
 import 'package:sweetscapes/model/user_model.dart';
 import 'package:sweetscapes/model/body/verify_otp_body.dart';
 import 'package:sweetscapes/repository/auth_repository.dart';
-import 'package:sweetscapes/utils/routes/routes_name.dart';
 import 'package:sweetscapes/utils/utils.dart';
 import 'package:sweetscapes/view/onboarding/updateTags_view.dart';
 import 'package:sweetscapes/view_model/services/splash_services.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
 import '../../model/body/verify_otp_body.dart';
-import '../../utils/routes/routes_arguments.dart';
 
 class AuthViewModel with ChangeNotifier {
   final _myrepo = AuthRepository();
@@ -37,6 +37,8 @@ class AuthViewModel with ChangeNotifier {
 
   ApiResponse<SignUpOTPModel> signUpOTPData = ApiResponse.loading();
 
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   setLoginLoading(bool value) {
     _loading = value;
     notifyListeners();
@@ -55,6 +57,120 @@ class AuthViewModel with ChangeNotifier {
   setPasswordloading(bool value) {
     _passwordloading = value;
     notifyListeners();
+  }
+
+  void googleAuthSignIn(BuildContext context) {
+    setSignUpLoading(true);
+    _googleSignIn.signOut();
+    _googleSignIn.signIn().then(
+      (value) {
+        GAuthBody gAuthBody = GAuthBody();
+        gAuthBody.email = value!.email;
+        gAuthBody.name = value.displayName!;
+
+        userData = ApiResponse.loading();
+
+        dynamic gAuthData = gAuthBody.toJson();
+        final userPreference =
+            Provider.of<UserViewModel>(context, listen: false);
+
+        _myrepo
+            .gAuthUrl(gAuthData)
+            .then((value) => {
+                  setSignUpLoading(false),
+                  if (value.status.toString() == 'Successful')
+                    {
+                      if (value.user!.isNew! == true)
+                        {
+                          userPreference.saveUser(
+                            UserModel(
+                              token: value.token.toString(),
+                              user: User(
+                                isNew: true,
+                              ),
+                            ),
+                          ),
+                          userData = ApiResponse.completed(value),
+                          Utils.goFlushBar('SignUp Successful', context),
+                          AutoRouter.of(context).push(UpdateTagsViewRoute()),
+                        }
+                      else
+                        {
+                          AutoRouter.of(context).push(HomeScreenRoute()),
+                        }
+                    }
+                  else
+                    {
+                      Utils.goErrorFlush('Try Again', context),
+                    },
+                })
+            .onError(
+              (error, stackTrace) => {
+                setSignUpLoading(false),
+                userData = ApiResponse.error(error.toString()),
+                Utils.goErrorFlush(error.toString(), context),
+              },
+            );
+      },
+    );
+    setSignUpLoading(false);
+  }
+
+  void googleAuthLogIn(BuildContext context) {
+    setLoginLoading(true);
+    _googleSignIn.signIn().then(
+      (value) {
+        GAuthBody gAuthBody = GAuthBody();
+        gAuthBody.email = value!.email;
+        gAuthBody.name = value.displayName!;
+
+        userData = ApiResponse.loading();
+
+        dynamic gAuthData = gAuthBody.toJson();
+        final userPreference =
+            Provider.of<UserViewModel>(context, listen: false);
+
+        _myrepo
+            .gAuthUrl(gAuthData)
+            .then((value) => {
+                  setLoginLoading(false),
+                  if (value.status.toString() == 'Successful')
+                    {
+                      userPreference.saveUser(
+                        UserModel(
+                          token: value.token.toString(),
+                          user: User(
+                            isNew: value.user!.isNew!,
+                          ),
+                        ),
+                      ),
+                      userData = ApiResponse.completed(value),
+                      Utils.goFlushBar('LogIn Successful', context),
+                      print('Reached here'),
+                      if (value.user!.isNew! == true)
+                        {
+                          AutoRouter.of(context).push(UpdateTagsViewRoute()),
+                        }
+                      else
+                        {
+                          AutoRouter.of(context).push(HomeScreenRoute()),
+                        }
+                    }
+                  else
+                    {
+                      Utils.goErrorFlush('Try Again', context),
+                    },
+                })
+            .onError(
+              (error, stackTrace) => {
+                setLoginLoading(false),
+                userData = ApiResponse.error(error.toString()),
+                Utils.goErrorFlush(error.toString(), context),
+              },
+            );
+      },
+    );
+    setLoginLoading(false);
   }
 
   Future<void> loginUrl(dynamic data, BuildContext context) async {
@@ -176,7 +292,7 @@ class AuthViewModel with ChangeNotifier {
                     UserModel(
                       token: value.token.toString(),
                       user: User(
-                        isNew: false,
+                        isNew: true,
                       ),
                     ),
                   ),

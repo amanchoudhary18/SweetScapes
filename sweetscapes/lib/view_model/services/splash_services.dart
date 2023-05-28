@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:sweetscapes/app/routes/router.gr.dart';
 import 'package:sweetscapes/data/app_exceptions.dart';
 import 'package:sweetscapes/model/user_model.dart';
-import 'package:sweetscapes/utils/routes/routes_arguments.dart';
-import 'package:sweetscapes/utils/routes/routes_name.dart';
 import 'package:sweetscapes/view/home_screen.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
