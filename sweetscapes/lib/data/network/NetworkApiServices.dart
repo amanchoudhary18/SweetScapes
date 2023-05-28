@@ -52,7 +52,7 @@ class NetworkApiServices extends BaseApiServices {
   }
 
   @override
-  Future getPutApiResponse(String url, dynamic data, String token) async {
+  Future userPutApiResponse(String url, dynamic data, String token) async {
     dynamic responseJson;
     final msg = jsonEncode(data);
     try {
@@ -80,7 +80,7 @@ class NetworkApiServices extends BaseApiServices {
     final msg = jsonEncode(data);
     try {
       http.Response response = await http
-          .put(
+          .post(
             Uri.parse(url),
             body: msg,
             headers: {
@@ -88,6 +88,27 @@ class NetworkApiServices extends BaseApiServices {
               'Authorization': 'Bearer $token',
             },
             encoding: Encoding.getByName("utf-8"),
+          )
+          .timeout(const Duration(seconds: 5));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+    return responseJson;
+  }
+
+  @override
+  Future userGetApiResponse(String url, String token) async {
+    dynamic responseJson;
+    try {
+      http.Response response = await http
+          .get(
+            Uri.parse(url),
+            headers: {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            // encoding: Encoding.getByName("utf-8"),
           )
           .timeout(const Duration(seconds: 5));
       responseJson = returnResponse(response);

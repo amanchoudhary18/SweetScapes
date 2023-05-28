@@ -46,14 +46,4 @@ class AuthRepository {
       rethrow;
     }
   }
-
-  Future<UserModel> updateUserDetailsUrl(dynamic data, String token) async {
-    try {
-      dynamic response =
-          await _apiServices.getPutApiResponse(AppUrl.updateUserDetailsUrl, data, token);
-      return response = UserModel.fromJson(response);
-    } catch (e) {
-      rethrow;
-    }
-  }
 }

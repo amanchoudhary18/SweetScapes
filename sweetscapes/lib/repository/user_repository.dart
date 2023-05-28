@@ -10,7 +10,7 @@ class UserRepository {
 
   Future<UserModel> updateUserDetailsUrl(dynamic data, String token) async {
     try {
-      dynamic response = await _apiServices.getPutApiResponse(
+      dynamic response = await _apiServices.userPutApiResponse(
           AppUrl.updateUserDetailsUrl, data, token);
       return response = UserModel.fromJson(response);
     } catch (e) {
@@ -20,7 +20,7 @@ class UserRepository {
 
   Future<UpdateInitial_Response> updateInitialDetails(dynamic data, String token) async {
     try {
-      dynamic response = await _apiServices.getPutApiResponse(
+      dynamic response = await _apiServices.userPutApiResponse(
           AppUrl.updateInitialUrl, data, token);
       return response = UpdateInitial_Response.fromJson(response);
     } catch (e) {
@@ -30,7 +30,7 @@ class UserRepository {
 
   Future<UserModel> setInitialPreferences(dynamic data, String token) async {
     try {
-      dynamic response = await _apiServices.userPostApiResponse(
+      dynamic response = await _apiServices.userPutApiResponse(
           AppUrl.setInitialPreferences, data, token);
       return response = UserModel.fromJson(response);
     } catch (e) {

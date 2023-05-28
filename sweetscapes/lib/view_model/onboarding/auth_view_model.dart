@@ -17,9 +17,12 @@ import 'package:sweetscapes/view_model/services/splash_services.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
 import '../../model/body/verify_otp_body.dart';
+import '../../repository/user_repository.dart';
 
 class AuthViewModel with ChangeNotifier {
   final _myrepo = AuthRepository();
+  final _myUserRepo = UserRepository();
+
 
   bool _loading = false;
   bool get loading => _loading;
@@ -334,7 +337,7 @@ class AuthViewModel with ChangeNotifier {
     String token = setPassUser.token.toString();
 
     setPasswordloading(true);
-    _myrepo
+    _myUserRepo
         .updateUserDetailsUrl(data, token)
         .then((value) => {
               setPasswordloading(false),
