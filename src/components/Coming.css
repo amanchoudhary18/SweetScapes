@@ -1,0 +1,49 @@
+.coming {
+  padding: 100px 0;
+  background-color: blueviolet;
+}
+
+.coming-heading {
+  color: white;
+  width: max-content;
+  margin: auto;
+  font-family: "Montserrat";
+  font-weight: 600;
+  font-size: 60px;
+}
+
+.coming-cta {
+  margin: 40px auto;
+  text-align: center;
+  width: max-content;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}
+
+.coming-cta-button {
+  background-color: black;
+  font-family: "Montserrat";
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+  box-shadow: 5px 7px 10px 0px rgba(0, 0, 0, 0.1);
+  margin: 0px auto;
+  padding: 12px 15px;
+
+  cursor: pointer;
+}
+
+.coming-cta-button:hover {
+  opacity: 0.75;
+  transition: 0.3s linear;
+}
+.coming-cta input {
+  padding: 14px 16px;
+  width: 600px;
+  border-radius: 10px;
+  border: none;
+}

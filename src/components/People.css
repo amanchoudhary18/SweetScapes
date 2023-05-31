@@ -1,0 +1,57 @@
+.people {
+  margin: 0 80px;
+  padding-top: 150px;
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+}
+
+.people-left {
+  width: 55%;
+}
+.people-heading {
+  font-family: "Montserrat";
+  font-size: 60px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  line-height: 0.8;
+}
+
+.people-selector {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 8px 16px;
+  width: max-content;
+  border-radius: 15px;
+  background-color: #f3f3f3;
+}
+
+.people-selector p {
+  font-family: "Source Sans Pro";
+  margin: 0;
+  color: #a0a0a0;
+  padding: 4px 8px;
+  border-radius: 10px;
+  transition: color 0.1s ease-in;
+  cursor: pointer;
+}
+
+.people-body-text {
+  margin: 48px 0;
+  font-family: "Source Sans Pro";
+  margin: 0;
+  color: #a0a0a0;
+  font-size: 28px;
+  padding: 4px 8px;
+  width: 75%;
+}
+
+.people-body-text {
+  transition: all 3s ease-in-out;
+}
+
+.people-right img {
+  margin: 32px 0;
+}

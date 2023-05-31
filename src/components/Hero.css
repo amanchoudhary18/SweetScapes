@@ -1,0 +1,79 @@
+.hero {
+  margin: 100px 80px;
+}
+.hero-cta-button a {
+  text-decoration: none;
+  color: white;
+}
+
+.hero-text {
+  width: 1000px;
+  margin: auto;
+  text-align: center;
+}
+
+.hero-primary-text {
+  font-family: "Montserrat";
+  font-weight: 600;
+  font-size: 65px;
+  line-height: 1.1;
+
+  margin: 0;
+}
+
+.hero-cta {
+  width: max-content;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.hero-cta-button {
+  background: rgb(151, 76, 204);
+  background: rgb(76, 145, 204);
+  background: linear-gradient(
+    90deg,
+    rgba(76, 145, 204, 1) 0%,
+    rgba(98, 36, 214, 1) 46%,
+    rgba(192, 94, 215, 1) 100%
+  );
+  font-family: "Montserrat";
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+
+  border: none;
+  border-radius: 10px;
+  box-shadow: 5px 7px 10px 0px rgba(0, 0, 0, 0.1);
+  margin: 0px auto;
+  padding: 12px 15px;
+
+  cursor: pointer;
+}
+
+.hero-cta-button:hover {
+  opacity: 0.75;
+  transition: 0.3s linear;
+}
+.hero-cta-secondary-text {
+  font-family: "Source Sans Pro";
+  font-size: 18px;
+  font-weight: 500;
+  color: grey;
+  margin-top: 12px;
+}
+
+.fade-in-image {
+  animation: fadeIn 1s;
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translate3d(0, 40px, 0);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}

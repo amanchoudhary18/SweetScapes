@@ -1,0 +1,95 @@
+.navbar {
+  padding: 8px 80px;
+  display: flex;
+  flex-direction: row;
+
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: white;
+}
+
+.navbar-logo img {
+  height: 60px;
+  padding-top: 5px;
+}
+
+.navbar-elements {
+  margin-left: 24px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  width: max-content;
+}
+.navbar-elements a {
+  text-decoration: none;
+  color: black;
+}
+
+.navbar-elements p {
+  font-size: 16px;
+  font-family: "Montserrat";
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.navbar-icons {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  margin: 16px;
+  margin-top: 16px;
+  margin-left: auto;
+  padding: 0px 16px;
+}
+
+.navbar-elements p:hover {
+  background-color: #e4e3e3;
+  transition: 0.5s ease-in;
+}
+
+.dark {
+  background-color: black;
+}
+
+.dark .navbar {
+  border-bottom: 1px solid black;
+}
+
+.dark .navbar-elements p {
+  color: white;
+}
+
+.dark .navbar-elements {
+  color: white;
+}
+
+.dark .navbar-elements p:hover {
+  background-color: #7d7d7d;
+  transition: 0.5s ease-in;
+}
+
+.open-it {
+  animation: fade-in 500ms forwards;
+}
+
+.close-it {
+  animation: fade-out 500ms forwards;
+}
+
+.coming-soon-btn {
+  background: rgb(151, 76, 204);
+  background: rgb(76, 145, 204);
+  background: linear-gradient(
+    90deg,
+    rgba(76, 145, 204, 1) 0%,
+    rgba(98, 36, 214, 1) 46%,
+    rgba(192, 94, 215, 1) 100%
+  );
+
+  color: white;
+  padding: 12px;
+}
