@@ -42,10 +42,11 @@
   margin: 48px 0;
   font-family: "Source Sans Pro";
   margin: 0;
-  color: #a0a0a0;
+  color: #504f4f;
   font-size: 28px;
   padding: 4px 8px;
   width: 75%;
+  word-spacing: 30px;
 }
 
 .people-body-text {
