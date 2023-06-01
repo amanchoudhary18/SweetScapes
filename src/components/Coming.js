@@ -1,7 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import "./Coming.css";
 
 const Coming = () => {
+  const [email, setEmail] = useState("");
+  const handleEmail = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const submitEmail = async () => {
+    const res = await axios.post(
+      "https://date-form-prod.onrender.com/api/vi/email/addEmail",
+      {
+        email: email,
+      }
+    );
+
+    console.log(res);
+  };
+
   return (
     <div>
       <div className="coming" id="coming">
@@ -14,8 +31,16 @@ const Coming = () => {
         </p>
 
         <div className="coming-cta ">
-          <input type="text" placeholder="Enter your email address" />
-          <button type="button" className="coming-cta-button">
+          <input
+            type="text"
+            placeholder="Enter your email address"
+            onChange={handleEmail}
+          />
+          <button
+            type="button"
+            className="coming-cta-button"
+            onClick={submitEmail}
+          >
             Sign Up for Updates
           </button>
         </div>
