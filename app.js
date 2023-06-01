@@ -4,13 +4,16 @@ const mongoose = require("mongoose");
 const axios = require("axios");
 const generateAge = require("./utils/generateAge");
 const path = require("path");
+const cors = require("cors");
 
 mongoose.connect(process.env.MONGODB_URI, () => {
   console.log("Connected to MongoDB");
 });
 
 const app = express();
+
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname + "/public")));
 
