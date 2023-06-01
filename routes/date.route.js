@@ -20,6 +20,7 @@ router.get("/dates", userAuth, async (req, res) => {
     const userPreferences = req.user.preferences;
     const dateData = dates.map((date) => {
       const {
+        _id,
         category,
         availability,
         area,
@@ -27,7 +28,6 @@ router.get("/dates", userAuth, async (req, res) => {
         tile_content,
         price_per_head,
         tags,
-        _id,
       } = date;
 
       // Dining
@@ -60,6 +60,7 @@ router.get("/dates", userAuth, async (req, res) => {
         tile_content,
         price_per_head,
         tags,
+        _id,
       };
 
       return updatedDate;
@@ -80,6 +81,7 @@ router.get("/:id", userAuth, async (req, res) => {
     const date = await DateModel.findById(req.params.id);
     console.log(date);
     const {
+      _id,
       tags,
       area,
       people_count,
@@ -144,6 +146,7 @@ router.get("/:id", userAuth, async (req, res) => {
     const fourWheelerContacts = date.travel.four_wheeler.contacts;
 
     const updatedDate = {
+      _id,
       tags,
       area,
       people_count,
