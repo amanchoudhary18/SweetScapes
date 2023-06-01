@@ -4,19 +4,36 @@ import "./Coming.css";
 
 const Coming = () => {
   const [email, setEmail] = useState("");
+
+  const verifyEmail = (input) => {
+    var validRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+    if (input.match(validRegex)) return true;
+    else return false;
+  };
+
   const handleEmail = (e) => {
-    setEmail(e.target.value);
+    if (e.target.value) setEmail(e.target.value);
   };
 
   const submitEmail = async () => {
-    const res = await axios.post(
-      "https://date-form-prod.onrender.com/api/vi/email/addEmail",
-      {
-        email: email,
+    try {
+      if (email === "") {
+        alert("Empty Input Not Allowed");
+      } else if (!verifyEmail(email)) {
+        alert("Enter Valid Email");
       }
-    );
 
-    console.log(res);
+      const res = await axios.post(
+        "https://date-form-prod.onrender.com/api/v1/email/addEmail",
+        {
+          email: email,
+        }
+      );
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -29,16 +46,17 @@ const Coming = () => {
           and <span style={{ color: "black", fontWeight: "700" }}>iOS</span>{" "}
           devices
         </p>
-
-        <div className="coming-cta ">
+        <div className="coming-cta">
           <input
             type="text"
             placeholder="Enter your email address"
             onChange={handleEmail}
           />
+
           <button
             type="button"
             className="coming-cta-button"
+            style={{ backgroundolor: "grey" }}
             onClick={submitEmail}
           >
             Sign Up for Updates
