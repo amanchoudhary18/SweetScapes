@@ -31,6 +31,8 @@ const Coming = () => {
           email: email,
         }
       );
+
+      alert(`${res.data.status}`);
     } catch (error) {
       alert(error.message);
     }
