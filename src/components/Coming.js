@@ -32,6 +32,8 @@ const Coming = () => {
         }
       );
 
+      setEmail("");
+
       alert(`${res.data.status}`);
     } catch (error) {
       alert(error.message);
@@ -53,6 +55,7 @@ const Coming = () => {
             type="text"
             placeholder="Enter your email address"
             onChange={handleEmail}
+            value={email}
           />
 
           <button
