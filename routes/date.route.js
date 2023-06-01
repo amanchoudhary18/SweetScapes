@@ -75,15 +75,6 @@ router.get("/dates", userAuth, async (req, res) => {
   }
 });
 
-// router.get("/:id", userAuth, async (req, res) => {
-//   try {
-//     const dates = await DateModel.findById(req.params.id);
-//     res.status(200).send({ status: "Successful", dates });
-//   } catch (error) {
-//     res.status(500).send({ status: "Failed", message: error.message });
-//   }
-// });
-
 router.get("/:id", userAuth, async (req, res) => {
   try {
     const date = await DateModel.findById(req.params.id);

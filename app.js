@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname + "/public")));
 
 app.get("/api/v1/home", (req, res) => {
-  res.send("Welcome to MyBespoke !");
+  res.send("Welcome to SweetScapes !");
 });
 
 const userRouter = require("./routes/user.route");

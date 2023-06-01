@@ -102,19 +102,19 @@ const dateSchema = new mongoose.Schema({
     type: String,
   },
   people_count: {
-    ["2"]: {
+    couple: {
       type: Boolean,
       default: false,
     },
-    ["3-6"]: {
+    small: {
       type: Boolean,
       default: false,
     },
-    ["7-10"]: {
+    medium: {
       type: Boolean,
       default: false,
     },
-    [">10"]: {
+    large: {
       type: Boolean,
       default: false,
     },
