@@ -56,8 +56,10 @@ const People = () => {
     <div id="groups">
       <div className="people">
         <div className="people-left">
-          <p className="people-heading">The perfect outings for</p>
-          <p className="people-heading">every group size </p>
+          <p className="people-heading">
+            The perfect outings for every group size
+          </p>
+
           <div className="people-selector">
             <p
               style={selected[0] ? styleSelected : styleNotSelected}
@@ -96,7 +98,7 @@ const People = () => {
         </div>
 
         <div className="people-right">
-          <img src={bodyImage} alt="people" width="500px" />
+          <img src={bodyImage} alt="people" />
         </div>
       </div>
     </div>

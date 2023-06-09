@@ -46,9 +46,29 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-icons">
-        <BsInstagram size="18px" style={{ margin: "5px 0 " }} />
-        <BsLinkedin size="18px" style={{ margin: "5px 0" }} />
-        <SiGmail size="22px" style={{ margin: "3px 0" }} />
+        <a
+          href="https://www.instagram.com/sweetscapes.in/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <BsInstagram size="18px" color="black" style={{ margin: "5px 0 " }} />
+        </a>
+
+        <a
+          href="https://www.linkedin.com/company/sweetscapes"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <BsLinkedin size="18px" color="black" style={{ margin: "5px 0" }} />
+        </a>
+
+        <a
+          href="mailto:sweetscapes.organization@gmail.com"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <SiGmail size="22px" color="black" style={{ margin: "3px 0" }} />
+        </a>
       </div>
     </div>
   );
@@ -78,12 +98,29 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-icons">
-        <a href="https://www.instagram.com/sweetscapes.in/">
+        <a
+          href="https://www.instagram.com/sweetscapes.in/"
+          target="_blank"
+          rel="noreferrer"
+        >
           <BsInstagram size="18px" color="white" style={{ margin: "5px 0 " }} />
         </a>
 
-        <BsLinkedin size="18px" color="white" style={{ margin: "5px 0" }} />
-        <SiGmail size="22px" color="white" style={{ margin: "3px 0" }} />
+        <a
+          href="https://www.linkedin.com/company/sweetscapes"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <BsLinkedin size="18px" color="white" style={{ margin: "5px 0" }} />
+        </a>
+
+        <a
+          href="mailto:sweetscapes.organization@gmail.com"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <SiGmail size="22px" color="white" style={{ margin: "3px 0" }} />
+        </a>
       </div>
     </div>
   );

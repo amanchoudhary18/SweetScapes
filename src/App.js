@@ -5,6 +5,7 @@ import Collage from "./components/Collage";
 import Why from "./components/Why";
 import People from "./components/People";
 import Coming from "./components/Coming";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Why />
       <People />
       <Coming />
+      <Footer />
     </div>
   );
 }

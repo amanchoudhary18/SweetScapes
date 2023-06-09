@@ -10,26 +10,10 @@ import img8 from "../assets/images/8.jpg";
 import "./Collage.css";
 
 const Collage = () => {
-  const domRef = useRef();
-  const [isVisible, setVisible] = useState(true);
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => setVisible(entry.isIntersecting));
-    });
-    const current = domRef.current;
-    observer.observe(current);
-    return () => observer.unobserve(current);
-  }, []);
-
   return (
     <div className="collage" id="about">
       <div className="collage-overlay">
-        <div
-          style={{ margin: "250px 0" }}
-          className={`fade-in-section ${isVisible ? "is-visible" : ""}`}
-          ref={domRef}
-        >
-          {" "}
+        <div style={{ margin: "250px 0" }}>
           <p className="collage-overlay-text">A place where</p>
           <p className="collage-overlay-text">extraordinary moments begin</p>
         </div>
