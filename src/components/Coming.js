@@ -23,18 +23,18 @@ const Coming = () => {
         alert("Empty Input Not Allowed");
       } else if (!verifyEmail(email)) {
         alert("Enter Valid Email");
+      } else {
+        const res = await axios.post(
+          "https://date-form-prod.onrender.com/api/v1/email/addEmail",
+          {
+            email: email,
+          }
+        );
+
+        setEmail("");
+
+        alert(`${res.data.status}`);
       }
-
-      const res = await axios.post(
-        "https://date-form-prod.onrender.com/api/v1/email/addEmail",
-        {
-          email: email,
-        }
-      );
-
-      setEmail("");
-
-      alert(`${res.data.status}`);
     } catch (error) {
       alert(error.message);
     }
