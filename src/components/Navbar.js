@@ -96,18 +96,28 @@ const Navbar = () => {
         >
           <div className="navbar-logo">
             <a href="#hero">
-              <img
-                src={icon}
-                alt="our logo"
-                width="35px"
-                style={{ height: "35px" }}
-              />
+              <img src={lightLogo} alt="our logo" style={{ height: "50px" }} />
+            </a>
+
+            <a href="#coming">
+              <p
+                className="coming-soon-btn"
+                style={{
+                  fontSize: "12px",
+                  padding: "7px 11px",
+                  borderRadius: "8px",
+                  marginTop: "15px",
+                  marginLeft: "65px",
+                }}
+              >
+                Coming soon
+              </p>
             </a>
 
             {!openOptions ? (
               <GiHamburgerMenu
                 size={"30px"}
-                style={{ margin: "8px" }}
+                style={{ margin: "15px" }}
                 onClick={() => setOpenOptions(true)}
               />
             ) : (
@@ -142,15 +152,6 @@ const Navbar = () => {
           </a>
           <a href="#groups">
             <p onClick={() => setOpenOptions(false)}>Features</p>
-          </a>
-
-          <a href="#coming">
-            <p
-              className="coming-soon-btn"
-              onClick={() => setOpenOptions(false)}
-            >
-              Coming soon
-            </p>
           </a>
         </div>
       )}
