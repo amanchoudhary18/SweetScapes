@@ -80,9 +80,9 @@
 @media screen and (max-width: 425px) {
   .hero {
     box-sizing: border-box;
-    height: 50vh;
+    height: 42vh;
     margin: 0 16px;
-    margin-top: 28vh;
+    margin-top: 22vh;
   }
 
   .hero-text {

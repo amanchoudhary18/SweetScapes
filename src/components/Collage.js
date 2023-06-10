@@ -47,9 +47,9 @@ const Collage = () => {
       <div className="resp">
         <div className="collage-pictures-row ">
           <div className="collage-pictures-col" style={{ maxWidth: "50%" }}>
+            <img src={img1} alt="img5" />
             <img src={img6} alt="img1" height="130px" />
             <img src={img5} alt="img5" height="130px" />
-            <img src={img1} alt="img5" />
           </div>
           <div className="collage-pictures-col" style={{ maxWidth: "50%" }}>
             <img src={img7} alt="img5" height="130px" />
