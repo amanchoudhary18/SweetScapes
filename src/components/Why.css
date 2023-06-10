@@ -88,6 +88,7 @@
 
   .why-head-row div {
     width: 310px;
+    margin-bottom: 24px;
   }
 
   .why-head-row div div img {
@@ -106,7 +107,7 @@
   }
 
   .why-head {
-    margin: 32px 24px 24px;
+    margin: 32px 16px 24px;
     padding-top: 32px;
   }
 

@@ -65,7 +65,7 @@ const Footer = () => {
 
           <div className="website-links resp" style={{ textAlign: "right" }}>
             <h3>Contact Us </h3>
-            <div className="social-links" style={{ marginTop: "38px" }}>
+            <div className="social-links" style={{ marginTop: "44px" }}>
               <a
                 href="https://www.instagram.com/sweetscapes.in/"
                 target="_blank"

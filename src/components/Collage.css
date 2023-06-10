@@ -111,3 +111,12 @@
     margin: 17% 0px;
   }
 }
+
+@media screen and (max-width: 380px) {
+  .collage {
+    height: 180px;
+  }
+  .collage-overlay {
+    height: 180px;
+  }
+}

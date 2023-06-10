@@ -86,3 +86,9 @@
     width: 320px;
   }
 }
+
+@media screen and (max-width: 380px) {
+  .coming-cta input {
+    width: 260px;
+  }
+}

@@ -128,23 +128,29 @@ const Navbar = () => {
             openOptions
               ? {
                   borderBottom: "1px solid #d0d0d0",
+                  boxSizing: "border-box",
                   width: "100%",
                 }
-              : { width: "100%" }
+              : { boxSizing: "border-box", width: "100%" }
           }
         >
           <a href="#about">
-            <p>About</p>
+            <p onClick={() => setOpenOptions(false)}>About</p>
           </a>
           <a href="#why">
-            <p>How it works</p>
+            <p onClick={() => setOpenOptions(false)}>How it works</p>
           </a>
           <a href="#groups">
-            <p>Features</p>
+            <p onClick={() => setOpenOptions(false)}>Features</p>
           </a>
 
           <a href="#coming">
-            <p className="coming-soon-btn">Coming soon</p>
+            <p
+              className="coming-soon-btn"
+              onClick={() => setOpenOptions(false)}
+            >
+              Coming soon
+            </p>
           </a>
         </div>
       )}
