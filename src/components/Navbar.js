@@ -107,7 +107,7 @@ const Navbar = () => {
                   padding: "7px 11px",
                   borderRadius: "8px",
                   marginTop: "18px",
-                  marginLeft: "65px",
+                  marginLeft: "50px",
                 }}
               >
                 Coming soon
