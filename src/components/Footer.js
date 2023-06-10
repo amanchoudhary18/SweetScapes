@@ -50,7 +50,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                <BsFillEnvelopeFill size="18px" color="black" />
+                <BsLinkedin size="18px" color="black" />
               </a>
 
               <a
@@ -58,7 +58,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                <BsLinkedin size="18px" color="black" />
+                <BsFillEnvelopeFill size="18px" color="black" />
               </a>
             </div>
           </div>
@@ -79,7 +79,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                <BsFillEnvelopeFill size="14px" color="black" />
+                <BsLinkedin size="14px" color="black" />
               </a>
 
               <a
@@ -87,7 +87,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                <BsLinkedin size="14px" color="black" />
+                <BsFillEnvelopeFill size="14px" color="black" />
               </a>
             </div>
           </div>
