@@ -125,6 +125,7 @@
     margin: 16px 0;
     font-size: 16px;
     color: #2b2b2b;
+    box-sizing: border-box;
     width: 100%;
   }
 

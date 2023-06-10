@@ -108,6 +108,7 @@
   .collage-overlay-text {
     font-size: 24px;
     margin: 0px;
+    padding: 0px 16px;
 
     height: max-content;
   }
