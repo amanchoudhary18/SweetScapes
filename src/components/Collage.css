@@ -61,6 +61,14 @@
   visibility: visible;
 }
 
+.collage-overlay div {
+  margin: 250px 0px;
+}
+
+.resp {
+  display: none;
+}
+
 @media screen and (max-width: 1400px) {
   .collage {
     height: 640px;
@@ -78,5 +86,28 @@
 
   .collage-overlay {
     height: 600px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .resp {
+    display: block;
+  }
+
+  .collage {
+    height: 200px;
+  }
+  .collage-overlay-text {
+    font-size: 24px;
+    margin: 0px;
+    height: max-content;
+  }
+
+  .collage-overlay {
+    height: 200px;
+  }
+
+  .collage-overlay .resp {
+    margin: 17% 0px;
   }
 }

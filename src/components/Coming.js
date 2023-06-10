@@ -43,13 +43,21 @@ const Coming = () => {
   return (
     <div>
       <div className="coming" id="coming">
-        <p className="coming-heading">SweetScapes is coming soon</p>
-        <p className="coming-heading">
+        <p className="coming-heading desktop">SweetScapes is coming soon</p>
+        <p className="coming-heading desktop">
           across all{" "}
           <span style={{ color: "#A4C639", fontWeight: "700" }}>Android</span>{" "}
           and <span style={{ color: "black", fontWeight: "700" }}>iOS</span>{" "}
           devices
         </p>
+
+        <p className="coming-heading resp">
+          SweetScapes is coming soon across all{" "}
+          <span style={{ color: "#A4C639", fontWeight: "700" }}>Android</span>{" "}
+          and <span style={{ color: "black", fontWeight: "700" }}>iOS</span>{" "}
+          devices
+        </p>
+
         <div className="coming-cta">
           <input
             type="text"
@@ -60,11 +68,20 @@ const Coming = () => {
 
           <button
             type="button"
-            className="coming-cta-button"
+            className="coming-cta-button desktop"
             style={{ backgroundolor: "grey" }}
             onClick={submitEmail}
           >
             Sign Up for Updates
+          </button>
+
+          <button
+            type="button"
+            className="coming-cta-button resp"
+            style={{ backgroundolor: "grey" }}
+            onClick={submitEmail}
+          >
+            Sign Up
           </button>
         </div>
       </div>

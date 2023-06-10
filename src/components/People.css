@@ -86,3 +86,42 @@
     width: 400px;
   }
 }
+
+@media screen and (max-width: 425px) {
+  .people {
+    margin: 0 24px;
+    padding-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .people-left {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .people-heading {
+    font-size: 26px;
+    text-align: center;
+  }
+
+  .people-selector {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .people-body-text {
+    margin: 16px 0;
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .people-right img {
+    width: 280px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+  }
+}

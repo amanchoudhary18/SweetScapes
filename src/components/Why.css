@@ -95,3 +95,48 @@
     width: 310px;
   }
 }
+
+.resp {
+  display: none;
+}
+
+@media screen and (max-width: 425px) {
+  .resp {
+    display: block;
+  }
+
+  .why-head {
+    margin: 32px 24px 24px;
+    padding-top: 32px;
+  }
+
+  .why-heading {
+    font-size: 26px;
+    text-align: center;
+  }
+
+  .why-subheading {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .why-head-row {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .why-head-row div {
+    width: 280px;
+  }
+
+  .why-head-row div div img {
+    height: 280px;
+    width: 280px;
+  }
+
+  .why-head-row-title {
+    font-size: 20px;
+  }
+}

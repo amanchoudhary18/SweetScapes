@@ -48,3 +48,41 @@
   border-radius: 10px;
   border: none;
 }
+
+.resp {
+  display: none;
+}
+
+@media screen and (max-width: 425px) {
+  .resp {
+    display: block;
+  }
+
+  .desktop {
+    display: none;
+  }
+
+  .coming-heading {
+    font-size: 24px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .coming {
+    padding: 32px 24px;
+  }
+
+  .coming-cta {
+    width: 100%;
+  }
+
+  .coming-cta-button {
+    font-size: 14px;
+    padding: 4px;
+    width: 30%;
+  }
+
+  .coming-cta input {
+    width: 320px;
+  }
+}

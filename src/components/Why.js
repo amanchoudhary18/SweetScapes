@@ -13,11 +13,17 @@ const Why = () => {
     <div>
       <div className="why-head" id="why">
         <p className="why-heading">The SweetScapes Method</p>
-        <p className="why-subheading">
+        <p className="why-subheading desktop">
           Uniquely Crafted Recommendations, Thoughtful Curation, and Seamless
           Planning
         </p>
-        <p className="why-subheading">for Extraordinary Adventures.</p>
+        <p className="why-subheading desktop">for Extraordinary Adventures.</p>
+
+        <p className="why-subheading resp">
+          Uniquely Crafted Recommendations, Thoughtful Curation, and Planning
+          for Extraordinary Adventures.
+        </p>
+
         <div className="why-head-col">
           <div className="why-head-row">
             <div>

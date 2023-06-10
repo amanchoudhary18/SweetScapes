@@ -59,7 +59,6 @@
   font-size: 18px;
   font-weight: 500;
   color: grey;
-  margin-top: 12px;
 }
 
 .fade-in-image {
@@ -75,5 +74,36 @@
   to {
     transform: translate3d(0, 0, 0);
     opacity: 1;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .hero {
+    margin: 64px 16px;
+  }
+
+  .hero-text {
+    width: 100%;
+  }
+
+  .hero-primary-text {
+    font-family: "Montserrat";
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  .hero-cta-button {
+    font-size: 12px;
+  }
+
+  .hero-cta {
+    margin: 16px auto;
+  }
+
+  .hero-cta-secondary-text {
+    font-size: 12px;
+    margin-top: 8px;
   }
 }

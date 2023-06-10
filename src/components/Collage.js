@@ -13,9 +13,14 @@ const Collage = () => {
   return (
     <div className="collage" id="about">
       <div className="collage-overlay">
-        <div style={{ margin: "250px 0" }}>
+        <div className="desktop">
           <p className="collage-overlay-text">A place where</p>
           <p className="collage-overlay-text">extraordinary moments begin</p>
+        </div>
+
+        <div className="resp">
+          <p className="collage-overlay-text">A place where extraordinary </p>
+          <p className="collage-overlay-text">moments begin</p>
         </div>
       </div>
       <div className="collage-pictures-row">

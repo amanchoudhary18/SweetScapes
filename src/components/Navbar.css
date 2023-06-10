@@ -93,3 +93,43 @@
   color: white;
   padding: 12px;
 }
+
+.resp {
+  display: none;
+}
+
+@media screen and (max-width: 425px) {
+  .resp {
+    display: block;
+    width: 100%;
+  }
+
+  .navbar {
+    padding: 8px;
+  }
+
+  .navbar-logo {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .navbar-elements {
+    flex-direction: column;
+    margin: 0;
+    padding: 16px;
+  }
+
+  .coming-soon-btn {
+    width: max-content;
+  }
+
+  .navbar-elements p {
+    margin: 4px 0px;
+  }
+
+  .desktop {
+    display: none;
+  }
+}
