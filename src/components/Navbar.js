@@ -96,7 +96,7 @@ const Navbar = () => {
         >
           <div className="navbar-logo">
             <a href="#hero">
-              <img src={lightLogo} alt="our logo" style={{ height: "50px" }} />
+              <img src={lightLogo} alt="our logo" style={{ height: "55px" }} />
             </a>
 
             <a href="#coming">
@@ -106,7 +106,7 @@ const Navbar = () => {
                   fontSize: "12px",
                   padding: "7px 11px",
                   borderRadius: "8px",
-                  marginTop: "15px",
+                  marginTop: "18px",
                   marginLeft: "65px",
                 }}
               >
@@ -117,13 +117,13 @@ const Navbar = () => {
             {!openOptions ? (
               <GiHamburgerMenu
                 size={"30px"}
-                style={{ margin: "15px" }}
+                style={{ margin: "18px" }}
                 onClick={() => setOpenOptions(true)}
               />
             ) : (
               <IoCloseOutline
                 size={"30px"}
-                style={{ margin: "8px" }}
+                style={{ margin: "18px" }}
                 onClick={() => setOpenOptions(false)}
               />
             )}
