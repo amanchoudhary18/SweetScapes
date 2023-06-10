@@ -82,7 +82,7 @@ a {
   }
 
   .website-links h3 {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .page-links {
@@ -100,7 +100,8 @@ a {
     font-size: 12px;
   }
   .footer-body {
-    justify-content: center;
+    justify-content: space-between;
+    padding: 0 12px;
   }
   .social-links {
     margin-right: 60px;
