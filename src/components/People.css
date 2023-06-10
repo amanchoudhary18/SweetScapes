@@ -1,3 +1,6 @@
+.people-selector .resp {
+  display: none;
+}
 .people {
   margin: 0 80px;
   padding-top: 100px;
@@ -48,10 +51,6 @@
   width: 75%;
 }
 
-.people-body-text {
-  transition: all 0.3s ease-in-out;
-}
-
 .people-right img {
   margin: 32px 0;
   width: 500px;
@@ -88,6 +87,13 @@
 }
 
 @media screen and (max-width: 425px) {
+  .resp {
+    display: block;
+  }
+
+  .desktop {
+    display: none;
+  }
   .people {
     margin: 0 24px;
     padding-top: 32px;
@@ -107,13 +113,12 @@
   }
 
   .people-selector {
+    display: flex;
     box-sizing: border-box;
     width: 100%;
     text-align: center;
     font-size: 14px;
     margin: 24px auto 0px;
-
-    justify-content: space-between;
   }
 
   .people-body-text {

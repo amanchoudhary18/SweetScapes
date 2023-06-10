@@ -60,39 +60,6 @@ const People = () => {
             The perfect outings for every group size
           </p>
 
-          <div className="people-selector desktop">
-            <p
-              style={selected[0] ? styleSelected : styleNotSelected}
-              onClick={() => {
-                setSelected([true, false, false]);
-                setBodyImage(images[0]);
-                setBodyText(text[0]);
-              }}
-            >
-              Solo Adventures
-            </p>
-            <p
-              style={selected[1] ? styleSelected : styleNotSelected}
-              onClick={() => {
-                setSelected([false, true, false]);
-                setBodyImage(images[1]);
-                setBodyText(text[1]);
-              }}
-            >
-              Dates for Couples
-            </p>
-            <p
-              style={selected[2] ? styleSelected : styleNotSelected}
-              onClick={() => {
-                setSelected([false, false, true]);
-                setBodyImage(images[2]);
-                setBodyText(text[2]);
-              }}
-            >
-              Gatherings with Friends
-            </p>
-          </div>
-
           <div className="people-selector resp" style={{ display: "flex" }}>
             <p
               style={selected[0] ? styleSelected : styleNotSelected}
