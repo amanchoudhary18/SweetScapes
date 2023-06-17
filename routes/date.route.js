@@ -3,10 +3,8 @@ const userAuth = require("../middleware/userAuth");
 const DateModel = require("../models/date.model");
 const router = express.Router();
 const sgMail = require("@sendgrid/mail");
-
-sgMail.setApiKey(
-  "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"
-);
+require("dotenv").config({ path: "../config/.env" });]
+sgMail.setApiKey(process.env.SG_GRID_API);
 
 router.post("/addDate", async (req, res) => {
   const dateBody = req.body;
