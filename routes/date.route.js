@@ -2,6 +2,11 @@ const express = require("express");
 const userAuth = require("../middleware/userAuth");
 const DateModel = require("../models/date.model");
 const router = express.Router();
+const sgMail = require("@sendgrid/mail");
+
+sgMail.setApiKey(
+  "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"
+);
 
 router.post("/addDate", async (req, res) => {
   const dateBody = req.body;
@@ -168,6 +173,28 @@ router.get("/:id", userAuth, async (req, res) => {
     res.status(200).send({ status: "Successful", date: updatedDate });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
+  }
+});
+
+router.post("/send-email", async (req, res) => {
+  const { to, subject, text, html } = req.body;
+
+  const msg = {
+    to,
+    from: "sweetscapes.organization@gmail.com",
+    subject,
+    text,
+    html,
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log("sent");
+    res.send("Email sent successfully!");
+  } catch (error) {
+    console.error("Error sending email:", error);
+    console.log("sent");
+    res.status(500).send("An error occurred while sending the email.");
   }
 });
 

@@ -75,6 +75,7 @@ exports.register = async (req, res) => {
 // login function
 exports.login = async (req, res) => {
   const userBody = req.body;
+
   if (userBody.email) {
     try {
       const user = await User.findOne({
@@ -82,18 +83,34 @@ exports.login = async (req, res) => {
       });
       console.log(user);
       if (user) {
-        const isMatch = await bcrypt.compare(userBody.password, user.password);
-        console.log(isMatch);
-
-        const token = await user.generateAuthToken();
-        if (isMatch) {
-          res.status(200).send({ status: "Successful", user, token });
-        } else {
+        otp = generateOTP(4);
+        // await sendotp(user.mobileNumber, otp);
+        var otpModel = {
+          otp: otp,
+          status: true,
+          email: user.email,
+        };
+        const otpDb = new OtpModel(otpModel);
+        otpsave = await otpDb.save();
+        setTimeout(async () => {
+          console.log("executing otp timeout");
+          const otpupdate = await OtpModel.findOneAndUpdate(
+            { _id: otpsave._id },
+            { otp: otp, status: false }
+          );
+          console.log(otpupdate);
+        }, 100000);
+        if (otpsave)
           res.status(200).send({
-            status: "Failed",
-            message: "Password does not match",
+            status: "Successful",
+            message: "otp sent",
+            otpId: otpsave._id,
           });
-        }
+        else
+          res.send({
+            status: "Failed",
+            message: otpsave,
+          });
       } else {
         console.log("No value found case");
         res.status(200).send({
@@ -112,6 +129,47 @@ exports.login = async (req, res) => {
       status: "Failed",
       message: "Enter valid email",
     });
+  }
+};
+
+exports.loginotpverification = async (req, res) => {
+  try {
+    const otp = req.body.otpEntered;
+    const otpId = req.body.otpId;
+
+    const otpDB = await OtpModel.findById(otpId);
+    const email = otpDB.email;
+
+    console.log(otp, otpId, otpDB, email);
+    if (
+      otpDB.otp == otp &&
+      otpDB.status &&
+      req.body.user.email == otpDB.email
+    ) {
+      const user = await User.findOne({ email });
+      console.log(user);
+      const token = await user.generateAuthToken();
+
+      otpDB.status = false;
+      await otpDB.save();
+
+      res.status(200).send({
+        status: "Successful",
+        message: "Email verified",
+        user,
+        token,
+      });
+    } else {
+      res
+        .status(400)
+        .send({
+          status: "Failed",
+          message: "Incorrect OTP entered. Please try again.",
+        });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({ status: "Failed", message: "Wrong OTP entered" });
   }
 };
 
