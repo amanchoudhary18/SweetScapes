@@ -18,7 +18,7 @@ jobs:
           node-version: 14
 
       - name: Install project dependencies
-        run: npm ci
+        run: npm i
 
       - name: Send Keep Alive Request
         run: curl -s https://date-form-prod.onrender.com/api/v1/home
