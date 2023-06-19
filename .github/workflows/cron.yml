@@ -21,4 +21,4 @@ jobs:
         run: npm ci
 
       - name: Send Keep Alive Request
-        run: curl -s https://your-backend-url/
+        run: curl -s https://date-form-prod.onrender.com/api/v1/home
