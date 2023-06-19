@@ -1,23 +1,24 @@
-name: API Activation Cron Job
+name: Keep Alive
+
 on:
   schedule:
-    - cron: "*/10 * * * *" # Run every 10 minutes
+    - cron: "*/10 * * * *"
 
 jobs:
-  activate-api:
+  keep_alive:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: 14
 
-      - name: Install dependencies
+      - name: Install project dependencies
         run: npm ci
 
-      - name: Activate API
-        run: npm run dev
+      - name: Send Keep Alive Request
+        run: curl -s https://your-backend-url/
