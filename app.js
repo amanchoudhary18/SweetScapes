@@ -19,9 +19,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname + "/public")));
 
 app.get("/api/v1/home", async (req, res) => {
-  const time = new Date();
-  const hit = new Hit({ hit_time: time });
-  await hit.save();
   res.send("Welcome to SweetScapes !");
 });
 
