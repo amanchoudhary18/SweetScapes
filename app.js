@@ -5,6 +5,7 @@ const axios = require("axios");
 const generateAge = require("./utils/generateAge");
 const path = require("path");
 const cors = require("cors");
+const Hit = require("./models/cron.model");
 
 mongoose.connect(process.env.MONGODB_URI, () => {
   console.log("Connected to MongoDB");
@@ -17,7 +18,10 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname + "/public")));
 
-app.get("/api/v1/home", (req, res) => {
+app.get("/api/v1/home", async (req, res) => {
+  const time = new Date();
+  const hit = new Hit({ hit_time: time });
+  await hit.save();
   res.send("Welcome to SweetScapes !");
 });
 
