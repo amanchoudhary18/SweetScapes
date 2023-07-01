@@ -37,6 +37,9 @@ app.use("/api/v1/date", dateRouter);
 const emailRouter = require("./routes/email.route");
 app.use("/api/v1/email", emailRouter);
 
+const planRouter = require("./routes/plan.route");
+app.use("/api/v1/plan", planRouter);
+
 app.listen(process.env.PORT, () => {
   console.log(`Server started on ${process.env.PORT}`);
 });
