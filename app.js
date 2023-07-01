@@ -40,6 +40,9 @@ app.use("/api/v1/email", emailRouter);
 const planRouter = require("./routes/plan.route");
 app.use("/api/v1/plan", planRouter);
 
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 app.listen(process.env.PORT, () => {
   console.log(`Server started on ${process.env.PORT}`);
 });
