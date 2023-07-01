@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const diningModel = new mongoose.Schema({
+  type: {
+    type: String,
+  },
   tags: [
     {
       type: String,
@@ -58,6 +61,9 @@ const diningModel = new mongoose.Schema({
     type: String,
   },
   closing_time: {
+    type: String,
+  },
+  img: {
     type: String,
   },
 });

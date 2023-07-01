@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const outingModel = new mongoose.Schema({
+  type: {
+    type: String,
+  },
   tags: [
     {
       type: String,
@@ -53,6 +56,9 @@ const outingModel = new mongoose.Schema({
     type: String,
   },
   closing_time: {
+    type: String,
+  },
+  img: {
     type: String,
   },
 });
