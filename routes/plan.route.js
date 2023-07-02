@@ -10,8 +10,8 @@ const API_KEY = process.env.GOOGLE_MAPS_KEY;
 
 const BIT_LOCATION = {
   map: {
-    lat: "23.4152236",
-    lng: "85.4212082",
+    lat: "23.41656964288303",
+    lng: "85.44054332013442",
   },
 };
 
@@ -163,6 +163,24 @@ router.post("/addDining", async (req, res) => {
     const dining = new Dining(diningBody);
     dining.save();
     res.status(200).send({ status: "Successful", dining });
+  } catch (error) {
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+});
+
+router.get("/getDiningsLength", async (req, res) => {
+  try {
+    const dinings = await Dining.find({});
+    res.status(200).send({ status: "Successfull", count: dinings.length });
+  } catch (error) {
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+});
+
+router.get("/getOutingsLength", async (req, res) => {
+  try {
+    const outings = await Outing.find({});
+    res.status(200).send({ status: "Successfull", count: outings.length });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
