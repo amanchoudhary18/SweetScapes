@@ -74,21 +74,6 @@ const userSchema = new mongoose.Schema(
           required: true,
           default: 0,
         },
-        Home_Delivery: {
-          type: Number,
-          required: true,
-          default: 0,
-        },
-        Take_Away: {
-          type: Number,
-          required: true,
-          default: 0,
-        },
-        Home_Made: {
-          type: Number,
-          required: true,
-          default: 0,
-        },
         Cafes: {
           type: Number,
           required: true,
@@ -103,7 +88,12 @@ const userSchema = new mongoose.Schema(
 
       // Outing Preferences
       Outing: {
-        Hills_Lakes: {
+        Hills: {
+          type: Number,
+          required: true,
+          default: 0,
+        },
+        Lakes: {
           type: Number,
           required: true,
           default: 0,
@@ -118,17 +108,12 @@ const userSchema = new mongoose.Schema(
           required: true,
           default: 0,
         },
-        Movie: {
+        Movie_Halls: {
           type: Number,
           required: true,
           default: 0,
         },
-        Park: {
-          type: Number,
-          required: true,
-          default: 0,
-        },
-        Picnics: {
+        Parks: {
           type: Number,
           required: true,
           default: 0,
@@ -143,7 +128,17 @@ const userSchema = new mongoose.Schema(
           required: true,
           default: 0,
         },
-        Window_Shopping: {
+        Shopping: {
+          type: Number,
+          required: true,
+          default: 0,
+        },
+        Places_Of_Worship: {
+          type: Number,
+          required: true,
+          default: 0,
+        },
+        Museum: {
           type: Number,
           required: true,
           default: 0,

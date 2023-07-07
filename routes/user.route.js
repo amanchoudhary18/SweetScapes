@@ -19,11 +19,11 @@ router.post("/register", UserController.register);
 // otp verification
 router.post("/otpVerification", UserController.otpverification);
 
-// login route
-router.post("/login", UserController.login);
+// // login route
+// router.post("/login", UserController.login);
 
-// login otpverification
-router.post("/loginotpverification", UserController.loginotpverification);
+// // login otpverification
+// router.post("/loginotpverification", UserController.loginotpverification);
 
 // get mydata
 router.get("/mydata", userAuth, UserController.mydata);

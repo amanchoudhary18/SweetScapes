@@ -160,12 +160,10 @@ exports.loginotpverification = async (req, res) => {
         token,
       });
     } else {
-      res
-        .status(400)
-        .send({
-          status: "Failed",
-          message: "Incorrect OTP entered. Please try again.",
-        });
+      res.status(400).send({
+        status: "Failed",
+        message: "Incorrect OTP entered. Please try again.",
+      });
     }
   } catch (error) {
     console.log(error);
@@ -442,16 +440,33 @@ exports.otpverification = async (req, res) => {
   const email = otpDB.email;
 
   if (otpDB.otp == otp && otpDB.status) {
-    const user = new User({ email });
-    await user.save();
-    const token = await user.generateAuthToken();
+    const existingEmail = await User.findOne({ email: userBody.email });
 
-    res.status(200).send({
-      status: "Successful",
-      message: "Email verified",
-      user,
-      token,
-    });
+    if (existingEmail) {
+      const user = await User.findOne({ email: userBody.email });
+      const token = await user.generateAuthToken();
+      res.status(200).send({
+        status: "Successful",
+        user,
+        token,
+      });
+    } else {
+      if (userBody.email.includes("@bitmesra.ac.in")) {
+        const user = new User({ email: userBody.email });
+        await user.save();
+        const token = await user.generateAuthToken();
+        res.status(200).send({
+          status: "Successful",
+          user,
+          token,
+        });
+      } else {
+        res.send({
+          status: "Failed",
+          message: "Enter your institute email id",
+        });
+      }
+    }
   } else {
     res.status(400).send({ status: "Failed", message: "Wrong OTP entered" });
   }
