@@ -204,8 +204,6 @@ exports.update = async (req, res) => {
           if (preferences.Dine.Fine_Dining !== undefined)
             user.preferences.Dine.Fine_Dining = preferences.Dine.Fine_Dining
               ? 1
-              : 0
-              ? 1
               : 0;
           if (preferences.Dine.Decent_Dining !== undefined)
             user.preferences.Dine.Decent_Dining = preferences.Dine.Decent_Dining
@@ -245,7 +243,7 @@ exports.update = async (req, res) => {
           if (preferences.Outing.Movie !== undefined)
             user.preferences.Outing.Movie = preferences.Outing.Movie ? 1 : 0;
           if (preferences.Outing.Park !== undefined)
-            user.preferences.Outing.Park = preferences.Outing.Park ? 1 : 0;
+            user.preferences.Outing.Parks = preferences.Outing.Parks ? 1 : 0;
           if (preferences.Outing.Picnics !== undefined)
             user.preferences.Outing.Picnics = preferences.Outing.Picnics
               ? 1
@@ -338,8 +336,6 @@ exports.setInitialPreferences = async (req, res) => {
           if (preferences.Dine.Fine_Dining !== undefined)
             user.preferences.Dine.Fine_Dining = preferences.Dine.Fine_Dining
               ? 1
-              : 0
-              ? 1
               : 0;
           if (preferences.Dine.Decent_Dining !== undefined)
             user.preferences.Dine.Decent_Dining = preferences.Dine.Decent_Dining
@@ -347,28 +343,17 @@ exports.setInitialPreferences = async (req, res) => {
               : 0;
           if (preferences.Dine.Dhabas !== undefined)
             user.preferences.Dine.Dhabas = preferences.Dine.Dhabas ? 1 : 0;
-          if (preferences.Dine.Home_Delivery !== undefined)
-            user.preferences.Dine.Home_Delivery = preferences.Dine.Home_Delivery
-              ? 1
-              : 0;
-          if (preferences.Dine.Take_Away !== undefined)
-            user.preferences.Dine.Take_Away = preferences.Dine.Take_Away
-              ? 1
-              : 0;
-          if (preferences.Dine.Home_Made !== undefined)
-            user.preferences.Dine.Home_Made = preferences.Dine.Home_Made
-              ? 1
-              : 0;
+
           if (preferences.Dine.Cafes !== undefined)
             user.preferences.Dine.Cafes = preferences.Dine.Cafes ? 1 : 0;
         }
 
         // Outing Preferences
         if (preferences.Outing !== undefined) {
-          if (preferences.Outing.Hills_Lakes !== undefined)
-            user.preferences.Outing.Hills_Lakes = preferences.Outing.Hills_Lakes
-              ? 1
-              : 0;
+          if (preferences.Outing.Hills !== undefined)
+            user.preferences.Outing.Hills = preferences.Outing.Hills ? 1 : 0;
+          if (preferences.Outing.Lakes !== undefined)
+            user.preferences.Outing.Lakes = preferences.Outing.Lakes ? 1 : 0;
           if (preferences.Outing.Dams_Waterfalls !== undefined)
             user.preferences.Outing.Dams_Waterfalls = preferences.Outing
               .Dams_Waterfalls
@@ -376,14 +361,13 @@ exports.setInitialPreferences = async (req, res) => {
               : 0;
           if (preferences.Outing.Malls !== undefined)
             user.preferences.Outing.Malls = preferences.Outing.Malls ? 1 : 0;
-          if (preferences.Outing.Movie !== undefined)
-            user.preferences.Outing.Movie = preferences.Outing.Movie ? 1 : 0;
-          if (preferences.Outing.Park !== undefined)
-            user.preferences.Outing.Park = preferences.Outing.Park ? 1 : 0;
-          if (preferences.Outing.Picnics !== undefined)
-            user.preferences.Outing.Picnics = preferences.Outing.Picnics
+          if (preferences.Outing.Movie_Halls !== undefined)
+            user.preferences.Outing.Movie_Halls = preferences.Outing.Movie_Halls
               ? 1
               : 0;
+          if (preferences.Outing.Parks !== undefined)
+            user.preferences.Outing.Parks = preferences.Outing.Parks ? 1 : 0;
+
           if (preferences.Outing.Clubbing !== undefined)
             user.preferences.Outing.Clubbing = preferences.Outing.Clubbing
               ? 1
@@ -392,11 +376,17 @@ exports.setInitialPreferences = async (req, res) => {
             user.preferences.Outing.Night_Out = preferences.Outing.Night_Out
               ? 1
               : 0;
-          if (preferences.Outing.Window_Shopping !== undefined)
-            user.preferences.Outing.Window_Shopping = preferences.Outing
-              .Window_Shopping
+          if (preferences.Outing.Shopping !== undefined)
+            user.preferences.Outing.Shopping = preferences.Outing.Shopping
               ? 1
               : 0;
+          if (preferences.Outing.Places_Of_Worship !== undefined)
+            user.preferences.Outing.Places_Of_Worship = preferences.Outing
+              .Places_Of_Worship
+              ? 1
+              : 0;
+          if (preferences.Outing.Museum !== undefined)
+            user.preferences.Outing.Museum = preferences.Outing.Museum ? 1 : 0;
         }
 
         user.isNew = false;
