@@ -16,57 +16,39 @@ exports.register = async (req, res) => {
       .status(200)
       .send({ status: "Failed", message: "Enter your institute email id" });
   } else {
-    const existingEmailUser = await User.findOne({
-      email: userBody.email,
-    });
-    const user = new User(userBody);
-    if (userBody.email) {
-      if (!existingEmailUser) {
-        try {
-          otp = generateOTP(4);
-          // await sendotp(user.mobileNumber, otp);
-          var otpModel = {
-            otp: otp,
-            status: true,
-            email: user.email,
-          };
-          const otpDb = new OtpModel(otpModel);
-          otpsave = await otpDb.save();
-          setTimeout(async () => {
-            console.log("executing otp timeout");
-            const otpupdate = await OtpModel.findOneAndUpdate(
-              { _id: otpsave._id },
-              { otp: otp, status: false }
-            );
-            console.log(otpupdate);
-          }, 100000);
-          if (otpsave)
-            res.status(200).send({
-              status: "Successful",
-              message: "otp sent",
-              otpId: otpsave._id,
-            });
-          else
-            res.send({
-              status: "Failed",
-              message: otpsave,
-            });
-        } catch (err) {
-          res.status(200).send({
-            status: "Failed",
-            message: err.message,
-          });
-        }
-      } else {
+    try {
+      otp = generateOTP(4);
+      // await sendotp(user.mobileNumber, otp);
+      var otpModel = {
+        otp: otp,
+        status: true,
+        email: userBody.email,
+      };
+      const otpDb = new OtpModel(otpModel);
+      otpsave = await otpDb.save();
+      setTimeout(async () => {
+        console.log("executing otp timeout");
+        const otpupdate = await OtpModel.findOneAndUpdate(
+          { _id: otpsave._id },
+          { otp: otp, status: false }
+        );
+        console.log(otpupdate);
+      }, 100000);
+      if (otpsave)
         res.status(200).send({
-          status: "Failed",
-          message: "Email is already in use",
+          status: "Successful",
+          message: "otp sent",
+          otpId: otpsave._id,
         });
-      }
-    } else {
+      else
+        res.send({
+          status: "Failed",
+          message: otpsave,
+        });
+    } catch (err) {
       res.status(200).send({
         status: "Failed",
-        message: "Send a email or password in request.",
+        message: err.message,
       });
     }
   }
@@ -440,10 +422,10 @@ exports.otpverification = async (req, res) => {
   const email = otpDB.email;
 
   if (otpDB.otp == otp && otpDB.status) {
-    const existingEmail = await User.findOne({ email: userBody.email });
+    const existingEmail = await User.findOne({ email: email });
 
     if (existingEmail) {
-      const user = await User.findOne({ email: userBody.email });
+      const user = await User.findOne({ email: email });
       const token = await user.generateAuthToken();
       res.status(200).send({
         status: "Successful",
@@ -451,8 +433,8 @@ exports.otpverification = async (req, res) => {
         token,
       });
     } else {
-      if (userBody.email.includes("@bitmesra.ac.in")) {
-        const user = new User({ email: userBody.email });
+      if (email.includes("@bitmesra.ac.in")) {
+        const user = new User({ email: email });
         await user.save();
         const token = await user.generateAuthToken();
         res.status(200).send({
