@@ -1,4 +1,3 @@
-// Gurushanth's code
 const mongoose = require("mongoose");
 
 const paircodeSchema = new mongoose.Schema({

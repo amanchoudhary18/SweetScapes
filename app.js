@@ -5,7 +5,7 @@ const axios = require("axios");
 const generateAge = require("./utils/generateAge");
 const path = require("path");
 const cors = require("cors");
-const Hit = require("./models/cron.model");
+const OtpModel = require("./models/otp.model");
 
 mongoose.connect(process.env.MONGODB_URI, () => {
   console.log("Connected to MongoDB");
@@ -19,20 +19,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname + "/public")));
 
 app.get("/api/v1/home", async (req, res) => {
-  const options = { timeZone: "Asia/Kolkata", timeZoneName: "short" };
-  const today = new Date().toLocaleString("en-IN", options);
-  try {
-    const hit = new Hit({ hit_time: today });
-    hit.save();
-  } catch (error) {}
   res.send("Welcome to SweetScapes !");
 });
 
 const userRouter = require("./routes/user.route");
 app.use("/api/v1/user", userRouter);
-
-const dateRouter = require("./routes/date.route");
-app.use("/api/v1/date", dateRouter);
 
 const emailRouter = require("./routes/email.route");
 app.use("/api/v1/email", emailRouter);
@@ -46,3 +37,13 @@ app.get("*", (req, res) => {
 app.listen(process.env.PORT, () => {
   console.log(`Server started on ${process.env.PORT}`);
 });
+
+// delete otps
+const deleteInactiveOTP = async () => {
+  const otps = await OtpModel.find({});
+  const filter = { status: false };
+  const result = await OtpModel.deleteMany(filter);
+  console.log(result);
+};
+
+setInterval(deleteInactiveOTP, 24 * 60 * 60 * 1000);

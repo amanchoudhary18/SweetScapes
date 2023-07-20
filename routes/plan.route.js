@@ -5,8 +5,10 @@ const Outing = require("../models/outing.model");
 const Dining = require("../models/dining.model");
 const router = express.Router();
 const axios = require("axios");
+const PlanModel = require("../models/plan.model");
 require("dotenv").config({ path: "../.env" });
 const API_KEY = process.env.GOOGLE_MAPS_KEY;
+const userAuth = require("../middleware/userAuth");
 
 const BIT_LOCATION = {
   map: {
@@ -42,16 +44,23 @@ function getDistance(origin, destination, mode) {
 }
 
 // compare time function
-function compareArrivalTime(busA, busB, time) {
-  const timeDiffA = Math.abs(
-    getTimeDifference(busA.boarding.arrival_time, time)
-  );
-  const timeDiffB = Math.abs(
-    getTimeDifference(busB.boarding.arrival_time, time)
-  );
+const compareArrivalTime = (busA, busB, time) => {
+  const busATime = new Date(time);
+  const busBTime = new Date(time);
 
-  return timeDiffA - timeDiffB;
-}
+  const newATime = busA.boarding.arrival_time;
+  const newBTime = busB.boarding.arrival_time;
+
+  busATime.setHours(newATime.split(":")[0]);
+  busATime.setMinutes(newATime.split(":")[1]);
+  busBTime.setHours(newBTime.split(":")[0]);
+  busBTime.setMinutes(newBTime.split(":")[1]);
+
+  const diff1 = Math.abs(busATime.getTime() - time.getTime());
+  const diff2 = Math.abs(busBTime.getTime() - time.getTime());
+
+  return diff1 < diff2;
+};
 
 // round time to next
 function roundTimeToNext(time, interval) {
@@ -107,28 +116,19 @@ function getTimeDifference(time1, time2) {
   return minutesDifference;
 }
 
-// Add duration to time
-function addDurationToTime(time, durationInMinutes) {
-  const [hours, minutes] = time.split(":").map(Number);
-  const totalMinutes = hours * 60 + minutes + durationInMinutes;
-  const newHours = Math.floor(totalMinutes / 60);
-  const newMinutes = totalMinutes % 60;
-  const newTime = `${String(newHours).padStart(2, "0")}:${String(
-    newMinutes
-  ).padStart(2, "0")}`;
-  return newTime;
-}
+// compre epoch with "hh:mm"
+function isTimestampBefore(timestamp, timeString) {
+  const currentTime = new Date();
+  const [hours, minutes] = timeString.split(":");
+  const comparisonTime = new Date(
+    currentTime.getFullYear(),
+    currentTime.getMonth(),
+    currentTime.getDate(),
+    hours,
+    minutes
+  );
 
-// Epoch to time
-function epochToTime(epoch) {
-  const milliseconds = epoch * 1000;
-  const date = new Date(milliseconds);
-
-  const hours = ("0" + date.getHours()).slice(-2);
-  const minutes = ("0" + date.getMinutes()).slice(-2);
-
-  const time = hours + ":" + minutes;
-  return time;
+  return timestamp < comparisonTime.getTime();
 }
 
 // Add a new bus
@@ -191,6 +191,13 @@ router.post("/createPlan", async (req, res) => {
     const plan_start_time = req.body.plan_start_time;
     const requestData = req.body.components;
 
+    // Calculating initial time
+    const options = { weekday: "long", timeZone: "Asia/Kolkata" };
+    const date = new Date(plan_start_time);
+    const dayoftheweek = date
+      .toLocaleDateString("en-IN", options)
+      .toLowerCase();
+
     // details of all components of the plan
     const components = [];
     for (const item of requestData) {
@@ -200,6 +207,15 @@ router.post("/createPlan", async (req, res) => {
         details = await Outing.findById(id);
       } else if (type === "Dining") {
         details = await Dining.findById(id);
+      }
+
+      if (!details.availability[dayoftheweek]) {
+        throw {
+          message: `${
+            type === "Outing" ? details.place_name : details.hotel_name
+          } is not available on ${dayoftheweek}s`,
+          componentId: id,
+        };
       }
       components.push({ id, order, type, details });
     }
@@ -334,55 +350,51 @@ router.post("/createPlan", async (req, res) => {
 
     // Two Wheeler Travel
     let twoTravel = [];
-    let time = plan_start_time;
+    let time = new Date(date);
     let currTwoTravel;
     let totalDistance = 0;
 
     for (let i = 0; i < allDistancesandDurations.length; i++) {
       if (i != 0) {
-        time += components[i - 1].details.duration * 60;
+        time.setTime(
+          time.getTime() + components[i - 1].details.duration * 60 * 1000
+        );
 
-        if (
-          getMinutesBetween(
-            components[i - 1].details.closing_time,
-            epochToTime(time)
-          ) > 0
-        ) {
+        if (!isTimestampBefore(time, components[i - 1].details.closing_time)) {
           throw {
             message: `${
               components[i - 1].type === "Outing"
                 ? components[i - 1].details.place_name
                 : components[i - 1].details.hotel_name
-            } is closed`,
+            } gets closed at ${components[i - 1].details.closing_time}`,
             componentId: components[i - 1].id,
           };
         }
       }
 
       currTwoTravel = {
+        mode: "two wheeler",
         duration: allDistancesandDurations[i].driving.duration,
         distance: allDistancesandDurations[i].driving.distance,
         boarding_point: allDistancesandDurations[i].boarding_point,
-        boarding_time: epochToTime(time),
+        boarding_time: time.getTime(),
+        boarding_time_formatted: new Date(time.getTime()).toLocaleTimeString(),
         drop_point: allDistancesandDurations[i].drop_point,
-        drop_time: epochToTime(
-          time + allDistancesandDurations[i].driving.duration * 60
+        drop_time: time.setTime(
+          time.getTime() +
+            allDistancesandDurations[i].driving.duration * 60 * 1000
         ),
+        drop_time_formatted: new Date(time.getTime()).toLocaleTimeString(),
       };
 
       if (i !== allDistancesandDurations.length - 1) {
-        if (
-          getMinutesBetween(
-            components[i].details.opening_time,
-            epochToTime(time)
-          ) < 0
-        ) {
+        if (isTimestampBefore(time, components[i].details.opening_time)) {
           throw {
             message: `${
               components[i].type === "Outing"
                 ? components[i].details.place_name
                 : components[i].details.hotel_name
-            } is not open`,
+            } is not open before ${components[i].details.opening_time}`,
             componentId: components[i].id,
           };
         }
@@ -390,50 +402,63 @@ router.post("/createPlan", async (req, res) => {
 
       twoTravel.push(currTwoTravel);
 
-      time = time + allDistancesandDurations[i].driving.duration * 60;
-
       totalDistance += parseFloat(allDistancesandDurations[i].driving.distance);
     }
 
-    let totalTime = Math.abs(
-      getMinutesBetween(
-        twoTravel[0].boarding_time,
-        twoTravel[twoTravel.length - 1].drop_time
-      )
+    const totalTime = Math.floor(
+      (twoTravel[twoTravel.length - 1].drop_time - twoTravel[0].boarding_time) /
+        (1000 * 60)
     );
 
-    const price_distance = (totalDistance / 40) * 100;
-    const price_duration = (totalTime / 60) * 100;
+    let price = 0;
+
+    if (
+      dayoftheweek === "monday" ||
+      dayoftheweek === "tuesday" ||
+      dayoftheweek === "wednesday" ||
+      dayoftheweek === "thursday"
+    ) {
+      let petrol_cost = (totalDistance / 40) * 100;
+      let hour_cost = (totalTime / 60) * 60;
+      price = petrol_cost + hour_cost;
+    } else if (dayoftheweek === "saturday" || dayoftheweek === "sunday") {
+      let petrol_cost = (totalDistance / 40) * 100;
+      let hour_cost = (totalTime / 60) * 70;
+      price = petrol_cost + hour_cost;
+    } else {
+      let petrol_cost = (totalDistance / 30) * 100;
+      let hour_cost = (totalTime / 60) * 70;
+      price = petrol_cost + hour_cost;
+    }
 
     const completeTwoWheeler = {
-      mode: "two_wheeler",
       route: twoTravel,
       duration: totalTime,
       distance: parseFloat(totalDistance.toFixed(2)),
-      price:
-        price_distance > price_duration
-          ? parseInt(price_distance)
-          : parseInt(price_duration),
+      price: Math.round(price / 5) * 5,
     };
 
     // Four Wheeler Travel
+
     const completeFourWheeler = {
-      mode: "four_wheeler",
-      route: twoTravel,
+      route: twoTravel.map((travel) => {
+        if (travel.mode === "two wheeler") {
+          return { ...travel, mode: "four wheeler" };
+        }
+        return travel;
+      }),
       duration: totalTime,
       distance: parseFloat(totalDistance.toFixed(2)),
-      price:
-        price_distance > price_duration
-          ? parseInt(price_distance)
-          : parseInt(price_duration),
+      price: 1800,
     };
 
     //Bus Travel
     let busTravel = [];
     const start = components[0];
 
-    time = plan_start_time;
+    time = new Date(date);
 
+    // Finding all the buses in the route
     let startBus = await Bus.find({
       route_type: { $in: start.details.bus_route_type },
     }).then((result) =>
@@ -446,6 +471,7 @@ router.post("/createPlan", async (req, res) => {
       )
     );
 
+    // Allocationg boarding and drop points
     startBus = startBus.map((bus) => {
       const route = bus.route.find(
         (route) => route.name === start.details.bus_nodal_point
@@ -463,34 +489,45 @@ router.post("/createPlan", async (req, res) => {
       };
     });
 
+    // Sorting based on closest time of boarding
     startBus.sort((busA, busB) =>
-      compareArrivalTime(busA, busB, epochToTime(time))
+      compareArrivalTime(busA, busB, time) ? -1 : 1
     );
+
+    // Check if the bus is +- 30 minutes from start time
+    const nearestBusTime = new Date(time);
+    nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
+    nearestBusTime.setMinutes(startBus[0].boarding.arrival_time.split(":")[1]);
+
+    let start_bus_found = true;
+    let end_bus_found = true;
+
+    if (Math.abs(nearestBusTime - time) / (1000 * 60) > 30)
+      start_bus_found = false;
 
     let currBusTravel;
 
-    let start_bus_not_found = false;
-    let end_bus_not_found = false;
+    if (startBus[0] && start_bus_found) {
+      time = nearestBusTime;
 
-    if (
-      startBus[0] &&
-      Math.abs(
-        getMinutesBetween(startBus[0].boarding.arrival_time, epochToTime(time))
-      ) <= 60
-    ) {
-      time = startBus[0].boarding.arrival_time;
       currBusTravel = {
         mode: "bus",
         distance: "Not Providing",
         duration: startBus[0].duration,
         boarding_point: startBus[0].boarding.name,
-        boarding_time: time,
+        boarding_time: time.getTime(),
+        boarding_time_formatted: time.toLocaleTimeString(),
         drop_point: startBus[0].drop.name,
-        drop_time: addDurationToTime(time, startBus[0].duration),
+        drop_time: time.getTime() + startBus[0].duration * 60 * 1000,
+        drop_time_formatted: new Date(
+          time.getTime() + startBus[0].duration * 60 * 1000
+        ).toLocaleTimeString(),
         price: startBus[0].student ? 0 : 40,
       };
+      time = time.getTime() + startBus[0].duration * 60 * 1000;
+
       busTravel.push(currBusTravel);
-      time = addDurationToTime(time, startBus[0].duration);
+
       const start_walk_board = startBus[0].drop.map;
       const start_walk_drop = components[0].details.map;
       const res = await getDistance(
@@ -505,32 +542,37 @@ router.post("/createPlan", async (req, res) => {
         distance: res.distance,
         boarding_point: startBus[0].drop.name,
         boarding_time: time,
+        boarding_time_formatted: new Date(time).toLocaleTimeString(),
         drop_point:
           components[0].type == "Outing"
             ? components[0].details.place_name
             : components[0].details.hotel_name,
-        drop_time: addDurationToTime(time, res.duration),
+        drop_time: time + res.duration * 60 * 1000,
+        drop_time_formatted: new Date(
+          time + res.duration * 60 * 1000
+        ).toLocaleTimeString(),
         price: 0,
       };
 
       busTravel.push(currBusTravel);
-      time = addDurationToTime(time, res.duration);
+      time = time + res.duration * 60 * 1000;
     } else {
-      start_bus_not_found = true;
-      let startAuto = completeTwoWheeler.route[0];
-      startAuto.mode = "auto";
-      busTravel.push(startAuto);
-      time += completeTwoWheeler.route[0].duration * 60;
-    }
+      let startAuto = {
+        ...completeTwoWheeler.route[0],
+        mode: "auto",
+        price:
+          Math.round(
+            parseFloat(allDistancesandDurations[0].driving.distance) * 2
+          ) * 10,
+      };
 
-    if (time.toString().length > 5) {
-      time = epochToTime(time);
+      busTravel.push(startAuto);
+      time = time.getTime() + completeTwoWheeler.route[0].duration * 60 * 1000;
     }
 
     for (let i = 1; i < allDistancesandDurations.length; i++) {
       if (i !== 0) {
-        time = addDurationToTime(time, components[i - 1].details.duration);
-        time = roundTimeToNext(time, 5);
+        time = time + components[i - 1].details.duration * 60 * 1000;
       }
 
       if (i === allDistancesandDurations.length - 1) {
@@ -551,14 +593,20 @@ router.post("/createPlan", async (req, res) => {
         distance: selectiveDistance,
         boarding_point: allDistancesandDurations[i].boarding_point,
         boarding_time: time,
+        boarding_time_formatted: new Date(time).toLocaleTimeString(),
         drop_point: allDistancesandDurations[i].drop_point,
-        drop_time: addDurationToTime(time, selectiveDuration),
+        drop_time: time + selectiveDuration * 60 * 1000,
+        drop_time_formatted: new Date(
+          time + selectiveDuration * 60 * 1000
+        ).toLocaleTimeString(),
+        price: allDistancesandDurations[i].walking
+          ? 0
+          : Math.round(parseFloat(selectiveDistance) * 2) * 10,
       };
 
       busTravel.push(currBusTravel);
 
-      time = addDurationToTime(time, selectiveDuration);
-      time = roundTimeToNext(time, 5);
+      time = time + selectiveDuration * 60 * 1000;
       totalDistance += parseFloat(selectiveDuration);
     }
 
@@ -577,7 +625,7 @@ router.post("/createPlan", async (req, res) => {
       )
     );
 
-    let time_before_walking = time;
+    let time_before_walking = new Date(time).getTime();
     let currWalkToBus;
     if (endBus[0]) {
       for (const routeElement of endBus[0].route) {
@@ -602,13 +650,16 @@ router.post("/createPlan", async (req, res) => {
             ? end.details.place_name
             : end.details.hotel_name,
         boarding_time: time,
+        boarding_time_formatted: new Date(time).toLocaleTimeString(),
         drop_point: end_walk_drop,
-        drop_time: addDurationToTime(time, resDistance.duration),
+        drop_time: time + resDistance.duration * 60 * 1000,
+        drop_time_formatted: new Date(
+          time + resDistance.duration * 60 * 1000
+        ).toLocaleTimeString(),
         price: 0,
       };
 
-      time = addDurationToTime(time, resDistance.duration);
-      time = roundTimeToNext(time, 5);
+      time = time + resDistance.duration * 60 * 1000;
 
       endBus = endBus.map((bus) => {
         const route = bus.route.find(
@@ -628,30 +679,49 @@ router.post("/createPlan", async (req, res) => {
         };
       });
 
-      endBus.sort((busA, busB) => compareArrivalTime(busA, busB, time));
+      endBus.sort((busA, busB) =>
+        compareArrivalTime(busA, busB, new Date(time))
+      );
     } else {
       endBus = [null];
     }
 
-    if (
-      endBus[0] &&
-      getMinutesBetween(time, endBus[0].boarding.arrival_time) >= 0 &&
-      getMinutesBetween(time, endBus[0].boarding.arrival_time) <= 30
-    ) {
+    // checking is bus is available +30 minutes
+    let nearestEndBusTime;
+    if (endBus[0] != null) {
+      nearestEndBusTime = new Date(time);
+      nearestEndBusTime.setHours(endBus[0].boarding.arrival_time.split(":")[0]);
+      nearestEndBusTime.setMinutes(
+        endBus[0].boarding.arrival_time.split(":")[1]
+      );
+
+      if (
+        (nearestEndBusTime - time) / (1000 * 60) < 0 ||
+        (nearestEndBusTime - time) / (1000 * 60) > 30
+      )
+        end_bus_found = false;
+    } else {
+      end_bus_found = false;
+    }
+
+    if (end_bus_found) {
       currBusTravel = {
         mode: "bus",
         duration: endBus[0].duration,
         distance: "Not Providing",
         boarding_point: endBus[0].boarding.name,
-        boarding_time: endBus[0].boarding.arrival_time,
+        boarding_time: nearestBusTime,
+        boarding_time_formatted: new Date(nearestBusTime).toLocaleTimeString(),
         drop_point: endBus[0].drop.name,
-        drop_time: endBus[0].drop.arrival_time,
+        drop_time: nearestBusTime + endBus[0].duration * 1000 * 60,
+        drop_time_formatted: new Date(
+          nearestBusTime + endBus[0].duration * 1000 * 60
+        ).toLocaleTimeString(),
         price: endBus[0].student ? 0 : 40,
       };
       busTravel.push(currWalkToBus);
       busTravel.push(currBusTravel);
     } else {
-      end_bus_not_found = true;
       currBusTravel = {
         mode: "auto",
         duration:
@@ -664,23 +734,64 @@ router.post("/createPlan", async (req, res) => {
           allDistancesandDurations[allDistancesandDurations.length - 1]
             .boarding_point,
         boarding_time: time_before_walking,
+        boarding_time_formatted: new Date(
+          time_before_walking
+        ).toLocaleTimeString(),
         drop_point: "BIT Mesra",
-        drop_time: addDurationToTime(
-          time_before_walking,
+        drop_time:
+          time_before_walking +
           allDistancesandDurations[allDistancesandDurations.length - 1].driving
-            .duration
-        ),
+            .duration *
+            60 *
+            1000,
+        drop_time_formatted: new Date(
+          time_before_walking +
+            allDistancesandDurations[allDistancesandDurations.length - 1]
+              .driving.duration *
+              60 *
+              1000
+        ).toLocaleTimeString(),
+        price:
+          Math.round(
+            parseFloat(
+              allDistancesandDurations[allDistancesandDurations.length - 1]
+                .driving.distance
+            ) * 2
+          ) * 10,
       };
       busTravel.push(currBusTravel);
+    }
+
+    price = 0;
+    let completeBus;
+    if (!start_bus_found && !end_bus_found) {
+      completeBus = null;
+    } else {
+      for (let i = 0; i < busTravel.length; i++) {
+        price += busTravel[i].price;
+      }
+
+      completeBus = {
+        route: busTravel,
+        distance: "Not Providing",
+        duration: Math.round(
+          (busTravel[busTravel.length - 1].drop_time -
+            busTravel[0].boarding_time) /
+            (1000 * 60)
+        ),
+        price,
+      };
     }
 
     // Auto Travel
     let autoTravel = [];
     let currAutoTravel;
-    time = plan_start_time;
+    time = new Date(date).getTime();
+
+    totalDistance = 0;
     for (let i = 0; i < allDistancesandDurations.length; i++) {
       if (i !== 0) {
-        time = time + components[i - 1].details.duration * 60;
+        time = time + components[i - 1].details.duration * 60 * 1000;
       }
 
       let selectiveDuration = allDistancesandDurations[i].walking
@@ -696,30 +807,71 @@ router.post("/createPlan", async (req, res) => {
         duration: selectiveDuration,
         distance: selectiveDistance,
         boarding_point: allDistancesandDurations[i].boarding_point,
-        boarding_time: epochToTime(time),
+        boarding_time: time,
+        boarding_time_formatted: new Date(time).toLocaleTimeString(),
         drop_point: allDistancesandDurations[i].drop_point,
-        drop_time: epochToTime(time + selectiveDuration * 60),
+        drop_time: time + selectiveDuration * 1000 * 60,
+        drop_time_formatted: new Date(
+          time + selectiveDuration * 1000 * 60
+        ).toLocaleTimeString(),
+        price: allDistancesandDurations[i].walking
+          ? 0
+          : Math.round(parseFloat(selectiveDistance) * 2) * 10,
       };
 
       autoTravel.push(currAutoTravel);
 
-      time = time + selectiveDuration * 60;
+      time = time + selectiveDuration * 60 * 1000;
 
-      totalDistance += parseFloat(selectiveDuration);
+      totalDistance += parseFloat(selectiveDistance);
     }
 
-    if (start_bus_not_found && end_bus_not_found) {
-      busTravel = null;
+    price = 0;
+
+    for (let i = 0; i < autoTravel.length; i++) {
+      price += autoTravel[i].price;
     }
+
+    const completeAuto = {
+      route: autoTravel,
+      distance: totalDistance,
+      duration: Math.round(
+        (autoTravel[autoTravel.length - 1].drop_time -
+          autoTravel[0].boarding_time) /
+          (1000 * 60)
+      ),
+      price,
+    };
+
+    // Overall Availability
+    const availability = {
+      sunday: true,
+      monday: true,
+      tuesday: true,
+      wednesday: true,
+      thursday: true,
+      friday: true,
+      saturday: true,
+    };
+
+    components.forEach((component) => {
+      Object.keys(availability).forEach((day) => {
+        availability[day] =
+          availability[day] && component.details.availability[day];
+      });
+    });
+
+    console.log(components);
 
     res.status(200).json({
       status: "Successful",
       allTravel: {
-        bus: busTravel,
-        auto: autoTravel,
+        bus: completeBus,
+        auto: completeAuto,
         two_wheeler: completeTwoWheeler,
         four_wheeler: completeFourWheeler,
       },
+      availability,
     });
   } catch (error) {
     if (error.componentId)
@@ -732,6 +884,176 @@ router.post("/createPlan", async (req, res) => {
       console.log(error);
       res.status(500).json({ status: "Failed", message: error.message });
     }
+    console.log(error);
+  }
+});
+
+router.post("/savePlan", async (req, res) => {
+  const { plan_start_time, components, tile_content } = req.body;
+  components.sort((a, b) => a.component_id.localeCompare(b.component_id));
+  let idString = "";
+  components.map((e) => {
+    idString += e.component_id;
+  });
+
+  console.log(idString);
+
+  try {
+    const existingPlan = await PlanModel.findOne({ plan_id: idString });
+
+    if (!existingPlan) {
+      const plan = new PlanModel({
+        plan_start_time,
+        components,
+        plan_id: idString,
+        tile_content,
+      });
+      await plan.save();
+      res.status(200).send({ status: "Successful", plan });
+    } else {
+      res
+        .status(200)
+        .send({ status: "Failed", message: "Already made", existingPlan });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ status: "Failed", message: error });
+  }
+});
+
+router.get("/getAllPlans", userAuth, async (req, res) => {
+  try {
+    const allPlans = await PlanModel.find({});
+    const userPreferences = req.user.preferences;
+
+    const completedAllPlans = [];
+
+    for (let i = 0; i < allPlans.length; i++) {
+      const populatedComponents = [];
+      const tags = new Set();
+      const images = [];
+      let availability = {
+        sunday: true,
+        monday: true,
+        tuesday: true,
+        wednesday: true,
+        thursday: true,
+        friday: true,
+        saturday: true,
+      };
+      const plan_start_time = allPlans[i].plan_start_time;
+      let price = 0;
+      const tile_content = allPlans[i].tile_content;
+      const plan_preferences = {
+        Dine: {
+          Fine_Dining: 0,
+          Decent_Dining: 0,
+          Dhabas: 0,
+          Cafes: 0,
+          Streetfood: 0,
+        },
+        Outing: {
+          Hills: 0,
+          Lakes: 0,
+          Dams_Waterfalls: 0,
+          Malls: 0,
+          Movie_Halls: 0,
+          Parks: 0,
+          Clubbing: 0,
+          Night_Out: 0,
+          Shopping: 0,
+          Places_Of_Worship: 0,
+          Museum: 0,
+        },
+      };
+
+      for (const component of allPlans[i].components) {
+        let curr_component;
+
+        if (component.type === "Outing") {
+          curr_component = await Outing.findOne({
+            _id: component.component_id,
+          });
+        } else if (component.type === "Dining") {
+          curr_component = await Dining.findOne({
+            _id: component.component_id,
+          });
+        }
+
+        populatedComponents.push(curr_component);
+        tags.add(curr_component.tags[0]);
+
+        images.push({
+          img_link: curr_component.img,
+          img_name:
+            curr_component.type === "Outing"
+              ? curr_component.place_name
+              : curr_component.hotel_name,
+          order: component.order,
+        });
+
+        availability = {
+          sunday: availability.sunday && curr_component.availability.sunday,
+          monday: availability.monday && curr_component.availability.monday,
+          tuesday: availability.tuesday && curr_component.availability.tuesday,
+          wednesday:
+            availability.wednesday && curr_component.availability.wednesday,
+          thursday:
+            availability.thursday && curr_component.availability.thursday,
+          friday: availability.friday && curr_component.availability.friday,
+          saturday:
+            availability.saturday && curr_component.availability.saturday,
+        };
+
+        price += curr_component.price_per_head;
+
+        plan_preferences[component.type === "Outing" ? "Outing" : "Dine"][
+          curr_component.tags[0]
+        ]++;
+      }
+
+      const likeness =
+        (plan_preferences.Dine.Fine_Dining * userPreferences.Dine.Fine_Dining +
+          plan_preferences.Dine.Decent_Dining *
+            userPreferences.Dine.Decent_Dining +
+          plan_preferences.Dine.Dhabas * userPreferences.Dine.Dhabas +
+          plan_preferences.Dine.Cafes * userPreferences.Dine.Cafes +
+          plan_preferences.Dine.Streetfood * userPreferences.Dine.Streetfood +
+          plan_preferences.Outing.Hills * userPreferences.Outing.Hills +
+          plan_preferences.Outing.Lakes * userPreferences.Outing.Lakes +
+          plan_preferences.Outing.Dams_Waterfalls *
+            userPreferences.Outing.Dams_Waterfalls +
+          plan_preferences.Outing.Malls * userPreferences.Outing.Malls +
+          plan_preferences.Outing.Movie_Halls *
+            userPreferences.Outing.Movie_Halls +
+          plan_preferences.Outing.Parks * userPreferences.Outing.Parks +
+          plan_preferences.Outing.Clubbing * userPreferences.Outing.Clubbing +
+          plan_preferences.Outing.Shopping * userPreferences.Outing.Shopping +
+          plan_preferences.Outing.Night_Out * userPreferences.Outing.Night_Out +
+          plan_preferences.Outing.Places_Of_Worship *
+            userPreferences.Outing.Places_Of_Worship +
+          plan_preferences.Outing.Museum * userPreferences.Outing.Museum) /
+        16;
+
+      const uniqueTags = Array.from(tags);
+
+      completedAllPlans.push({
+        tags: uniqueTags,
+        images: images.sort((a, b) => a.order - b.order),
+        availability,
+        plan_start_time,
+        price,
+        tile_content,
+        likeness,
+      });
+    }
+
+    completedAllPlans.sort((a, b) => b.likeness - a.likeness);
+
+    res.status(200).send({ status: "Successful", completedAllPlans });
+  } catch (error) {
+    console.log(error);
+    res.status(200).send({ status: "Failed", message: error.message });
   }
 });
 
