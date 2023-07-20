@@ -79,7 +79,7 @@ function getTimeDifference(time1, time2) {
   return minutesDifference;
 }
 
-// compre epoch with "hh:mm"
+// compare epoch with "hh:mm"
 function isTimestampBefore(timestamp, timeString) {
   const currentTime = new Date();
   const [hours, minutes] = timeString.split(":");
@@ -143,6 +143,7 @@ router.post("/addDining", async (req, res) => {
   }
 });
 
+// Get Number of Dinings
 router.get("/getDiningsLength", async (req, res) => {
   try {
     const dinings = await Dining.find({});
@@ -152,6 +153,7 @@ router.get("/getDiningsLength", async (req, res) => {
   }
 });
 
+// Get number of Outings
 router.get("/getOutingsLength", async (req, res) => {
   try {
     const outings = await Outing.find({});
@@ -161,6 +163,7 @@ router.get("/getOutingsLength", async (req, res) => {
   }
 });
 
+// Create a plan
 router.post("/createPlan", async (req, res) => {
   try {
     const plan_start_time = req.body.plan_start_time;
@@ -446,7 +449,7 @@ router.post("/createPlan", async (req, res) => {
       )
     );
 
-    // Allocationg boarding and drop points
+    // Allocating boarding and drop points
     startBus = startBus.map((bus) => {
       const route = bus.route.find(
         (route) => route.name === start.details.bus_nodal_point
@@ -1013,14 +1016,17 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
       const uniqueTags = Array.from(tags);
 
       completedAllPlans.push({
+        id: allPlans[i].plan_id,
         tags: uniqueTags,
         images: images.sort((a, b) => a.order - b.order),
         availability,
         plan_start_time,
         price,
         tile_content,
-        likeness,
+        likeness: parseFloat(likeness),
       });
+
+      console.log(typeof likeness);
     }
 
     completedAllPlans.sort((a, b) => b.likeness - a.likeness);
