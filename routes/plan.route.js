@@ -62,43 +62,6 @@ const compareArrivalTime = (busA, busB, time) => {
   return diff1 < diff2;
 };
 
-// round time to next
-function roundTimeToNext(time, interval) {
-  const [hours, minutes] = time.split(":");
-  const parsedHours = parseInt(hours, 10);
-  const parsedMinutes = parseInt(minutes, 10);
-
-  let roundedMinutes;
-  if (interval === 5) {
-    roundedMinutes = Math.ceil(parsedMinutes / 5) * 5;
-  } else if (interval === 10) {
-    roundedMinutes = Math.ceil(parsedMinutes / 10) * 10;
-  } else {
-    throw new Error("Invalid interval. Please provide either 5 or 10.");
-  }
-
-  let roundedHours = parsedHours;
-  if (roundedMinutes === 60) {
-    roundedHours += 1;
-    roundedMinutes = 0;
-  }
-
-  return `${String(roundedHours).padStart(2, "0")}:${String(
-    roundedMinutes
-  ).padStart(2, "0")}`;
-}
-
-// get time difference in minutes
-function getMinutesBetween(startTime, endTime) {
-  const [startHours, startMinutes] = startTime.split(":");
-  const [endHours, endMinutes] = endTime.split(":");
-  const totalStartMinutes =
-    parseInt(startHours, 10) * 60 + parseInt(startMinutes, 10);
-  const totalEndMinutes =
-    parseInt(endHours, 10) * 60 + parseInt(endMinutes, 10);
-  return totalEndMinutes - totalStartMinutes;
-}
-
 //utility function
 function getTimeDifference(time1, time2) {
   const [hours1, minutes1] = time1.split(":");
@@ -129,6 +92,18 @@ function isTimestampBefore(timestamp, timeString) {
   );
 
   return timestamp < comparisonTime.getTime();
+}
+
+// Extract file id from drive link
+function extractIdFromGoogleDriveLink(url) {
+  const regex = /\/file\/d\/([a-zA-Z0-9_-]+)\/view/i;
+  const match = url.match(regex);
+
+  if (match && match[1]) {
+    return match[1];
+  } else {
+    return null;
+  }
 }
 
 // Add a new bus
@@ -984,7 +959,7 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         tags.add(curr_component.tags[0]);
 
         images.push({
-          img_link: curr_component.img,
+          img_link: extractIdFromGoogleDriveLink(curr_component.img),
           img_name:
             curr_component.type === "Outing"
               ? curr_component.place_name
