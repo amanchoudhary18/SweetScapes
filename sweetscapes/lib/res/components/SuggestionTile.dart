@@ -61,67 +61,73 @@ class SuggestionTile extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            decoration: TextFieldDecoration.textFieldDecoration().copyWith(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            width: screenWidth,
-            // height: screenHeight * 0.15,
-            child: Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        dateOverviewText,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0, left: 8),
-                        child: Text(
-                          '₹ $datePrice',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+          GestureDetector(
+            onTap: () => onPressed(),
+            child: Container(
+              decoration: TextFieldDecoration.textFieldDecoration().copyWith(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              width: screenWidth,
+              // height: screenHeight * 0.15,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.5,
+                          child: Text(
+                            dateOverviewText,
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: Container(
-                          width: screenWidth * 0.25,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.keyboard_arrow_down_outlined,
-                            size: 30,
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0, left: 8),
+                          child: Text(
+                            '₹ $datePrice',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    child: Image.asset(
-                      (dateType == DateType.DINEOUT)
-                      ? 'assets/images/dineout.png'
-                      : (dateType == DateType.WORKSHOP)
-                          ? 'assets/images/workshop.png'
-                          : 'assets/images/outing.png',
-                      fit: BoxFit.cover,
-                      // color: Color.fromRGBO(255, 255, 255, 0.5),
-                      colorBlendMode: BlendMode.modulate,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Container(
+                            width: screenWidth * 0.25,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.keyboard_arrow_down_outlined,
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      child: Image.asset(
+                        (dateType == DateType.DINEOUT)
+                            ? 'assets/images/dineout.png'
+                            : (dateType == DateType.WORKSHOP)
+                                ? 'assets/images/workshop.png'
+                                : 'assets/images/outing.png',
+                        fit: BoxFit.cover,
+                        // color: Color.fromRGBO(255, 255, 255, 0.5),
+                        colorBlendMode: BlendMode.modulate,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Container(

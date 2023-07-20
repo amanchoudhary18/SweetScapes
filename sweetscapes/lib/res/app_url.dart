@@ -10,4 +10,5 @@ class AppUrl {
   static var updateInitialUrl = '$baseUrl/api/v1/user/updateInitial';
   static var setInitialPreferences = '$baseUrl/api/v1/user/setInitialPreferences';
   static var getAllDates = '$baseUrl/api/v1/date/dates';
+  static var getDateDetails = '$baseUrl/api/v1/date/';
 }

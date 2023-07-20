@@ -1,0 +1,1 @@
+enum Fonts {TITLE, SUBTITLE, BUTTON}

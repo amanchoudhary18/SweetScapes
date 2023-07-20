@@ -46,28 +46,22 @@ class Dine {
   bool? fineDining;
   bool? decentDining;
   bool? dhabas;
-  bool? homeDelivery;
-  bool? takeAway;
-  bool? homeMade;
   bool? cafes;
+  bool? streetfood;
 
   Dine(
       {this.fineDining,
       this.decentDining,
       this.dhabas,
-      this.homeDelivery,
-      this.takeAway,
-      this.homeMade,
-      this.cafes});
+      this.cafes,
+      this.streetfood});
 
   Dine.fromJson(Map<String, dynamic> json) {
     fineDining = json['Fine_Dining'];
     decentDining = json['Decent_Dining'];
     dhabas = json['Dhabas'];
-    homeDelivery = json['Home_Delivery'];
-    takeAway = json['Take_Away'];
-    homeMade = json['Home_Made'];
     cafes = json['Cafes'];
+    streetfood = json['Streetfood'];
   }
 
   Map<String, dynamic> toJson() {
@@ -75,59 +69,65 @@ class Dine {
     data['Fine_Dining'] = this.fineDining;
     data['Decent_Dining'] = this.decentDining;
     data['Dhabas'] = this.dhabas;
-    data['Home_Delivery'] = this.homeDelivery;
-    data['Take_Away'] = this.takeAway;
-    data['Home_Made'] = this.homeMade;
     data['Cafes'] = this.cafes;
+    data['Streetfood'] = this.streetfood;
     return data;
   }
 }
 
 class Outing {
-  bool? hillsLakes;
+  bool? hills;
+  bool? lakes;
   bool? damsWaterfalls;
   bool? malls;
-  bool? movie;
-  bool? park;
-  bool? picnics;
+  bool? movieHalls;
+  bool? parks;
   bool? clubbing;
   bool? nightOut;
-  bool? windowShopping;
+  bool? shopping;
+  bool? placesOfWorship;
+  bool? museum;
 
   Outing(
-      {this.hillsLakes,
+      {this.hills,
+      this.lakes,
       this.damsWaterfalls,
       this.malls,
-      this.movie,
-      this.park,
-      this.picnics,
+      this.movieHalls,
+      this.parks,
       this.clubbing,
       this.nightOut,
-      this.windowShopping});
+      this.shopping,
+      this.placesOfWorship,
+      this.museum});
 
   Outing.fromJson(Map<String, dynamic> json) {
-    hillsLakes = json['Hills_Lakes'];
+    hills = json['Hills'];
+    lakes = json['Lakes'];
     damsWaterfalls = json['Dams_Waterfalls'];
     malls = json['Malls'];
-    movie = json['Movie'];
-    park = json['Park'];
-    picnics = json['Picnics'];
+    movieHalls = json['Movie_Halls'];
+    parks = json['Parks'];
     clubbing = json['Clubbing'];
     nightOut = json['Night_Out'];
-    windowShopping = json['Window_Shopping'];
+    shopping = json['Shopping'];
+    placesOfWorship = json['Places_Of_Worship'];
+    museum = json['Museum'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Hills_Lakes'] = this.hillsLakes;
+    data['Hills'] = this.hills;
+    data['Lakes'] = this.lakes;
     data['Dams_Waterfalls'] = this.damsWaterfalls;
     data['Malls'] = this.malls;
-    data['Movie'] = this.movie;
-    data['Park'] = this.park;
-    data['Picnics'] = this.picnics;
+    data['Movie_Halls'] = this.movieHalls;
+    data['Parks'] = this.parks;
     data['Clubbing'] = this.clubbing;
     data['Night_Out'] = this.nightOut;
-    data['Window_Shopping'] = this.windowShopping;
+    data['Shopping'] = this.shopping;
+    data['Places_Of_Worship'] = this.placesOfWorship;
+    data['Museum'] = this.museum;
     return data;
   }
 }

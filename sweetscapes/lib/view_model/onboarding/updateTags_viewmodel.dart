@@ -1,101 +1,90 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sweetscapes/app/routes/router.gr.dart';
-import 'package:sweetscapes/data/response/api_response.dart';
 import 'package:sweetscapes/model/body/set_preferences_body.dart' as spd;
 import 'package:sweetscapes/repository/user_repository.dart';
-import 'package:sweetscapes/res/enums/DateType.dart';
-import 'package:sweetscapes/res/enums/Genders.dart';
 
 import '../../model/user_model.dart';
 import '../../utils/utils.dart';
 import '../user_view_model.dart';
 
 class UpdateTagsViewModel with ChangeNotifier {
-  List<String> dineChipText = [
-    "Fine Dining",
-    "Decent Dining",
-    "Dhaba",
-    "Home Delivery",
-    "Take Away",
-    "Home-made",
-    "Cafe",
-  ];
+  Map<String, bool> diningTags = {
+    'Fine Dining': false,
+    'Decent Dining': false,
+    'Dhaba': false,
+    'Cafe': false,
+    'Street Food': false,
+  };
 
-  List<bool> dineSelectedChips = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ];
+  Map<String, String> diningIcons = {
+    'Fine Dining': 'assets/tagIcons/icons=fineDining.svg',
+    'Decent Dining': 'assets/tagIcons/icons=decentDining.svg',
+    'Dhaba': 'assets/tagIcons/icons=dhabas.svg',
+    'Cafe': 'assets/tagIcons/icons=cafes.svg',
+    'Street Food': 'assets/tagIcons/icons=streetfood.svg',
+  };
 
-  List<String> outingChipText = [
-    "Hill, Lake",
-    "Dam, Waterfall",
-    "Mall",
-    "Movie",
-    "Park",
-    "Picnic",
-    "Clubbing",
-    "Night Out",
-    "Window Shopping",
-  ];
+  void updateDiningTags(String label) {
+    diningTags[label] = !diningTags[label]!;
+    notifyListeners();
+  }
 
-  List<bool> outingSelectedChips = [
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-    false,
-  ];
+  Map<String, bool> outingTags = {
+    'Hills': false,
+    'Lakes': false,
+    'Dams, Waterfalls': false,
+    'Malls': false,
+    'Movie': false,
+    'Parks': false,
+    // 'Picnics': false,
+    'Clubbing': false,
+    'Night Out': false,
+    'Shopping': false,
+    'Places of Worship': false,
+    'Museum': false,
+  };
+
+  Map<String, String> outingIcons = {
+    'Hills': 'assets/tagIcons/icons=hills.svg',
+    'Lakes': 'assets/tagIcons/icons=Lakes.svg',
+    'Dams, Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
+    'Malls': 'assets/tagIcons/icons=malls.svg',
+    'Movie': 'assets/tagIcons/icons=movie.svg',
+    'Parks': 'assets/tagIcons/icons=park.svg',
+    // 'Picnics': 'assets/tagIcons/icons=picnic.svg',
+    'Clubbing': 'assets/tagIcons/icons=clubs.svg',
+    'Night Out': 'assets/tagIcons/icons=Night out.svg',
+    'Shopping': 'assets/tagIcons/icons=shopping.svg',
+    'Places of Worship': 'assets/tagIcons/icons=religious.svg',
+    'Museum': 'assets/tagIcons/icons=religious.svg',
+  };
+
+  void updateOutingTags(String label) {
+    outingTags[label] = !outingTags[label]!;
+    notifyListeners();
+  }
 
   final _myRepo = UserRepository();
   int _onboardingState = 0;
   DateTime _userBirthDay = DateTime(2000, 1, 1);
-  Genders _userGender = Genders.MALE;
+  String _userGender = "";
 
   DateTime get userBirthDay => _userBirthDay;
 
   int get onboardingState => _onboardingState;
 
-  Genders get userGender => _userGender;
+  String get userGender => _userGender;
 
   void updateBirthday(DateTime value) {
     _userBirthDay = value;
     notifyListeners();
   }
 
-  void updateGender(Genders value) {
+  void updateGender(String value) {
     _userGender = value;
     notifyListeners();
-  }
-
-  void updateonboardingState(int value) {
-    _onboardingState = value;
-    notifyListeners();
-  }
-
-  updateChipStatus(int index, DateType dateType) {
-    if (dateType == DateType.DINEOUT) {
-      dineSelectedChips[index] = !dineSelectedChips[index];
-    } else if (dateType == DateType.OUTING) {
-      outingSelectedChips[index] = !outingSelectedChips[index];
-    }
-  }
-
-  Future<bool> onWillPop() async {
-    updateonboardingState(0);
-    notifyListeners();
-    return true;
   }
 
   bool _nextLoading = false;
@@ -106,20 +95,16 @@ class UpdateTagsViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void submitBasicDetails(BuildContext context) async {
+  void submitBasicDetails(String userName, BuildContext context) async {
     setNextLoading(true);
     final userPreference = Provider.of<UserViewModel>(context, listen: false);
     UserModel loggedInUser = await userPreference.getUser();
     String token = loggedInUser.token.toString();
 
     String userBday = _userBirthDay.millisecondsSinceEpoch.toString();
-    String userGen = (_userGender == Genders.MALE)
-        ? 'Male'
-        : (_userGender == Genders.FEMALE)
-            ? 'Female'
-            : 'Others';
+    String userGen = _userGender;
 
-    Map data = {'birthday': userBday, 'gender': userGen};
+    Map data = {'name': userName, 'birthday': userBday, 'gender': userGen};
 
     _myRepo
         .updateUserDetailsUrl(data, token)
@@ -128,7 +113,7 @@ class UpdateTagsViewModel with ChangeNotifier {
               if (value.status.toString() == 'Successful')
                 {
                   Utils.goFlushBar('Birthday and Gender Updated', context),
-                  updateonboardingState(1),
+                  AutoRouter.of(context).push(UpdateTagsViewRoute()),
                 }
               else
                 {
@@ -149,22 +134,23 @@ class UpdateTagsViewModel with ChangeNotifier {
     fineDining: false,
     decentDining: false,
     dhabas: false,
-    homeDelivery: false,
-    takeAway: false,
-    homeMade: false,
     cafes: false,
+    streetfood: false,
   );
 
   spd.Outing outingObject = spd.Outing(
-    hillsLakes: false,
+    hills: false,
+    lakes: false,
     damsWaterfalls: false,
     malls: false,
-    movie: false,
-    park: false,
-    picnics: false,
+    movieHalls: false,
+    parks: false,
+    // picnics: false,
     clubbing: false,
     nightOut: false,
-    windowShopping: false,
+    shopping: false,
+    placesOfWorship: false,
+    museum: false,
   );
 
   late spd.Preferences preferences;
@@ -180,35 +166,42 @@ class UpdateTagsViewModel with ChangeNotifier {
     UserModel loggedInUser = await userPreference.getUser();
     String token = loggedInUser.token.toString();
 
-    setPreferences_Body.preferences!.dine!.fineDining = dineSelectedChips[0];
-    setPreferences_Body.preferences!.dine!.decentDining = dineSelectedChips[1];
-    setPreferences_Body.preferences!.dine!.dhabas = dineSelectedChips[2];
-    setPreferences_Body.preferences!.dine!.homeDelivery = dineSelectedChips[3];
-    setPreferences_Body.preferences!.dine!.takeAway = dineSelectedChips[4];
-    setPreferences_Body.preferences!.dine!.homeMade = dineSelectedChips[5];
-    setPreferences_Body.preferences!.dine!.cafes = dineSelectedChips[6];
+    setPreferences_Body.preferences!.dine!.fineDining =
+        diningTags['Fine Dining'];
+    setPreferences_Body.preferences!.dine!.decentDining =
+        diningTags['Decent Dining'];
+    setPreferences_Body.preferences!.dine!.dhabas = diningTags['Dhaba'];
+    setPreferences_Body.preferences!.dine!.cafes = diningTags['Cafe'];
+    setPreferences_Body.preferences!.dine!.streetfood =
+        diningTags['Street Food'];
 
-    setPreferences_Body.preferences!.outing!.hillsLakes =
-        outingSelectedChips[0];
+    setPreferences_Body.preferences!.outing!.hills = outingTags['Hills'];
+    setPreferences_Body.preferences!.outing!.lakes = outingTags['Lakes'];
     setPreferences_Body.preferences!.outing!.damsWaterfalls =
-        outingSelectedChips[1];
-    setPreferences_Body.preferences!.outing!.malls = outingSelectedChips[2];
-    setPreferences_Body.preferences!.outing!.movie = outingSelectedChips[3];
-    setPreferences_Body.preferences!.outing!.park = outingSelectedChips[4];
-    setPreferences_Body.preferences!.outing!.picnics = outingSelectedChips[5];
-    setPreferences_Body.preferences!.outing!.clubbing = outingSelectedChips[6];
-    setPreferences_Body.preferences!.outing!.nightOut = outingSelectedChips[7];
-    setPreferences_Body.preferences!.outing!.windowShopping =
-        outingSelectedChips[8];
+        outingTags['Dams, Waterfalls'];
+    setPreferences_Body.preferences!.outing!.malls = outingTags['Malls'];
+    setPreferences_Body.preferences!.outing!.movieHalls = outingTags['Movie'];
+    setPreferences_Body.preferences!.outing!.parks = outingTags['Parks'];
+    setPreferences_Body.preferences!.outing!.clubbing = outingTags['Clubbing'];
+    setPreferences_Body.preferences!.outing!.nightOut = outingTags['Night Out'];
+    setPreferences_Body.preferences!.outing!.shopping = outingTags['Shopping'];
+    setPreferences_Body.preferences!.outing!.placesOfWorship =
+        outingTags['Places of Worship'];
+    setPreferences_Body.preferences!.outing!.museum = outingTags['Museum'];
 
     dynamic data = setPreferences_Body.toJson();
+
+    print(setPreferences_Body);
+    print('Here Data');
+    print(data);
 
     _myRepo
         .setInitialPreferences(data, token)
         .then((value) => {
               if (value.status.toString() == 'Successful')
                 {
-                  updateonboardingState(0),
+                  print('Here true'),
+                  print(value.user),
                   Utils.goFlushBar('Preferences Updated', context),
                   userPreference.saveUser(
                     UserModel(

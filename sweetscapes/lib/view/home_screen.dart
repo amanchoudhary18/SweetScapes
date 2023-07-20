@@ -1,24 +1,12 @@
 import 'package:auto_route/annotations.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dot_navigation_bar/dot_navigation_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
-import 'package:sweetscapes/model/user_model.dart';
-import 'package:sweetscapes/res/components/round_button.dart';
-import 'package:sweetscapes/res/enums/DateType.dart';
-import 'package:sweetscapes/res/functions/TextFieldDecoration.dart';
 import 'package:sweetscapes/view/bookings/bookings_view.dart';
 import 'package:sweetscapes/view/date%20suggestions/date_suggestion_view.dart';
 import 'package:sweetscapes/view/gifts/gift_suggestion_view.dart';
 import 'package:sweetscapes/view/profile/user_profile_view.dart';
 import 'package:sweetscapes/view_model/home_screen_view_model.dart';
-import 'package:sweetscapes/view_model/user_view_model.dart';
-
-import '../res/components/SuggestionTile.dart';
-import '../utils/utils.dart';
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {

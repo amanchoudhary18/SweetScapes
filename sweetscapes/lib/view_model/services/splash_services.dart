@@ -2,9 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sweetscapes/app/routes/router.gr.dart';
-import 'package:sweetscapes/data/app_exceptions.dart';
 import 'package:sweetscapes/model/user_model.dart';
-import 'package:sweetscapes/view/home_screen.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
 class SplashServices {
@@ -17,10 +15,10 @@ class SplashServices {
       }
       if (value.token == null || value.token == 'null') {
         await Future.delayed(const Duration(seconds: 2));
-        AutoRouter.of(context).popAndPush(LoginViewRoute());
+        AutoRouter.of(context).popAndPush(IntroScreen1Route());
       } else if (value.user!.isNew ?? true == true) {
         await Future.delayed(const Duration(seconds: 2));
-        AutoRouter.of(context).popAndPush(UpdateTagsViewRoute());
+        AutoRouter.of(context).popAndPush(SetUpDetailsViewRoute());
       } else {
         await Future.delayed(const Duration(seconds: 2));
         AutoRouter.of(context).popAndPush(HomeScreenRoute());

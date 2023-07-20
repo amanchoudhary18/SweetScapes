@@ -1,7 +1,5 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:sweetscapes/view_model/services/splash_services.dart';
 
 @RoutePage()
@@ -27,9 +25,37 @@ class _SplashViewState extends State<SplashView> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Text(
-            'SweetScapes',
-            style: Theme.of(context).textTheme.headlineLarge,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                      height: 75,
+                      child: Image.asset(
+                        'assets/images/logo_whitebg.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+              Text(
+                'SweetScapes',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontFamily: 'GeneralSans',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Text(
+                'Simplify Your Escapes',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'SpaceGrotesk',
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ],
           ),
         ),
       ),

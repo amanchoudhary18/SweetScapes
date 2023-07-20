@@ -1,220 +1,237 @@
-import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:sweetscapes/res/components/round_button.dart';
-import 'package:sweetscapes/res/enums/DateType.dart';
-
-import '../../res/components/choiceChip_widget.dart';
-import '../../res/enums/Genders.dart';
-import '../../view_model/onboarding/updateTags_viewmodel.dart';
-import '../date suggestions/date_suggestion_view.dart';
+import 'package:sweetscapes/res/color.dart';
+import 'package:sweetscapes/res/components/AppText.dart';
+import 'package:sweetscapes/res/enums/Fonts.dart';
+import 'package:sweetscapes/res/fonts.dart';
+import 'package:sweetscapes/view_model/onboarding/updateTags_viewmodel.dart';
 
 @RoutePage()
 class UpdateTagsView extends StatelessWidget {
   UpdateTagsView({super.key});
 
-  final List<PopupMenuItem> genderOptions = [
-    const PopupMenuItem(
-      value: Genders.MALE,
-      child: Text('Male'),
-    ),
-    const PopupMenuItem(
-      value: Genders.FEMALE,
-      child: Text('Female'),
-    ),
-    const PopupMenuItem(
-      value: Genders.OTHERS,
-      child: Text('Others'),
-    ),
-  ];
-
-  List<ChoiceChipWidget> dineChips = [];
-
-  void initializeDineChips(UpdateTagsViewModel model) {
-    for (int i = 0; i < model.dineChipText.length; i++) {
-      dineChips.add(
-        ChoiceChipWidget(
-          isSelected: false,
-          index: i,
-          model: model,
-          dateType: DateType.DINEOUT,
-        ),
-      );
-    }
-  }
-
-  List<ChoiceChipWidget> outingChips = [];
-
-  void initializeOutingChips(UpdateTagsViewModel model) {
-    for (int i = 0; i < model.outingChipText.length; i++) {
-      outingChips.add(
-        ChoiceChipWidget(
-          isSelected: false,
-          index: i,
-          model: model,
-          dateType: DateType.OUTING,
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-
     final model = Provider.of<UpdateTagsViewModel>(context);
+    final screenHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      extendBody: true,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 52, 24, 0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        AutoRouter.of(context).pop();
+                      },
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_outlined,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 44,
+                    ),
+                    AppText(
+                      text: 'Let us know,\nWhat defines you',
+                      size: 28,
+                      font: Fonts.TITLE,
+                      weight: FontWeight.w700,
+                      color: AppColor.black,
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    const Text(
+                      'Select your preferences for a \"Perfect day\" to get recommendations tailored to your interests',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: AppFonts.subtitle,
+                        fontWeight: FontWeight.normal,
+                        color: AppColor.black,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  height: screenHeight * 0.525,
+                  child: CupertinoScrollbar(
+                    child: ListView(
+                      children: [
+                        AppText(
+                          text: 'Dining Preferences',
+                          size: 20,
+                          font: Fonts.TITLE,
+                          weight: FontWeight.w700,
+                          color: AppColor.black,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Wrap(
+                          runSpacing: -3,
+                          spacing: 8,
+                          children: model.diningTags.entries
+                              .map((MapEntry<String, bool> entry) {
+                            String label = entry.key;
+                            bool isSelected = entry.value;
 
-    return WillPopScope(
-      onWillPop: model.onWillPop,
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Color(0xFFFDFBF0),
-        body: Center(
-          child: SingleChildScrollView(
-            child: SafeArea(
-              child: Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  width: screenWidth * 0.8,
-                  height: screenHeight * 0.7,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Center(
-                      child: SingleChildScrollView(
-                        child: (model.onboardingState == 0)
-                            ? Column(
+                            return ChoiceChip(
+                              shape: StadiumBorder(side: BorderSide()),
+                              backgroundColor: AppColor.white,
+                              selectedColor: AppColor.black,
+                              label: Wrap(
+                                spacing: 4,
+                                crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
-                                  Text(
-                                    'Enter basic Details',
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                  const Divider(
-                                    thickness: 5,
-                                  ),
-                                  ListTile(
-                                    title: Text(
-                                      'BIRTHDAY',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
+                                  Container(
+                                    child: SvgPicture.asset(
+                                      model.diningIcons[label]!,
+                                      color: isSelected
+                                          ? AppColor.white
+                                          : AppColor.black,
                                     ),
-                                    subtitle: Text(
-                                      '${DateFormat('dd / MM / yyyy').format(model.userBirthDay)}',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    leading: Icon(Icons.cake_outlined),
-                                    trailing:
-                                        Icon(Icons.calendar_month_outlined),
-                                    onTap: () {
-                                      showDatePicker(
-                                        context: context,
-                                        initialDate: model.userBirthDay,
-                                        firstDate: DateTime(1999),
-                                        lastDate: DateTime(DateTime.now().year),
-                                      ).then(
-                                        (value) => model.updateBirthday(
-                                            value ?? model.userBirthDay),
-                                      );
-                                    },
-                                  ),
-                                  const Divider(
-                                    thickness: 5,
-                                  ),
-                                  ListTile(
-                                    leading: Icon(Icons.man_4_outlined),
-                                    title: Text(
-                                      'GENDER',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium,
-                                    ),
-                                    subtitle: Text(
-                                      (model.userGender == Genders.MALE)
-                                          ? 'Male'
-                                          : (model.userGender == Genders.FEMALE)
-                                              ? 'Female'
-                                              : 'Others',
-                                      style:
-                                          Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                    trailing: PopupMenuButton(
-                                      itemBuilder: (context) => genderOptions,
-                                      onSelected: (value) =>
-                                          model.updateGender(value),
-                                    ),
-                                  ),
-                                  const Divider(
-                                    thickness: 5,
-                                  ),
-                                  RoundButton(
-                                    title: 'NEXT',
-                                    onPress: () {
-                                      initializeDineChips(model);
-                                      initializeOutingChips(model);
-                                      model.submitBasicDetails(context);
-                                    },
-                                    loading: model.nextLoading,
-                                  ),
-                                ],
-                              )
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Enter Preferences',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall,
-                                  ),
-                                  const Divider(
-                                    thickness: 5,
                                   ),
                                   Text(
-                                    'Dining Preferences',
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                  Wrap(
-                                    spacing: 5,
-                                    runSpacing: 1,
-                                    children: dineChips,
-                                  ),
-                                  const Divider(
-                                    thickness: 5,
-                                  ),
-                                  Text(
-                                    'Outing Preferences',
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                  Wrap(
-                                    spacing: 5,
-                                    runSpacing: 1,
-                                    children: outingChips,
-                                  ),
-                                  const Divider(
-                                    thickness: 5,
-                                  ),
-                                  RoundButton(
-                                    title: 'SUBMIT',
-                                    onPress: () {
-                                      model.submitPreferences(context);
-                                    },
+                                    label,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: AppFonts.subtitle,
+                                      fontWeight: FontWeight.w500,
+                                      color: (isSelected)
+                                          ? AppColor.white
+                                          : AppColor.black,
+                                      letterSpacing: 0.14,
+                                    ),
                                   ),
                                 ],
                               ),
-                      ),
+                              selected: isSelected,
+                              onSelected: (bool selected) {
+                                model.updateDiningTags(label);
+                              },
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(
+                          height: 36,
+                        ),
+                        AppText(
+                          text: 'Outing Preferences',
+                          size: 20,
+                          font: Fonts.TITLE,
+                          weight: FontWeight.w700,
+                          color: AppColor.black,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Wrap(
+                          runSpacing: -3,
+                          spacing: 8,
+                          children: model.outingTags.entries
+                              .map((MapEntry<String, bool> entry) {
+                            String label = entry.key;
+                            bool isSelected = entry.value;
+
+                            return ChoiceChip(
+                              shape: StadiumBorder(side: BorderSide()),
+                              backgroundColor: AppColor.white,
+                              selectedColor: AppColor.black,
+                              label: Wrap(
+                                spacing: 4,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                // crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    child: SvgPicture.asset(
+                                      model.outingIcons[label]!,
+                                      color: isSelected
+                                          ? AppColor.white
+                                          : AppColor.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    label,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: AppFonts.subtitle,
+                                      fontWeight: FontWeight.w500,
+                                      color: (isSelected)
+                                          ? AppColor.white
+                                          : AppColor.black,
+                                      letterSpacing: 0.14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              selected: isSelected,
+                              onSelected: (bool selected) {
+                                model.updateOutingTags(label);
+                              },
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
                     ),
                   ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        child: GestureDetector(
+          onTap: () {
+            model.submitPreferences(context);
+          },
+          child: UnconstrainedBox(
+            constrainedAxis: Axis.horizontal,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColor.primary,
+                borderRadius: BorderRadius.circular(12),
+                // border: Border.all(color: AppColor.black),
+              ),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 24,
+                  ),
+                  child: (model.nextLoading)
+                      ? const CircularProgressIndicator(
+                          color: AppColor.white,
+                          strokeWidth: 2,
+                        )
+                      : const Text(
+                          'Submit',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: AppFonts.button,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.white,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
                 ),
               ),
             ),

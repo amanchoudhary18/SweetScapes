@@ -1,34 +1,22 @@
-import 'package:auto_route/annotations.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:dot_navigation_bar/dot_navigation_bar.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
-import 'package:sweetscapes/model/user_model.dart';
-import 'package:sweetscapes/res/components/round_button.dart';
+import 'package:sweetscapes/app/routes/router.gr.dart';
+import 'package:sweetscapes/model/response/getDates_response.dart';
 import 'package:sweetscapes/res/enums/DateType.dart';
-import 'package:sweetscapes/res/enums/Genders.dart';
 import 'package:sweetscapes/res/functions/TextFieldDecoration.dart';
 import 'package:sweetscapes/view/date suggestions/date_suggestion_viewmodel.dart';
-import 'package:sweetscapes/view_model/onboarding/updateTags_viewmodel.dart';
-import 'package:sweetscapes/view_model/home_screen_view_model.dart';
-import 'package:intl/intl.dart';
-import 'package:sweetscapes/view_model/user_view_model.dart';
 
 import '../../res/components/SuggestionTile.dart';
 import '../../utils/utils.dart';
 
-@RoutePage() 
+@RoutePage()
 class DateSuggestionView extends StatelessWidget {
   DateSuggestionView({
     super.key,
   });
 
-  final TextEditingController _ageInputController = TextEditingController();
-  final FocusNode _ageInputNode = FocusNode();
   final TextEditingController _dateController = TextEditingController();
   final FocusNode _dateNode = FocusNode();
   final TextEditingController _locationController = TextEditingController();
@@ -55,16 +43,16 @@ class DateSuggestionView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      width: screenWidth * 0.2,
-                      child: Image.asset(
-                        'assets/images/logoPurple.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(10.0),
+                  //   child: Container(
+                  //     width: screenWidth * 0.2,
+                  //     child: Image.asset(
+                  //       'assets/images/logoPurple.png',
+                  //       fit: BoxFit.cover,
+                  //     ),
+                  //   ),
+                  // ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 8.0, horizontal: 16),
@@ -179,13 +167,36 @@ class DateSuggestionView extends StatelessWidget {
                   Container(
                     height: screenHeight * 0.597,
                     width: screenWidth,
-                    child: CupertinoScrollbar(
-                      child: ListView.builder(
-                        itemCount: model.dateList.length,
-                        itemBuilder: (context, index) {
-                          return model.dateList[index];
-                        },
-                      ),
+                    child: FutureBuilder(
+                      future: model.fetchDates(context),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasData) {
+                          List<Date> dates = snapshot.data!;
+                          return CupertinoScrollbar(
+                            child: ListView.builder(
+                              itemCount: dates.length,
+                              itemBuilder: (context, index) => SuggestionTile(
+                                dateType: (dates[index].category! == "Outing")
+                                    ? DateType.OUTING
+                                    : DateType.DINEOUT,
+                                dateOverviewText: dates[index].tileContent!,
+                                datePrice:
+                                    dates[index].pricePerHead!.toDouble(),
+                                onPressed: () {
+                                  AutoRouter.of(context).push(
+                                    DateDetailsViewRoute(dateId: dates[index].sId!.toString())
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                        return const Text('Show Suggestions');
+                      },
                     ),
                   ),
                 ],

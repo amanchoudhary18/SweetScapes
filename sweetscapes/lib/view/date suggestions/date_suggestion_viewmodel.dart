@@ -1,55 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
-import 'package:sweetscapes/res/components/SuggestionTile.dart';
-
-import '../../res/enums/DateType.dart';
-import '../../view_model/user_view_model.dart';
+import 'package:sweetscapes/model/response/getDates_response.dart';
+import 'package:sweetscapes/model/user_model.dart';
+import 'package:sweetscapes/repository/dates_repository.dart';
+import 'package:sweetscapes/view_model/user_view_model.dart';
 
 class DateSuggestionViewModel extends BaseViewModel {
-  List<SuggestionTile> dateList = [
-    SuggestionTile(
-      dateType: DateType.DINEOUT,
-      dateOverviewText:
-          'Ola cab > Lunch > Standup show > Evening at park > returning ola cab',
-      datePrice: 1050,
-      onPressed: () {},
-    ),
-  ];
+  final _datesRepo = DatesRepository();
 
-  Future<void> fetchDates(BuildContext context) async {
-    final userPreference = Provider.of<UserViewModel>(context, listen: false);
+  bool _datesLoading = false;
+  bool get nextLoading => _datesLoading;
 
-    // _myrepo
-    //     .verifyOTPUrl(otpData)
-    //     .then((value) => {
-    //           setverifyOtpLoading(false),
-    //           if (value.status.toString() == 'Successful')
-    //             {
-    //               userPreference.saveUser(
-    //                 UserModel(
-    //                   token: value.token.toString(),
-    //                   user: User(
-    //                     isNew: false,
-    //                   ),
-    //                 ),
-    //               ),
-    //               userData = ApiResponse.completed(value),
-    //               Utils.goFlushBar('SignUp Successful', context),
-    //               Navigator.pushNamed(context, RoutesName.setPassword),
-    //             }
-    //           else
-    //             {
-    //               Utils.goErrorFlush('Try Again', context),
-    //             },
-    //         })
-    //     .onError(
-    //       (error, stackTrace) => {
-    //         setverifyOtpLoading(false),
-    //         userData = ApiResponse.error(error.toString()),
-    //         Utils.goErrorFlush(error.toString(), context),
-    //       },
-    //     );
+  setDatesLoading(bool value) {
+    _datesLoading = value;
+    notifyListeners();
   }
 
+  List<Date> errorDate = [
+    Date(
+      tileContent: 'ERROR',
+      pricePerHead: 404
+    )
+  ];
+
+  Future<List<Date>> fetchDates(BuildContext context) async {
+    // setDatesLoading(true);
+
+    final userPreference = Provider.of<UserViewModel>(context, listen: false);
+    UserModel loggedInUser = await userPreference.getUser();
+    String token = loggedInUser.token.toString();
+
+    List<Date> _dates = [];
+
+    await _datesRepo
+        .getAllDates(token)
+        .then((value) => {
+              // setDatesLoading(false),
+              if (value.status.toString() == 'Successful')
+                {
+                  // Utils.goFlushBar('Success', context),
+                  _dates = value.date!,
+                  print(value.date),
+                  print(value.date![0].tileContent!),
+                }
+              else
+                {
+                  _dates = errorDate,
+                  // Utils.goFlushBar('Please restart app', context),
+                },
+            })
+        .onError(
+          (error, stackTrace) => {
+            // setDatesLoading(false),
+            // Utils.goErrorFlush(error.toString(), context),
+          },
+        );
+
+    return _dates;
+  }
 }

@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:sweetscapes/data/app_exceptions.dart';
 import 'package:sweetscapes/data/network/BaseApiServices.dart';
-import 'package:http/http.dart' as http;
 
-import '../../model/user_model.dart';
 import '../../view_model/user_view_model.dart';
 
 class NetworkApiServices extends BaseApiServices {
@@ -19,6 +18,7 @@ class NetworkApiServices extends BaseApiServices {
       }
       return '';
     });
+    return '';
   }
 
   @override
