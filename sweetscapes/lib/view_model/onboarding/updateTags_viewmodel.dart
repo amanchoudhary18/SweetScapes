@@ -58,7 +58,7 @@ class UpdateTagsViewModel with ChangeNotifier {
     'Night Out': 'assets/tagIcons/icons=Night out.svg',
     'Shopping': 'assets/tagIcons/icons=shopping.svg',
     'Places of Worship': 'assets/tagIcons/icons=religious.svg',
-    'Museum': 'assets/tagIcons/icons=religious.svg',
+    'Museum': 'assets/tagIcons/icons=Museum.svg',
   };
 
   void updateOutingTags(String label) {
@@ -191,17 +191,11 @@ class UpdateTagsViewModel with ChangeNotifier {
 
     dynamic data = setPreferences_Body.toJson();
 
-    print(setPreferences_Body);
-    print('Here Data');
-    print(data);
-
     _myRepo
         .setInitialPreferences(data, token)
         .then((value) => {
               if (value.status.toString() == 'Successful')
                 {
-                  print('Here true'),
-                  print(value.user),
                   Utils.goFlushBar('Preferences Updated', context),
                   userPreference.saveUser(
                     UserModel(

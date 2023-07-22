@@ -4,59 +4,165 @@ import 'package:stacked/stacked.dart';
 import 'package:sweetscapes/model/response/getDates_response.dart';
 import 'package:sweetscapes/model/user_model.dart';
 import 'package:sweetscapes/repository/dates_repository.dart';
+import 'package:sweetscapes/utils/utils.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
 
 class DateSuggestionViewModel extends BaseViewModel {
   final _datesRepo = DatesRepository();
 
+  List<CompletedAllPlans> plans = [];
+
+  DateTime _planDate = DateTime.now();
+  DateTime get planDate => _planDate;
+
   bool _datesLoading = false;
   bool get nextLoading => _datesLoading;
+
+  updatePlanDate(DateTime value) {
+    _planDate = value;
+    notifyListeners();
+  }
 
   setDatesLoading(bool value) {
     _datesLoading = value;
     notifyListeners();
   }
 
-  List<Date> errorDate = [
-    Date(
-      tileContent: 'ERROR',
-      pricePerHead: 404
-    )
+  List<CompletedAllPlans> errorDate = [
+    CompletedAllPlans(tileContent: 'ERROR', price: 404)
   ];
 
-  Future<List<Date>> fetchDates(BuildContext context) async {
-    // setDatesLoading(true);
+  Map<String, bool> diningTags = {
+    'Fine Dining': false,
+    'Decent Dining': false,
+    'Dhaba': false,
+    'Cafe': false,
+    'Street Food': false,
+  };
 
+  Map<String, String> diningIcons = {
+    'Fine Dining': 'assets/tagIcons/icons=fineDining.svg',
+    'Decent Dining': 'assets/tagIcons/icons=decentDining.svg',
+    'Dhaba': 'assets/tagIcons/icons=dhabas.svg',
+    'Cafe': 'assets/tagIcons/icons=cafes.svg',
+    'Street Food': 'assets/tagIcons/icons=streetfood.svg',
+  };
+
+  void updateDiningTags(String label) {
+    diningTags[label] = !diningTags[label]!;
+    notifyListeners();
+  }
+
+  Map<String, bool> outingTags = {
+    'Hills': false,
+    'Lakes': false,
+    'Dams, Waterfalls': false,
+    'Malls': false,
+    'Movie': false,
+    'Parks': false,
+    // 'Picnics': false,
+    'Clubbing': false,
+    'Night Out': false,
+    'Shopping': false,
+    'Places of Worship': false,
+    'Museum': false,
+  };
+
+  Map<String, String> outingIcons = {
+    'Hills': 'assets/tagIcons/icons=hills.svg',
+    'Lakes': 'assets/tagIcons/icons=Lakes.svg',
+    'Dams, Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
+    'Malls': 'assets/tagIcons/icons=malls.svg',
+    'Movie': 'assets/tagIcons/icons=movie.svg',
+    'Parks': 'assets/tagIcons/icons=park.svg',
+    // 'Picnics': 'assets/tagIcons/icons=picnic.svg',
+    'Clubbing': 'assets/tagIcons/icons=clubs.svg',
+    'Night Out': 'assets/tagIcons/icons=Night out.svg',
+    'Shopping': 'assets/tagIcons/icons=shopping.svg',
+    'Places of Worship': 'assets/tagIcons/icons=religious.svg',
+    'Museum': 'assets/tagIcons/icons=Museum.svg',
+  };
+
+  Map<String, bool> allTags = {
+    'Fine Dining': false,
+    'Decent Dining': false,
+    'Dhaba': false,
+    'Cafe': false,
+    'Street Food': false,
+    'Hills': false,
+    'Lakes': false,
+    'Dams, Waterfalls': false,
+    'Malls': false,
+    'Movie': false,
+    'Parks': false,
+    // 'Picnics': false,
+    'Clubbing': false,
+    'Night Out': false,
+    'Shopping': false,
+    'Places of Worship': false,
+    'Museum': false,
+  };
+
+  void updateOutingTags(String label) {
+    outingTags[label] = !outingTags[label]!;
+    notifyListeners();
+  }
+
+  void filterPlans(List<String> filterTags) async {
+    if (filterTags.isEmpty) {
+      resetPlansOrder();
+    } else {
+      print(filterTags[0]);
+      for (int i = 0; i < plans.length; i++) {
+        plans[i].likeness = plans[i].likeness! - plans[i].likeness!.floor();
+        print(plans[i].likeness);
+        int match = 0;
+        for (int j = 0; j < filterTags.length; j++) {
+          if (plans[i].tags!.contains(filterTags[j])) {
+            match++;
+          }
+        }
+        plans[i].likeness = plans[i].likeness! + match;
+        print(plans[i].likeness);
+      }
+      plans.sort((a, b) => b.likeness!.compareTo(a.likeness as num));
+      notifyListeners();
+    }
+  }
+
+  void resetPlansOrder() {
+    for (int i = 0; i < plans.length; i++) {
+      plans[i].likeness = plans[i].likeness! - plans[i].likeness!.floor();
+    }
+    plans.sort((a, b) => b.likeness!.compareTo(a.likeness as num));
+    notifyListeners();
+  }
+
+  Future<List<CompletedAllPlans>> fetchPlans(BuildContext context) async {
     final userPreference = Provider.of<UserViewModel>(context, listen: false);
     UserModel loggedInUser = await userPreference.getUser();
     String token = loggedInUser.token.toString();
 
-    List<Date> _dates = [];
+    plans = errorDate;
 
     await _datesRepo
-        .getAllDates(token)
+        .getAllPlans(token)
         .then((value) => {
-              // setDatesLoading(false),
               if (value.status.toString() == 'Successful')
                 {
-                  // Utils.goFlushBar('Success', context),
-                  _dates = value.date!,
-                  print(value.date),
-                  print(value.date![0].tileContent!),
+                  plans = value.completedAllPlans!,
                 }
               else
                 {
-                  _dates = errorDate,
-                  // Utils.goFlushBar('Please restart app', context),
+                  plans = errorDate,
                 },
             })
         .onError(
           (error, stackTrace) => {
-            // setDatesLoading(false),
-            // Utils.goErrorFlush(error.toString(), context),
+            Utils.goErrorFlush(error.toString(), context),
           },
         );
 
-    return _dates;
+    return plans;
   }
 }

@@ -8,11 +8,11 @@ import '../res/app_url.dart';
 class DatesRepository {
   final BaseApiServices _apiServices = NetworkApiServices();
 
-  Future<GetDates> getAllDates(String token) async {
+  Future<GetAllPlans> getAllPlans(String token) async {
     try {
       dynamic response = await _apiServices.userGetApiResponse(
-          AppUrl.getAllDates, token);
-      return response = GetDates.fromJson(response);
+          AppUrl.getAllPlans, token);
+      return response = GetAllPlans.fromJson(response);
     } catch (e) {
       rethrow;
     }

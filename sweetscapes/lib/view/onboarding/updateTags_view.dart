@@ -191,7 +191,7 @@ class UpdateTagsView extends StatelessWidget {
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
