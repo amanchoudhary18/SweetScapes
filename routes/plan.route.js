@@ -957,8 +957,13 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
             _id: component.component_id,
           });
         }
+        const componentWithHighlight = {
+          is_highlight: component.is_highlight,
+          details: curr_component,
+        };
 
-        populatedComponents.push(curr_component);
+        populatedComponents.push(componentWithHighlight);
+
         tags.add(curr_component.tags[0]);
 
         images.push({
@@ -1024,6 +1029,7 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         price,
         tile_content,
         likeness: parseFloat(likeness),
+        components: populatedComponents,
       });
     }
 
