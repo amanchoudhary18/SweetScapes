@@ -1025,13 +1025,99 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         tile_content,
         likeness: parseFloat(likeness),
       });
-
-      console.log(typeof likeness);
     }
 
     completedAllPlans.sort((a, b) => b.likeness - a.likeness);
 
     res.status(200).send({ status: "Successful", completedAllPlans });
+  } catch (error) {
+    console.log(error);
+    res.status(200).send({ status: "Failed", message: error.message });
+  }
+});
+
+router.get("/getPlanDetails/:id", userAuth, async (req, res) => {
+  const plan_id = req.params.id;
+  try {
+    const plan = await PlanModel.findOne({
+      plan_id,
+    });
+
+    const populatedComponents = [];
+    const tags = new Set();
+    const images = [];
+
+    let availability = {
+      sunday: true,
+      monday: true,
+      tuesday: true,
+      wednesday: true,
+      thursday: true,
+      friday: true,
+      saturday: true,
+    };
+    const plan_start_time = plan.plan_start_time;
+    let price = 0;
+    const tile_content = plan.tile_content;
+
+    for (const component of plan.components) {
+      let curr_component;
+
+      if (component.type === "Outing") {
+        curr_component = await Outing.findOne({
+          _id: component.component_id,
+        });
+      } else if (component.type === "Dining") {
+        curr_component = await Dining.findOne({
+          _id: component.component_id,
+        });
+      }
+
+      const componentWithHighlight = {
+        is_highlight: component.is_highlight,
+        details: curr_component,
+      };
+
+      populatedComponents.push(componentWithHighlight);
+      tags.add(curr_component.tags[0]);
+
+      images.push({
+        img_link: extractIdFromGoogleDriveLink(curr_component.img),
+        img_name:
+          curr_component.type === "Outing"
+            ? curr_component.place_name
+            : curr_component.hotel_name,
+        order: component.order,
+      });
+
+      availability = {
+        sunday: availability.sunday && curr_component.availability.sunday,
+        monday: availability.monday && curr_component.availability.monday,
+        tuesday: availability.tuesday && curr_component.availability.tuesday,
+        wednesday:
+          availability.wednesday && curr_component.availability.wednesday,
+        thursday: availability.thursday && curr_component.availability.thursday,
+        friday: availability.friday && curr_component.availability.friday,
+        saturday: availability.saturday && curr_component.availability.saturday,
+      };
+
+      price += curr_component.price_per_head;
+    }
+
+    const uniqueTags = Array.from(tags);
+
+    const planDetails = {
+      id: plan_id,
+      tags: uniqueTags,
+      images: images.sort((a, b) => a.order - b.order),
+      availability,
+      plan_start_time,
+      price,
+      tile_content,
+      components: populatedComponents,
+    };
+
+    res.status(200).send({ status: "Successful", planDetails });
   } catch (error) {
     console.log(error);
     res.status(200).send({ status: "Failed", message: error.message });

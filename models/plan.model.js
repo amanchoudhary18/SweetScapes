@@ -15,6 +15,10 @@ const planSchema = {
         type: String,
       },
 
+      is_highlight: {
+        type: Boolean,
+        default: false,
+      },
       component_id: {
         type: mongoose.Schema.Types.ObjectId,
       },
