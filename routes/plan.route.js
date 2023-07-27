@@ -163,6 +163,28 @@ router.get("/getOutingsLength", async (req, res) => {
   }
 });
 
+// Get Number of Dinings
+router.get("/getDinings", async (req, res) => {
+  try {
+    const dinings = await Dining.find({});
+    console.log(dinings);
+    res.status(200).send({ status: "Successfull", dinings });
+  } catch (error) {
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+});
+
+// Get number of Outings
+router.get("/getOutings", async (req, res) => {
+  try {
+    const outings = await Outing.find({});
+    console.log(outings);
+    res.status(200).send({ status: "Successfull", outings });
+  } catch (error) {
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+});
+
 // Create a plan
 router.post("/createPlan", async (req, res) => {
   try {
