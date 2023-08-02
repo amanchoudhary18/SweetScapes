@@ -194,6 +194,7 @@ router.post("/createPlan", async (req, res) => {
     // Calculating initial time
     const options = { weekday: "long", timeZone: "Asia/Kolkata" };
     const date = new Date(plan_start_time);
+
     const dayoftheweek = date
       .toLocaleDateString("en-IN", options)
       .toLowerCase();
@@ -389,6 +390,7 @@ router.post("/createPlan", async (req, res) => {
 
       if (i !== allDistancesandDurations.length - 1) {
         if (isTimestampBefore(time, components[i].details.opening_time)) {
+          console.log(time, components[i].details.opening_time);
           throw {
             message: `${
               components[i].type === "Outing"
@@ -981,6 +983,7 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         }
         const componentWithHighlight = {
           is_highlight: component.is_highlight,
+          order: component.order,
           details: curr_component,
         };
 
@@ -1051,7 +1054,7 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         price,
         tile_content,
         likeness: parseFloat(likeness),
-        components: populatedComponents,
+        components: populatedComponents.sort((a, b) => a.order - b.order),
       });
     }
 
@@ -1090,6 +1093,7 @@ router.get("/getPlanDetails/:id", userAuth, async (req, res) => {
 
     for (const component of plan.components) {
       let curr_component;
+      console.log("hello");
 
       if (component.type === "Outing") {
         curr_component = await Outing.findOne({
