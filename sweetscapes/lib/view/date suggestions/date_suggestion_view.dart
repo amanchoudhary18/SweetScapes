@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
-import 'package:sweetscapes/model/response/getDates_response.dart';
+import 'package:sweetscapes/model/response/getAllPlans_response.dart';
 import 'package:sweetscapes/res/color.dart';
 import 'package:sweetscapes/res/components/AppText.dart';
 import 'package:sweetscapes/res/enums/Fonts.dart';
@@ -197,7 +197,7 @@ class DateSuggestionView extends StatelessWidget {
                                     ),
                                   );
                                 }
-                                return const Text('Show Suggestions');
+                                return const Text('Not able to fetch plans');
                               },
                             )
                           : CupertinoScrollbar(

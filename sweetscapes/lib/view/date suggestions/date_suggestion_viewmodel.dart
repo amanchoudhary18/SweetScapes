@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
-import 'package:sweetscapes/model/response/getDates_response.dart';
+import 'package:sweetscapes/model/response/getAllPlans_response.dart';
 import 'package:sweetscapes/model/user_model.dart';
 import 'package:sweetscapes/repository/dates_repository.dart';
 import 'package:sweetscapes/utils/utils.dart';
@@ -56,7 +56,7 @@ class DateSuggestionViewModel extends BaseViewModel {
   Map<String, bool> outingTags = {
     'Hills': false,
     'Lakes': false,
-    'Dams, Waterfalls': false,
+    'Dams Waterfalls': false,
     'Malls': false,
     'Movie': false,
     'Parks': false,
@@ -71,7 +71,7 @@ class DateSuggestionViewModel extends BaseViewModel {
   Map<String, String> outingIcons = {
     'Hills': 'assets/tagIcons/icons=hills.svg',
     'Lakes': 'assets/tagIcons/icons=Lakes.svg',
-    'Dams, Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
+    'Dams Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
     'Malls': 'assets/tagIcons/icons=malls.svg',
     'Movie': 'assets/tagIcons/icons=movie.svg',
     'Parks': 'assets/tagIcons/icons=park.svg',
@@ -91,7 +91,7 @@ class DateSuggestionViewModel extends BaseViewModel {
     'Street Food': false,
     'Hills': false,
     'Lakes': false,
-    'Dams, Waterfalls': false,
+    'Dams Waterfalls': false,
     'Malls': false,
     'Movie': false,
     'Parks': false,
@@ -112,28 +112,31 @@ class DateSuggestionViewModel extends BaseViewModel {
     if (filterTags.isEmpty) {
       resetPlansOrder();
     } else {
-      print(filterTags[0]);
-      for (int i = 0; i < plans.length; i++) {
-        plans[i].likeness = plans[i].likeness! - plans[i].likeness!.floor();
-        print(plans[i].likeness);
+      Map<CompletedAllPlans, double> likenessMap = {};
+
+      for (CompletedAllPlans plan in plans) {
+        double likeness = plan.likeness!;
         int match = 0;
-        for (int j = 0; j < filterTags.length; j++) {
-          if (plans[i].tags!.contains(filterTags[j])) {
+
+        for (String tag in filterTags) {
+          List<String> filterWords = tag.toLowerCase().split(' ');
+
+          if (filterWords.every((word) => plan.tags!
+              .any((planTag) => planTag.toLowerCase().contains(word)))) {
             match++;
           }
         }
-        plans[i].likeness = plans[i].likeness! + match;
-        print(plans[i].likeness);
+
+        likeness += match;
+        likenessMap[plan] = likeness;
       }
-      plans.sort((a, b) => b.likeness!.compareTo(a.likeness as num));
+
+      plans.sort((a, b) => likenessMap[b]!.compareTo(likenessMap[a]!));
       notifyListeners();
     }
   }
 
   void resetPlansOrder() {
-    for (int i = 0; i < plans.length; i++) {
-      plans[i].likeness = plans[i].likeness! - plans[i].likeness!.floor();
-    }
     plans.sort((a, b) => b.likeness!.compareTo(a.likeness as num));
     notifyListeners();
   }
@@ -163,6 +166,7 @@ class DateSuggestionViewModel extends BaseViewModel {
           },
         );
 
+    notifyListeners();
     return plans;
   }
 }

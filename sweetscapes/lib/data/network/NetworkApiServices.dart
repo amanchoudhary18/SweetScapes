@@ -26,7 +26,7 @@ class NetworkApiServices extends BaseApiServices {
     dynamic responseJson;
     try {
       final response =
-          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 7));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -43,7 +43,7 @@ class NetworkApiServices extends BaseApiServices {
             Uri.parse(url), 
             body: data
             )
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 7));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -66,7 +66,7 @@ class NetworkApiServices extends BaseApiServices {
             },
             encoding: Encoding.getByName("utf-8"),
           )
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 7));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -89,7 +89,7 @@ class NetworkApiServices extends BaseApiServices {
             },
             encoding: Encoding.getByName("utf-8"),
           )
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 7));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -110,7 +110,7 @@ class NetworkApiServices extends BaseApiServices {
             },
             // encoding: Encoding.getByName("utf-8"),
           )
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 7));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');

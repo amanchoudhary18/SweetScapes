@@ -4,6 +4,7 @@ import 'package:sweetscapes/app/routes/router.gr.dart';
 @AutoRouterConfig(replaceInRouteName: 'Route')
 class AppRouter extends $AppRouter {
   @override
+
   RouteType get defaultRouteType => const RouteType.custom(
     transitionsBuilder: TransitionsBuilders.noTransition,
   );
@@ -20,7 +21,7 @@ class AppRouter extends $AppRouter {
         AutoRoute(page: SetUpDetailsViewRoute.page),
         AutoRoute(page: UpdateTagsViewRoute.page),
         AutoRoute(page: UserProfileViewRoute.page),
-        AutoRoute(page: DateDetailsViewRoute.page),
+        CustomRoute(page: DateDetailsViewRoute.page, transitionsBuilder: TransitionsBuilders.slideLeft),
         AutoRoute(page: IntroScreen1Route.page),
         AutoRoute(page: IntroScreen2Route.page),
         AutoRoute(page: IntroScreen3Route.page),

@@ -34,7 +34,7 @@ class UpdateTagsViewModel with ChangeNotifier {
   Map<String, bool> outingTags = {
     'Hills': false,
     'Lakes': false,
-    'Dams, Waterfalls': false,
+    'Dams Waterfalls': false,
     'Malls': false,
     'Movie': false,
     'Parks': false,
@@ -49,7 +49,7 @@ class UpdateTagsViewModel with ChangeNotifier {
   Map<String, String> outingIcons = {
     'Hills': 'assets/tagIcons/icons=hills.svg',
     'Lakes': 'assets/tagIcons/icons=Lakes.svg',
-    'Dams, Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
+    'Dams Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
     'Malls': 'assets/tagIcons/icons=malls.svg',
     'Movie': 'assets/tagIcons/icons=movie.svg',
     'Parks': 'assets/tagIcons/icons=park.svg',

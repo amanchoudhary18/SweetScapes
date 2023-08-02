@@ -222,6 +222,7 @@ class AuthViewModel with ChangeNotifier {
                 {
                   if (value.user!.isNew! == true)
                     {
+                      print ("Signup" + value.token.toString()),
                       userPreference.saveUser(
                         UserModel(
                           token: value.token.toString(),
@@ -236,6 +237,7 @@ class AuthViewModel with ChangeNotifier {
                     }
                   else
                     {
+                      print ("Login" + value.token.toString()),
                       userPreference.saveUser(
                         UserModel(
                           token: value.token.toString(),

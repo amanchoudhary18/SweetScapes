@@ -1,14 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:sweetscapes/model/response/getDates_response.dart';
+import 'package:sweetscapes/app/routes/router.gr.dart';
+import 'package:sweetscapes/model/response/getAllPlans_response.dart';
 import 'package:sweetscapes/res/color.dart';
-import 'package:sweetscapes/res/enums/Fonts.dart';
 import 'package:sweetscapes/res/fonts.dart';
 import 'package:sweetscapes/res/tags_directory.dart';
-
-import '../enums/DateType.dart';
 
 class SuggestionTile extends StatelessWidget {
   const SuggestionTile({
@@ -20,7 +19,6 @@ class SuggestionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     var date = DateTime.fromMillisecondsSinceEpoch(plan.planStartTime!);
@@ -31,7 +29,9 @@ class SuggestionTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          AutoRouter.of(context).push(DateDetailsViewRoute(plan: plan));
+        },
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
@@ -211,68 +211,9 @@ class SuggestionTile extends StatelessWidget {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
-          // child: Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     Padding(
-          //       padding: const EdgeInsets.all(8.0),
-          //       child: Column(
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: [
-          //           Container(
-          //             width: MediaQuery.of(context).size.width * 0.5,
-          //             child: Text(
-          //               dateOverviewText,
-          //             ),
-          //           ),
-          //           Padding(
-          //             padding: const EdgeInsets.only(top: 20.0, left: 8),
-          //             child: Text(
-          //               '₹ $datePrice',
-          //               style: const TextStyle(
-          //                 fontWeight: FontWeight.bold,
-          //                 fontSize: 16,
-          //               ),
-          //             ),
-          //           ),
-          //           Padding(
-          //             padding: const EdgeInsets.only(left: 8),
-          //             child: Container(
-          //               width: screenWidth * 0.25,
-          //               decoration: BoxDecoration(
-          //                 color: Colors.grey.withOpacity(0.5),
-          //                 borderRadius: BorderRadius.circular(10),
-          //               ),
-          //               child: const Icon(
-          //                 Icons.keyboard_arrow_down_outlined,
-          //                 size: 30,
-          //               ),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //     Padding(
-          //       padding: const EdgeInsets.all(8.0),
-          //       child: Container(
-          //         height: MediaQuery.of(context).size.height * 0.1,
-          //         child: Image.asset(
-          //           (dateType == DateType.DINEOUT)
-          //               ? 'assets/images/dineout.png'
-          //               : (dateType == DateType.WORKSHOP)
-          //                   ? 'assets/images/workshop.png'
-          //                   : 'assets/images/outing.png',
-          //           fit: BoxFit.cover,
-          //           // color: Color.fromRGBO(255, 255, 255, 0.5),
-          //           colorBlendMode: BlendMode.modulate,
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ),
       ),
     );

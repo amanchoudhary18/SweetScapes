@@ -9,8 +9,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i16;
-import 'package:flutter/cupertino.dart' as _i17;
-import 'package:flutter/material.dart' as _i18;
+import 'package:flutter/cupertino.dart' as _i18;
+import 'package:flutter/material.dart' as _i19;
+import 'package:sweetscapes/model/response/getAllPlans_response.dart' as _i17;
 import 'package:sweetscapes/view/bookings/bookings_view.dart' as _i1;
 import 'package:sweetscapes/view/date%20suggestions/date_details_view.dart'
     as _i2;
@@ -44,7 +45,7 @@ abstract class $AppRouter extends _i16.RootStackRouter {
       final args = routeData.argsAs<DateDetailsViewRouteArgs>();
       return _i16.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: _i2.DateDetailsView(args.dateId),
+        child: _i2.DateDetailsView(args.plan),
       );
     },
     DateSuggestionViewRoute.name: (routeData) {
@@ -165,11 +166,11 @@ class BookingsViewRoute extends _i16.PageRouteInfo<void> {
 class DateDetailsViewRoute
     extends _i16.PageRouteInfo<DateDetailsViewRouteArgs> {
   DateDetailsViewRoute({
-    required String dateId,
+    required _i17.CompletedAllPlans plan,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           DateDetailsViewRoute.name,
-          args: DateDetailsViewRouteArgs(dateId: dateId),
+          args: DateDetailsViewRouteArgs(plan: plan),
           initialChildren: children,
         );
 
@@ -180,13 +181,13 @@ class DateDetailsViewRoute
 }
 
 class DateDetailsViewRouteArgs {
-  const DateDetailsViewRouteArgs({required this.dateId});
+  const DateDetailsViewRouteArgs({required this.plan});
 
-  final String dateId;
+  final _i17.CompletedAllPlans plan;
 
   @override
   String toString() {
-    return 'DateDetailsViewRouteArgs{dateId: $dateId}';
+    return 'DateDetailsViewRouteArgs{plan: $plan}';
   }
 }
 
@@ -195,7 +196,7 @@ class DateDetailsViewRouteArgs {
 class DateSuggestionViewRoute
     extends _i16.PageRouteInfo<DateSuggestionViewRouteArgs> {
   DateSuggestionViewRoute({
-    _i17.Key? key,
+    _i18.Key? key,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           DateSuggestionViewRoute.name,
@@ -212,7 +213,7 @@ class DateSuggestionViewRoute
 class DateSuggestionViewRouteArgs {
   const DateSuggestionViewRouteArgs({this.key});
 
-  final _i17.Key? key;
+  final _i18.Key? key;
 
   @override
   String toString() {
@@ -238,7 +239,7 @@ class GiftSuggestionViewRoute extends _i16.PageRouteInfo<void> {
 /// [_i5.HomeScreen]
 class HomeScreenRoute extends _i16.PageRouteInfo<HomeScreenRouteArgs> {
   HomeScreenRoute({
-    _i17.Key? key,
+    _i19.Key? key,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           HomeScreenRoute.name,
@@ -255,7 +256,7 @@ class HomeScreenRoute extends _i16.PageRouteInfo<HomeScreenRouteArgs> {
 class HomeScreenRouteArgs {
   const HomeScreenRouteArgs({this.key});
 
-  final _i17.Key? key;
+  final _i19.Key? key;
 
   @override
   String toString() {
@@ -309,7 +310,7 @@ class IntroScreen3Route extends _i16.PageRouteInfo<void> {
 /// [_i9.LoginView]
 class LoginViewRoute extends _i16.PageRouteInfo<LoginViewRouteArgs> {
   LoginViewRoute({
-    _i18.Key? key,
+    _i19.Key? key,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           LoginViewRoute.name,
@@ -326,7 +327,7 @@ class LoginViewRoute extends _i16.PageRouteInfo<LoginViewRouteArgs> {
 class LoginViewRouteArgs {
   const LoginViewRouteArgs({this.key});
 
-  final _i18.Key? key;
+  final _i19.Key? key;
 
   @override
   String toString() {
@@ -339,7 +340,7 @@ class LoginViewRouteArgs {
 class SetUpDetailsViewRoute
     extends _i16.PageRouteInfo<SetUpDetailsViewRouteArgs> {
   SetUpDetailsViewRoute({
-    _i18.Key? key,
+    _i19.Key? key,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           SetUpDetailsViewRoute.name,
@@ -356,7 +357,7 @@ class SetUpDetailsViewRoute
 class SetUpDetailsViewRouteArgs {
   const SetUpDetailsViewRouteArgs({this.key});
 
-  final _i18.Key? key;
+  final _i19.Key? key;
 
   @override
   String toString() {
@@ -398,7 +399,7 @@ class UpdateTagsViewRouteArgs {
 class VerifyEmailViewRoute
     extends _i16.PageRouteInfo<VerifyEmailViewRouteArgs> {
   VerifyEmailViewRoute({
-    _i18.Key? key,
+    _i19.Key? key,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           VerifyEmailViewRoute.name,
@@ -415,7 +416,7 @@ class VerifyEmailViewRoute
 class VerifyEmailViewRouteArgs {
   const VerifyEmailViewRouteArgs({this.key});
 
-  final _i18.Key? key;
+  final _i19.Key? key;
 
   @override
   String toString() {
@@ -427,7 +428,7 @@ class VerifyEmailViewRouteArgs {
 /// [_i13.VerifyOTPView]
 class VerifyOTPViewRoute extends _i16.PageRouteInfo<VerifyOTPViewRouteArgs> {
   VerifyOTPViewRoute({
-    _i18.Key? key,
+    _i19.Key? key,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           VerifyOTPViewRoute.name,
@@ -444,7 +445,7 @@ class VerifyOTPViewRoute extends _i16.PageRouteInfo<VerifyOTPViewRouteArgs> {
 class VerifyOTPViewRouteArgs {
   const VerifyOTPViewRouteArgs({this.key});
 
-  final _i18.Key? key;
+  final _i19.Key? key;
 
   @override
   String toString() {
@@ -457,7 +458,7 @@ class VerifyOTPViewRouteArgs {
 class UserProfileViewRoute
     extends _i16.PageRouteInfo<UserProfileViewRouteArgs> {
   UserProfileViewRoute({
-    _i18.Key? key,
+    _i19.Key? key,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           UserProfileViewRoute.name,
@@ -474,7 +475,7 @@ class UserProfileViewRoute
 class UserProfileViewRouteArgs {
   const UserProfileViewRouteArgs({this.key});
 
-  final _i18.Key? key;
+  final _i19.Key? key;
 
   @override
   String toString() {
@@ -486,7 +487,7 @@ class UserProfileViewRouteArgs {
 /// [_i15.SplashView]
 class SplashViewRoute extends _i16.PageRouteInfo<SplashViewRouteArgs> {
   SplashViewRoute({
-    _i18.Key? key,
+    _i19.Key? key,
     List<_i16.PageRouteInfo>? children,
   }) : super(
           SplashViewRoute.name,
@@ -503,7 +504,7 @@ class SplashViewRoute extends _i16.PageRouteInfo<SplashViewRouteArgs> {
 class SplashViewRouteArgs {
   const SplashViewRouteArgs({this.key});
 
-  final _i18.Key? key;
+  final _i19.Key? key;
 
   @override
   String toString() {
