@@ -1156,4 +1156,28 @@ router.get("/getPlanDetails/:id", userAuth, async (req, res) => {
   }
 });
 
+router.post("/getComponentsByTag", userAuth, async (req, res) => {
+  const { tag, type } = req.body;
+
+  console.log(tag, type);
+  try {
+    let components = [];
+
+    if (type == "Dining") {
+      components = await Dining.find({
+        tags: { $in: tag },
+      });
+    } else {
+      components = await Outing.find({
+        tags: { $in: tag },
+      });
+    }
+
+    res.status(200).send({ status: "Successful", components });
+  } catch (error) {
+    console.log(error);
+    res.status(200).send({ status: "Failed", message: error.message });
+  }
+});
+
 module.exports = router;
