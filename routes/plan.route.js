@@ -1173,7 +1173,20 @@ router.post("/getComponentsByTag", userAuth, async (req, res) => {
       });
     }
 
-    res.status(200).send({ status: "Successful", components });
+    const sendingComponents = [];
+
+    for (let i = 0; i < components.length; i++) {
+      const sendingComponent = {
+        is_highlight: false,
+        order: -1,
+        details: components[i],
+      };
+      sendingComponents.push(sendingComponent);
+    }
+
+    res
+      .status(200)
+      .send({ status: "Successful", components: sendingComponents });
   } catch (error) {
     console.log(error);
     res.status(200).send({ status: "Failed", message: error.message });
