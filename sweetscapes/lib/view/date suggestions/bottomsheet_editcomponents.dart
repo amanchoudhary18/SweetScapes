@@ -116,7 +116,8 @@ class _BottomSheetEditComponentsState extends State<BottomSheetEditComponents> {
                                   focusNode: _searchTagNode,
                                   autofocus: true,
                                   onChanged: (searchValue) => getComponent(
-                                      searchValue, widget.model.componentsByTag),
+                                      searchValue,
+                                      widget.model.componentsByTag),
                                   keyboardType: TextInputType.name,
                                   decoration: const InputDecoration(
                                     hintText: 'Explore other places',

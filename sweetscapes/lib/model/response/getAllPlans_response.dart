@@ -90,6 +90,17 @@ class CompletedAllPlans {
     }
     return data;
   }
+
+  CompletedAllPlans.copy(CompletedAllPlans other)
+      : id = other.id,
+        tags = List.from(other.tags as Iterable),
+        images = List.from(other.images as Iterable),
+        availability = Availability.copy(other.availability!),
+        planStartTime = other.planStartTime,
+        price = other.price,
+        tileContent = other.tileContent,
+        likeness = other.likeness,
+        components = List.from(other.components as Iterable);
 }
 
 class Images {
@@ -153,6 +164,15 @@ class Availability {
     data['saturday'] = this.saturday;
     return data;
   }
+
+  Availability.copy(Availability other)
+      : sunday = other.sunday,
+        monday = other.monday,
+        tuesday = other.tuesday,
+        wednesday = other.wednesday,
+        thursday = other.thursday,
+        friday = other.friday,
+        saturday = other.saturday;
 }
 
 class Components {

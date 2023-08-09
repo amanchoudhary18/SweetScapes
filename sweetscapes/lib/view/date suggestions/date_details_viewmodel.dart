@@ -11,8 +11,11 @@ import 'package:sweetscapes/view_model/user_view_model.dart';
 
 class DateDetailsViewModel extends BaseViewModel {
   late CompletedAllPlans plan;
+  late CompletedAllPlans originalPlan;
   DateDetailsViewModel(CompletedAllPlans completePlan) {
-    plan = completePlan;
+    plan = CompletedAllPlans.copy(completePlan);
+    originalPlan = CompletedAllPlans.copy(completePlan);
+    notifyListeners();
   }
 
   final _datesRepo = DatesRepository();
@@ -30,8 +33,12 @@ class DateDetailsViewModel extends BaseViewModel {
     // editPlanComponents = componentList;
   }
 
+  void resetPlan() {
+    plan = CompletedAllPlans.copy(originalPlan);
+    notifyListeners();
+  }
+
   void updatePlan() {
-    print('Here');
     plan.price = 0;
     // int index = 0;
     for (Components component in editPlanComponents) {
