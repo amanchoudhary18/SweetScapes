@@ -25,7 +25,7 @@ class DateDetailsView extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return ViewModelBuilder.reactive(
-      viewModelBuilder: () => DateDetailsViewModel(),
+      viewModelBuilder: () => DateDetailsViewModel(plan),
       builder: (context, model, child) => Scaffold(
         resizeToAvoidBottomInset: false,
         extendBody: true,
@@ -87,279 +87,262 @@ class DateDetailsView extends StatelessWidget {
                     )
                   ],
                 ),
-                FutureBuilder(
-                  future: model.initializePlanDetails(
-                      context, plan.components!, plan.images!),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else {
-                      return Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: Container(
-                            width: screenWidth,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  CarouselSlider(
-                                    options: CarouselOptions(
-                                      height: 200,
-                                      viewportFraction: 1,
-                                    ),
-                                    items: model.planImages.map((i) {
-                                      return Builder(
-                                        builder: (BuildContext context) {
-                                          return Stack(
-                                            alignment: AlignmentDirectional
-                                                .bottomStart,
-                                            children: [
-                                              Container(
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                height: 200,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(12)),
-                                                  child: Image.network(
-                                                    "https://drive.google.com/uc?export=view&id=${i.imgLink}",
-                                                    // "https://drive.google.com/uc?export=view&id=1QdNJBwl8XNk8dR_NDa1LU9mrsLj2kDkh",
-                                                    fit: BoxFit.fill,
-                                                    loadingBuilder: (BuildContext
-                                                            context,
-                                                        Widget child,
-                                                        ImageChunkEvent?
-                                                            loadingProgress) {
-                                                      if (loadingProgress ==
-                                                          null) return child;
-                                                      return Center(
-                                                        child: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            CircularProgressIndicator(
-                                                              value: loadingProgress
-                                                                          .expectedTotalBytes !=
-                                                                      null
-                                                                  ? loadingProgress
-                                                                          .cumulativeBytesLoaded /
-                                                                      loadingProgress
-                                                                          .expectedTotalBytes!
-                                                                  : 0.2,
-                                                            ),
-                                                            Text(
-                                                                'Loading Image...'),
-                                                          ],
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: AppColor.black
-                                                      .withOpacity(0.4),
-                                                  borderRadius:
-                                                      const BorderRadius
-                                                              .vertical(
-                                                          bottom:
-                                                              Radius.circular(
-                                                                  12)),
-                                                ),
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 20.0,
-                                                      vertical: 8.0),
-                                                  child: Row(
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: Container(
+                      width: screenWidth,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            CarouselSlider(
+                              options: CarouselOptions(
+                                height: 200,
+                                viewportFraction: 1,
+                              ),
+                              items: model.plan.images!.map((i) {
+                                return Builder(
+                                  builder: (BuildContext context) {
+                                    return Stack(
+                                      alignment:
+                                          AlignmentDirectional.bottomStart,
+                                      children: [
+                                        Container(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          height: 200,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(12)),
+                                            child: Image.network(
+                                              "https://drive.google.com/uc?export=view&id=${i.imgLink}",
+                                              // "https://drive.google.com/uc?export=view&id=1QdNJBwl8XNk8dR_NDa1LU9mrsLj2kDkh",
+                                              fit: BoxFit.fill,
+                                              loadingBuilder:
+                                                  (BuildContext context,
+                                                      Widget child,
+                                                      ImageChunkEvent?
+                                                          loadingProgress) {
+                                                if (loadingProgress == null)
+                                                  return child;
+                                                return Center(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
-                                                      Container(
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.7,
-                                                        child: Text(
-                                                          'Place ${i.order}: ${i.imgName}',
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 13,
-                                                            fontFamily: AppFonts
-                                                                .subtitle,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color:
-                                                                AppColor.white,
-                                                            letterSpacing: 0.16,
-                                                          ),
-                                                        ),
+                                                      CircularProgressIndicator(
+                                                        value: loadingProgress
+                                                                    .expectedTotalBytes !=
+                                                                null
+                                                            ? loadingProgress
+                                                                    .cumulativeBytesLoaded /
+                                                                loadingProgress
+                                                                    .expectedTotalBytes!
+                                                            : 0.2,
                                                       ),
+                                                      const Text(
+                                                          'Loading Image...'),
                                                     ],
                                                   ),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    }).toList(),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 32.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        Text(
-                                          'Start At ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(plan.planStartTime!))}',
-                                          style: const TextStyle(
-                                            height: 1.3,
-                                            fontSize: 12,
-                                            fontFamily: AppFonts.title,
-                                            fontWeight: FontWeight.w500,
-                                            color: AppColor.black,
-                                            letterSpacing: 0.15,
-                                          ),
-                                        ),
-                                        Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.8,
-                                          child: Text(
-                                            '${plan.tileContent}',
-                                            style: const TextStyle(
-                                              height: 1.3,
-                                              fontSize: 18,
-                                              fontFamily: AppFonts.title,
-                                              fontWeight: FontWeight.w700,
-                                              color: AppColor.black,
-                                              letterSpacing: 0.15,
+                                                );
+                                              },
                                             ),
                                           ),
                                         ),
-                                        Text(
-                                          '₹${plan.price}/person + Travel Charges',
-                                          style: TextStyle(
-                                            height: 1.14,
-                                            fontSize: 14,
-                                            fontFamily: AppFonts.subtitle,
-                                            fontWeight: FontWeight.w400,
-                                            color: Colors.grey.shade600,
-                                            letterSpacing: 0.21,
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color:
+                                                AppColor.black.withOpacity(0.4),
+                                            borderRadius:
+                                                const BorderRadius.vertical(
+                                                    bottom:
+                                                        Radius.circular(12)),
                                           ),
-                                        ),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        Wrap(
-                                          runSpacing: -3,
-                                          spacing: 8,
-                                          children:
-                                              plan.tags!.map((String entry) {
-                                            String iconTag = TagsDirectory()
-                                                .getTagIcon(entry);
-                                            String iconLabel = TagsDirectory()
-                                                .getTagLabel(entry);
-
-                                            return Chip(
-                                              shape: const StadiumBorder(),
-                                              backgroundColor:
-                                                  AppColor.secondary,
-                                              label: Wrap(
-                                                spacing: 4,
-                                                crossAxisAlignment:
-                                                    WrapCrossAlignment.center,
-                                                // crossAxisAlignment: CrossAxisAlignment.center,
-                                                children: [
-                                                  Container(
-                                                    child: SvgPicture.asset(
-                                                      iconTag,
-                                                      color: AppColor.black,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    iconLabel,
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20.0,
+                                                vertical: 8.0),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.7,
+                                                  child: Text(
+                                                    'Place ${i.order}: ${i.imgName}',
                                                     style: const TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 13,
                                                       fontFamily:
                                                           AppFonts.subtitle,
                                                       fontWeight:
                                                           FontWeight.w500,
-                                                      color: AppColor.black,
-                                                      letterSpacing: 0.14,
+                                                      color: AppColor.white,
+                                                      letterSpacing: 0.16,
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 28.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              AppText(
-                                                text: 'Plan Components',
-                                                size: 18,
-                                                font: Fonts.TITLE,
-                                                weight: FontWeight.w700,
-                                                color: AppColor.black,
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    isScrollControlled: true,
-                                                    builder: (BuildContext context) =>
-                                                        BottomSheetEditComponents(model.planComponents),
-                                                  );
-                                                },
-                                                child: Text(
-                                                  'Edit',
-                                                  style: TextStyle(
-                                                    height: 1.14,
-                                                    fontSize: 14,
-                                                    fontFamily:
-                                                        AppFonts.subtitle,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Colors.blue.shade400,
-                                                    letterSpacing: 0.21,
-                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                        Column(
-                                          children: model.planComponents
-                                              .map((Components component) {
-                                            return PlanComponentTile(
-                                                component: component, isEditable: false,);
-                                          }).toList(),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 32.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    'Start At ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(model.plan.planStartTime!))}',
+                                    style: const TextStyle(
+                                      height: 1.3,
+                                      fontSize: 12,
+                                      fontFamily: AppFonts.title,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColor.black,
+                                      letterSpacing: 0.15,
+                                    ),
+                                  ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    child: Text(
+                                      '${model.plan.tileContent}',
+                                      style: const TextStyle(
+                                        height: 1.3,
+                                        fontSize: 18,
+                                        fontFamily: AppFonts.title,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColor.black,
+                                        letterSpacing: 0.15,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    '₹${model.plan.price}/person + Travel Charges',
+                                    style: TextStyle(
+                                      height: 1.14,
+                                      fontSize: 14,
+                                      fontFamily: AppFonts.subtitle,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.grey.shade600,
+                                      letterSpacing: 0.21,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  Wrap(
+                                    runSpacing: -3,
+                                    spacing: 8,
+                                    children:
+                                        model.plan.tags!.map((String entry) {
+                                      String iconTag =
+                                          TagsDirectory().getTagIcon(entry);
+                                      String iconLabel =
+                                          TagsDirectory().getTagLabel(entry);
+
+                                      return Chip(
+                                        shape: const StadiumBorder(),
+                                        backgroundColor: AppColor.secondary,
+                                        label: Wrap(
+                                          spacing: 4,
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          // crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              child: SvgPicture.asset(
+                                                iconTag,
+                                                color: AppColor.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              iconLabel,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                fontFamily: AppFonts.subtitle,
+                                                fontWeight: FontWeight.w500,
+                                                color: AppColor.black,
+                                                letterSpacing: 0.14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 28.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        AppText(
+                                          text: 'Plan Components',
+                                          size: 18,
+                                          font: Fonts.TITLE,
+                                          weight: FontWeight.w700,
+                                          color: AppColor.black,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            model.initializePlanDetails();
+                                            showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              builder: (BuildContext context) =>
+                                                  BottomSheetEditComponents(
+                                                      model.editPlanComponents,
+                                                      model),
+                                            );
+                                          },
+                                          child: Container(
+                                            height: 20,
+                                            child: Text(
+                                              'Edit',
+                                              style: TextStyle(
+                                                height: 1.14,
+                                                fontSize: 14,
+                                                fontFamily: AppFonts.subtitle,
+                                                fontWeight: FontWeight.w400,
+                                                color: Colors.blue.shade400,
+                                                letterSpacing: 0.21,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
+                                  Column(
+                                    children: model.plan.components!
+                                        .map((Components component) {
+                                      return PlanComponentTile(
+                                        component: component,
+                                        isEditable: false,
+                                        onChangePressed: () {},
+                                      );
+                                    }).toList(),
+                                  ),
                                 ],
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      );
-                    }
-                    // return const Text('Not able to fetch plan');
-                  },
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

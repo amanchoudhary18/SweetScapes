@@ -6,10 +6,11 @@ import 'package:sweetscapes/res/fonts.dart';
 import 'package:sweetscapes/res/tags_directory.dart';
 
 class PlanComponentTile extends StatelessWidget {
-  const PlanComponentTile({super.key, required this.component, required this.isEditable});
+  const PlanComponentTile({super.key, required this.component, required this.isEditable, required this.onChangePressed});
 
   final Components component;
   final bool isEditable;
+  final Function onChangePressed;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +112,7 @@ class PlanComponentTile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    (component.isHighlight!)?
+                    (component.isHighlight ?? false)?
                     Chip(
                       shape: const StadiumBorder(),
                       backgroundColor: AppColor.lightPositive,
@@ -140,25 +141,30 @@ class PlanComponentTile extends StatelessWidget {
                       ),
                     )
                     : (isEditable) ?
-                    const Chip(
-                      shape: const StadiumBorder(side: BorderSide(color: AppColor.black, width: 1,)),
-                      backgroundColor: AppColor.white,
-                      label: Wrap(
-                        spacing: 4,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        // crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Change',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: AppFonts.title,
-                              fontWeight: FontWeight.w500,
-                              color: AppColor.black,
-                              letterSpacing: 0.14,
+                    GestureDetector(
+                      onTap: () {
+                        onChangePressed(component.details!.type, component.details!.tags![0], component.order);
+                      },
+                      child: const Chip(
+                        shape: const StadiumBorder(side: BorderSide(color: AppColor.black, width: 1,)),
+                        backgroundColor: AppColor.white,
+                        label: Wrap(
+                          spacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          // crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Change',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: AppFonts.title,
+                                fontWeight: FontWeight.w500,
+                                color: AppColor.black,
+                                letterSpacing: 0.14,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ):Container(),
                   ],

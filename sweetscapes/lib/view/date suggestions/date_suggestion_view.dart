@@ -44,7 +44,7 @@ class DateSuggestionView extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 32.0),
                     child: AppText(
-                      text: 'Lets Escape!',
+                      text: 'Lets Escape !',
                       size: 28,
                       font: Fonts.TITLE,
                       weight: FontWeight.w700,

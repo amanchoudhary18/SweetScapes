@@ -158,13 +158,15 @@ class Availability {
 class Components {
   bool? isHighlight;
   Details? details;
+  int? order;
 
-  Components({this.isHighlight, this.details});
+  Components({this.isHighlight, this.details, this.order});
 
   Components.fromJson(Map<String, dynamic> json) {
     isHighlight = json['is_highlight'];
     details =
         json['details'] != null ? new Details.fromJson(json['details']) : null;
+    order = json['order'];
   }
 
   Map<String, dynamic> toJson() {
@@ -173,6 +175,7 @@ class Components {
     if (this.details != null) {
       data['details'] = this.details!.toJson();
     }
+    data['order'] = this.order;
     return data;
   }
 }

@@ -78,4 +78,44 @@ class TagsDirectory {
     
     return tagLabel;
   }
+
+  String getTagLabelForDatabase(String query) {
+    String tagLabel = '';
+    if (query == 'Fine Dining')
+      tagLabel = 'Fine_Dining';
+    else if (query == 'Decent Dining')
+      tagLabel = 'Decent_Dining';
+    else if (query == 'Dhaba' || query == 'Dhabas')
+      tagLabel = 'Dhabas';
+    else if (query == 'Cafe' || query == 'Cafes')
+      tagLabel = 'Cafes';
+    else if (query == 'Street Food')
+      tagLabel = 'Streetfood';
+    else if (query == 'Hills')
+      tagLabel = 'Hills';
+    else if (query == 'Lakes')
+      tagLabel = 'Lakes';
+    else if (query == 'Dams Waterfalls')
+      tagLabel = 'Dams_Waterfalls';
+    else if (query == 'Malls')
+      tagLabel = 'Malls';
+    else if (query == 'Movie')
+      tagLabel = 'Movie_Halls';
+    else if (query == 'Parks')
+      tagLabel = 'Parks';
+    else if (query == 'Clubbing')
+      tagLabel = 'Clubbing';
+    else if (query == 'Night Out')
+      tagLabel = 'Night_Out';
+    else if (query == 'Shopping')
+      tagLabel = 'Shopping';
+    else if (query == 'Places Of Worship')
+      tagLabel = 'Places_Of_Worship';
+    else if (query == 'Museum')
+      tagLabel = 'Museum';
+    else
+      tagLabel = 'Unknown Tag';
+    
+    return tagLabel;
+  }
 }
