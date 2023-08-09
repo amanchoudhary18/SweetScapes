@@ -386,6 +386,7 @@ router.post("/createPlan", async (req, res) => {
             allDistancesandDurations[i].driving.duration * 60 * 1000
         ),
         drop_time_formatted: new Date(time.getTime()).toLocaleTimeString(),
+        price: 0,
       };
 
       if (i !== allDistancesandDurations.length - 1) {
@@ -411,8 +412,8 @@ router.post("/createPlan", async (req, res) => {
       (twoTravel[twoTravel.length - 1].drop_time - twoTravel[0].boarding_time) /
         (1000 * 60)
     );
-
-    let price = 0;
+    // scooty
+    let scooty_price = 0;
 
     if (
       dayoftheweek === "monday" ||
@@ -422,22 +423,33 @@ router.post("/createPlan", async (req, res) => {
     ) {
       let petrol_cost = (totalDistance / 40) * 100;
       let hour_cost = (totalTime / 60) * 60;
-      price = petrol_cost + hour_cost;
-    } else if (dayoftheweek === "saturday" || dayoftheweek === "sunday") {
+      scooty_price = petrol_cost + hour_cost;
+    } else {
       let petrol_cost = (totalDistance / 40) * 100;
       let hour_cost = (totalTime / 60) * 70;
-      price = petrol_cost + hour_cost;
-    } else {
-      let petrol_cost = (totalDistance / 30) * 100;
-      let hour_cost = (totalTime / 60) * 70;
-      price = petrol_cost + hour_cost;
+      scooty_price = petrol_cost + hour_cost;
     }
+
+    let bike_price = 0;
+    let odometer_cost = totalDistance * 10;
+
+    let bike_time_calculator =
+      totalTime / 60 - Math.floor(totalTime / 60) <= 0.25
+        ? Math.floor(totalTime / 60)
+        : Math.ceil(totalTime / 60);
+
+    let rent_petrol_cost =
+      Math.ceil(bike_time_calculator) * 90 + (totalDistance / 40) * 100;
+    bike_price = Math.max(rent_petrol_cost, odometer_cost);
 
     const completeTwoWheeler = {
       route: twoTravel,
       duration: totalTime,
       distance: parseFloat(totalDistance.toFixed(2)),
-      price: Math.round(price / 5) * 5,
+      price: {
+        scooty: Math.round(scooty_price / 5) * 5,
+        bike: Math.round(bike_price / 5) * 5,
+      },
     };
 
     // Four Wheeler Travel
@@ -451,7 +463,10 @@ router.post("/createPlan", async (req, res) => {
       }),
       duration: totalTime,
       distance: parseFloat(totalDistance.toFixed(2)),
-      price: 1800,
+      price: {
+        mid_size: 1800 + Math.ceil(((totalDistance / 16) * 94) / 10) * 10,
+        suv: 6500 + Math.ceil(((totalDistance / 10) * 94) / 10) * 10,
+      },
     };
 
     //Bus Travel
@@ -495,6 +510,8 @@ router.post("/createPlan", async (req, res) => {
     startBus.sort((busA, busB) =>
       compareArrivalTime(busA, busB, time) ? -1 : 1
     );
+
+    console.log(startBus);
 
     // Check if the bus is +- 30 minutes from start time
     const nearestBusTime = new Date(time);
@@ -988,7 +1005,6 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         };
 
         populatedComponents.push(componentWithHighlight);
-
         tags.add(curr_component.tags[0]);
 
         images.push({
