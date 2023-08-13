@@ -87,11 +87,14 @@ function isTimestampBefore(epochTimeMs, timestring) {
   const istDatetime = moment.tz(epochTimeMs, istTimezone);
   const [providedHours, providedMinutes] = timestring.split(":").map(Number);
 
-  // Get the current IST time
   const currentISTTime = moment.tz(istTimezone);
 
-  // Create a datetime object for the same date as the epoch timestamp with the provided time
+  const epochDate = new Date(epochTimeMs);
+
   const providedDatetime = currentISTTime.clone().set({
+    year: epochDate.getFullYear(),
+    month: epochDate.getMonth(),
+    date: epochDate.getDate(),
     hours: providedHours,
     minutes: providedMinutes,
     seconds: 0,
@@ -523,20 +526,6 @@ router.post("/createPlan", async (req, res) => {
       compareArrivalTime(busA, busB, time) ? -1 : 1
     );
 
-    // Check if the bus is +- 30 minutes from start time
-    // const nearestBusTime = new Date(time);
-    // console.log("before", nearestBusTime);
-    // nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
-    // nearestBusTime.setMinutes(startBus[0].boarding.arrival_time.split(":")[1]);
-
-    // console.log(nearestBusTime, time);
-
-    // let start_bus_found = true;
-    // let end_bus_found = true;
-
-    // if (Math.abs(nearestBusTime - time) / (1000 * 60) > 30)
-    //   start_bus_found = false;
-
     const timeZone = "Asia/Kolkata"; // Indian Standard Time (IST)
 
     const nearestBusTime = moment.tz(
@@ -544,16 +533,23 @@ router.post("/createPlan", async (req, res) => {
       "HH:mm",
       timeZone
     );
+
+    // Convert time to IST Date object
+    const timeInIST = moment(time).tz(timeZone).toDate();
+
+    // Set the date of nearestBusTime to match the date of timeInIST
     nearestBusTime.set({
+      year: timeInIST.getFullYear(),
+      month: timeInIST.getMonth(),
+      date: timeInIST.getDate(),
       hour: startBus[0].boarding.arrival_time.split(":")[0],
       minute: startBus[0].boarding.arrival_time.split(":")[1],
     });
 
-    const timeInIST = moment(time).tz(timeZone).toDate(); // Convert time to IST Date object
-
     const timeDifferenceInMinutes = Math.abs(
       nearestBusTime.diff(moment(timeInIST).tz(timeZone), "minutes")
     );
+
     const maximumTimeDifferenceInMinutes = 30;
 
     let start_bus_found = true;
