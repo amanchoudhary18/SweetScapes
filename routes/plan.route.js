@@ -530,6 +530,8 @@ router.post("/createPlan", async (req, res) => {
     nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
     nearestBusTime.setMinutes(startBus[0].boarding.arrival_time.split(":")[1]);
 
+    console.log(nearestBusTime, startBus[0].boarding.arrival_time);
+
     let start_bus_found = true;
     let end_bus_found = true;
 
