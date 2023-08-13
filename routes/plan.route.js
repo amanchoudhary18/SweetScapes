@@ -535,7 +535,11 @@ router.post("/createPlan", async (req, res) => {
     let start_bus_found = true;
     let end_bus_found = true;
 
-    if (Math.abs(nearestBusTime - time) / (1000 * 60) > 30)
+    if (
+      Math.abs(nearestBusTime - moment.tz(time, "Asia/Kolkata").toDate()) /
+        (1000 * 60) >
+      30
+    )
       start_bus_found = false;
 
     let currBusTravel;
