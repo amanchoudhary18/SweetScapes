@@ -79,8 +79,10 @@ function getTimeDifference(time1, time2) {
   return minutesDifference;
 }
 
-// compare epoch with "hh:mm"
+// compare epoch with "hh:mm
+const arr = [];
 function isTimestampBefore(timestamp, timeString) {
+  arr.push({ timestamp, timeString });
   const currentTime = new Date();
   const [hours, minutes] = timeString.split(":");
   const comparisonTime = new Date(
@@ -167,7 +169,7 @@ router.get("/getOutingsLength", async (req, res) => {
 router.get("/getDinings", async (req, res) => {
   try {
     const dinings = await Dining.find({});
-    console.log(dinings);
+
     res.status(200).send({ status: "Successfull", dinings });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
@@ -178,7 +180,7 @@ router.get("/getDinings", async (req, res) => {
 router.get("/getOutings", async (req, res) => {
   try {
     const outings = await Outing.find({});
-    console.log(outings);
+
     res.status(200).send({ status: "Successfull", outings });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
@@ -192,7 +194,7 @@ router.post("/createPlan", async (req, res) => {
     const requestData = req.body.components;
 
     // Calculating initial time
-    const options = { weekday: "long", timeZone: "Asia/Kolkata" };
+    let options = { weekday: "long", timeZone: "Asia/Kolkata" };
     const date = new Date(plan_start_time);
 
     const dayoftheweek = date
@@ -348,7 +350,7 @@ router.post("/createPlan", async (req, res) => {
     };
 
     allDistancesandDurations.push(currDistanceandDuration);
-
+    options = { timeZone: "Asia/Kolkata" };
     // Two Wheeler Travel
     let twoTravel = [];
     let time = new Date(date);
@@ -379,19 +381,24 @@ router.post("/createPlan", async (req, res) => {
         distance: allDistancesandDurations[i].driving.distance,
         boarding_point: allDistancesandDurations[i].boarding_point,
         boarding_time: time.getTime(),
-        boarding_time_formatted: new Date(time.getTime()).toLocaleTimeString(),
+        boarding_time_formatted: new Date(time.getTime()).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
         drop_point: allDistancesandDurations[i].drop_point,
         drop_time: time.setTime(
           time.getTime() +
             allDistancesandDurations[i].driving.duration * 60 * 1000
         ),
-        drop_time_formatted: new Date(time.getTime()).toLocaleTimeString(),
+        drop_time_formatted: new Date(time.getTime()).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
         price: 0,
       };
 
       if (i !== allDistancesandDurations.length - 1) {
         if (isTimestampBefore(time, components[i].details.opening_time)) {
-          console.log(time, components[i].details.opening_time);
           throw {
             message: `${
               components[i].type === "Outing"
@@ -511,8 +518,6 @@ router.post("/createPlan", async (req, res) => {
       compareArrivalTime(busA, busB, time) ? -1 : 1
     );
 
-    console.log(startBus);
-
     // Check if the bus is +- 30 minutes from start time
     const nearestBusTime = new Date(time);
     nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
@@ -535,12 +540,12 @@ router.post("/createPlan", async (req, res) => {
         duration: startBus[0].duration,
         boarding_point: startBus[0].boarding.name,
         boarding_time: time.getTime(),
-        boarding_time_formatted: time.toLocaleTimeString(),
+        boarding_time_formatted: time.toLocaleTimeString("en-IN", options),
         drop_point: startBus[0].drop.name,
         drop_time: time.getTime() + startBus[0].duration * 60 * 1000,
         drop_time_formatted: new Date(
           time.getTime() + startBus[0].duration * 60 * 1000
-        ).toLocaleTimeString(),
+        ).toLocaleTimeString("en-IN", options),
         price: startBus[0].student ? 0 : 40,
       };
       time = time.getTime() + startBus[0].duration * 60 * 1000;
@@ -561,7 +566,10 @@ router.post("/createPlan", async (req, res) => {
         distance: res.distance,
         boarding_point: startBus[0].drop.name,
         boarding_time: time,
-        boarding_time_formatted: new Date(time).toLocaleTimeString(),
+        boarding_time_formatted: new Date(time).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
         drop_point:
           components[0].type == "Outing"
             ? components[0].details.place_name
@@ -569,7 +577,7 @@ router.post("/createPlan", async (req, res) => {
         drop_time: time + res.duration * 60 * 1000,
         drop_time_formatted: new Date(
           time + res.duration * 60 * 1000
-        ).toLocaleTimeString(),
+        ).toLocaleTimeString("en-IN", options),
         price: 0,
       };
 
@@ -612,12 +620,15 @@ router.post("/createPlan", async (req, res) => {
         distance: selectiveDistance,
         boarding_point: allDistancesandDurations[i].boarding_point,
         boarding_time: time,
-        boarding_time_formatted: new Date(time).toLocaleTimeString(),
+        boarding_time_formatted: new Date(time).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
         drop_point: allDistancesandDurations[i].drop_point,
         drop_time: time + selectiveDuration * 60 * 1000,
         drop_time_formatted: new Date(
           time + selectiveDuration * 60 * 1000
-        ).toLocaleTimeString(),
+        ).toLocaleTimeString("en-IN", options),
         price: allDistancesandDurations[i].walking
           ? 0
           : Math.round(parseFloat(selectiveDistance) * 2) * 10,
@@ -669,12 +680,15 @@ router.post("/createPlan", async (req, res) => {
             ? end.details.place_name
             : end.details.hotel_name,
         boarding_time: time,
-        boarding_time_formatted: new Date(time).toLocaleTimeString(),
+        boarding_time_formatted: new Date(time).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
         drop_point: end_walk_drop,
         drop_time: time + resDistance.duration * 60 * 1000,
         drop_time_formatted: new Date(
           time + resDistance.duration * 60 * 1000
-        ).toLocaleTimeString(),
+        ).toLocaleTimeString("en-IN", options),
         price: 0,
       };
 
@@ -730,12 +744,15 @@ router.post("/createPlan", async (req, res) => {
         distance: "Not Providing",
         boarding_point: endBus[0].boarding.name,
         boarding_time: nearestBusTime,
-        boarding_time_formatted: new Date(nearestBusTime).toLocaleTimeString(),
+        boarding_time_formatted: new Date(nearestBusTime).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
         drop_point: endBus[0].drop.name,
         drop_time: nearestBusTime + endBus[0].duration * 1000 * 60,
         drop_time_formatted: new Date(
           nearestBusTime + endBus[0].duration * 1000 * 60
-        ).toLocaleTimeString(),
+        ).toLocaleTimeString("en-IN", options),
         price: endBus[0].student ? 0 : 40,
       };
       busTravel.push(currWalkToBus);
@@ -755,7 +772,7 @@ router.post("/createPlan", async (req, res) => {
         boarding_time: time_before_walking,
         boarding_time_formatted: new Date(
           time_before_walking
-        ).toLocaleTimeString(),
+        ).toLocaleTimeString("en-IN", options),
         drop_point: "BIT Mesra",
         drop_time:
           time_before_walking +
@@ -769,7 +786,7 @@ router.post("/createPlan", async (req, res) => {
               .driving.duration *
               60 *
               1000
-        ).toLocaleTimeString(),
+        ).toLocaleTimeString("en-IN", options),
         price:
           Math.round(
             parseFloat(
@@ -827,12 +844,15 @@ router.post("/createPlan", async (req, res) => {
         distance: selectiveDistance,
         boarding_point: allDistancesandDurations[i].boarding_point,
         boarding_time: time,
-        boarding_time_formatted: new Date(time).toLocaleTimeString(),
+        boarding_time_formatted: new Date(time).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
         drop_point: allDistancesandDurations[i].drop_point,
         drop_time: time + selectiveDuration * 1000 * 60,
         drop_time_formatted: new Date(
           time + selectiveDuration * 1000 * 60
-        ).toLocaleTimeString(),
+        ).toLocaleTimeString("en-IN", options),
         price: allDistancesandDurations[i].walking
           ? 0
           : Math.round(parseFloat(selectiveDistance) * 2) * 10,
@@ -880,8 +900,6 @@ router.post("/createPlan", async (req, res) => {
       });
     });
 
-    console.log(components);
-
     res.status(200).json({
       status: "Successful",
       allTravel: {
@@ -891,6 +909,7 @@ router.post("/createPlan", async (req, res) => {
         four_wheeler: completeFourWheeler,
       },
       availability,
+      arr,
     });
   } catch (error) {
     if (error.componentId)
@@ -914,8 +933,6 @@ router.post("/savePlan", async (req, res) => {
   components.map((e) => {
     idString += e.component_id;
   });
-
-  console.log(idString);
 
   try {
     const existingPlan = await PlanModel.findOne({ plan_id: idString });
@@ -1109,7 +1126,6 @@ router.get("/getPlanDetails/:id", userAuth, async (req, res) => {
 
     for (const component of plan.components) {
       let curr_component;
-      console.log("hello");
 
       if (component.type === "Outing") {
         curr_component = await Outing.findOne({
@@ -1175,7 +1191,6 @@ router.get("/getPlanDetails/:id", userAuth, async (req, res) => {
 router.post("/getComponentsByTag", userAuth, async (req, res) => {
   const { tag, type } = req.body;
 
-  console.log(tag, type);
   try {
     let components = [];
 
@@ -1192,6 +1207,8 @@ router.post("/getComponentsByTag", userAuth, async (req, res) => {
     const sendingComponents = [];
 
     for (let i = 0; i < components.length; i++) {
+      components[i].img = extractIdFromGoogleDriveLink(components[i].img);
+
       const sendingComponent = {
         is_highlight: false,
         order: -1,
