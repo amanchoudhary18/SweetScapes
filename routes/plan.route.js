@@ -524,12 +524,13 @@ router.post("/createPlan", async (req, res) => {
     );
 
     // Check if the bus is +- 30 minutes from start time
-    const nearestBusTime = new Date(time);
+
+    const nearestBusTime = moment.tz(time, "Asia/Kolkata").toDate();
 
     nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
     nearestBusTime.setMinutes(startBus[0].boarding.arrival_time.split(":")[1]);
 
-    console.log(nearestBusTime.toLocaleTimeString(), time.toLocaleTimeString());
+    console.log(nearestBusTime, time);
 
     let start_bus_found = true;
     let end_bus_found = true;
