@@ -259,7 +259,7 @@ router.post("/createPlan", async (req, res) => {
     }
 
     currWalkingDistanceandDuration =
-      distanceValue < 1
+      distanceValue < 0.7
         ? await getDistance(pointA.map, pointB.details.map, "walking")
         : null;
 
@@ -299,7 +299,7 @@ router.post("/createPlan", async (req, res) => {
       }
 
       currWalkingDistanceandDuration =
-        distanceValue < 1
+        distanceValue < 0.7
           ? await getDistance(pointA.details.map, pointB.details.map, "walking")
           : null;
 
@@ -339,7 +339,7 @@ router.post("/createPlan", async (req, res) => {
     }
 
     currWalkingDistanceandDuration =
-      distanceValue < 1
+      distanceValue < 0.7
         ? await getDistance(pointA.details.map, pointB.map, "walking")
         : null;
 
@@ -523,6 +523,8 @@ router.post("/createPlan", async (req, res) => {
       compareArrivalTime(busA, busB, time) ? -1 : 1
     );
 
+    console.log(startBus);
+
     // Check if the bus is +- 30 minutes from start time
     const nearestBusTime = new Date(time);
     nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
@@ -559,6 +561,7 @@ router.post("/createPlan", async (req, res) => {
 
       const start_walk_board = startBus[0].drop.map;
       const start_walk_drop = components[0].details.map;
+
       const res = await getDistance(
         start_walk_board,
         start_walk_drop,
