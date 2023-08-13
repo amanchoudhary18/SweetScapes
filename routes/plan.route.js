@@ -525,7 +525,7 @@ router.post("/createPlan", async (req, res) => {
 
     // Check if the bus is +- 30 minutes from start time
     const nearestBusTime = new Date(time);
-    const checkingTime = newDate(time);
+    const checkingTime = new Date(time);
     console.log("before", nearestBusTime);
     nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
     nearestBusTime.setMinutes(startBus[0].boarding.arrival_time.split(":")[1]);
