@@ -289,7 +289,7 @@ router.post("/createPlan", async (req, res) => {
     }
 
     currWalkingDistanceandDuration =
-      distanceValue < 0.7
+      distanceValue <= 0.7
         ? await getDistance(pointA.map, pointB.details.map, "walking")
         : null;
 
@@ -329,7 +329,7 @@ router.post("/createPlan", async (req, res) => {
       }
 
       currWalkingDistanceandDuration =
-        distanceValue < 0.7
+        distanceValue <= 0.7
           ? await getDistance(pointA.details.map, pointB.details.map, "walking")
           : null;
 
@@ -369,7 +369,7 @@ router.post("/createPlan", async (req, res) => {
     }
 
     currWalkingDistanceandDuration =
-      distanceValue < 0.7
+      distanceValue <= 0.7
         ? await getDistance(pointA.details.map, pointB.map, "walking")
         : null;
 
@@ -644,10 +644,16 @@ router.post("/createPlan", async (req, res) => {
       let startAuto = {
         ...completeTwoWheeler.route[0],
         mode: "auto",
-        price:
-          Math.round(
-            parseFloat(allDistancesandDurations[0].driving.distance) * 2
-          ) * 10,
+        price: Math.max(
+          100,
+          Math.ceil(
+            (Math.round(
+              parseFloat(allDistancesandDurations[0].driving.distance) * 2
+            ) *
+              10) /
+              50
+          ) * 50
+        ),
       };
 
       busTravel.push(startAuto);
@@ -688,7 +694,11 @@ router.post("/createPlan", async (req, res) => {
         ).toLocaleTimeString("en-IN", options),
         price: allDistancesandDurations[i].walking
           ? 0
-          : Math.round(parseFloat(selectiveDistance) * 2) * 10,
+          : Math.ceil((parseFloat(selectiveDistance) * 2 * 10) / 50) * 50 +
+            (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
+            moment.tz(time, "Asia/Kolkata").minute() >= 30
+              ? 100
+              : 0),
       };
 
       busTravel.push(currBusTravel);
@@ -868,14 +878,25 @@ router.post("/createPlan", async (req, res) => {
               60 *
               1000
         ).toLocaleTimeString("en-IN", options),
-        price:
-          Math.round(
-            parseFloat(
+        price: Math.max(
+          Math.ceil(
+            (parseFloat(
               allDistancesandDurations[allDistancesandDurations.length - 1]
                 .driving.distance
-            ) * 2
-          ) * 10,
+            ) *
+              20) /
+              50
+          ) *
+            50 +
+            (moment.tz(time_before_walking, "Asia/Kolkata").hour() >= 17 &&
+            moment.tz(time_before_walking, "Asia/Kolkata").minute() >= 30
+              ? 100
+              : 0),
+          100
+        ),
       };
+
+      console.log(time_before_walking);
       busTravel.push(currBusTravel);
     }
 
@@ -936,7 +957,22 @@ router.post("/createPlan", async (req, res) => {
         ).toLocaleTimeString("en-IN", options),
         price: allDistancesandDurations[i].walking
           ? 0
-          : Math.round(parseFloat(selectiveDistance) * 2) * 10,
+          : Math.ceil(
+              Math.max(
+                Math.round(parseFloat(selectiveDistance) * 2) * 10 +
+                  (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
+                  moment.tz(time, "Asia/Kolkata").minute() >= 30
+                    ? 100
+                    : 0),
+                allDistancesandDurations[i].boarding_point === "BIT Mesra" ||
+                  allDistancesandDurations[i].drop_point === "BIT Mesra"
+                  ? moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
+                    moment.tz(time, "Asia/Kolkata").minute() >= 30
+                    ? 150
+                    : 100
+                  : 0
+              ) / 50
+            ) * 50,
       };
 
       autoTravel.push(currAutoTravel);
