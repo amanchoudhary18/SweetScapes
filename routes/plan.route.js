@@ -524,24 +524,49 @@ router.post("/createPlan", async (req, res) => {
     );
 
     // Check if the bus is +- 30 minutes from start time
-    const nearestBusTime = new Date(time);
-    const checkingTime = new Date(time);
-    console.log("before", nearestBusTime);
-    nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
-    nearestBusTime.setMinutes(startBus[0].boarding.arrival_time.split(":")[1]);
+    // const nearestBusTime = new Date(time);
+    // console.log("before", nearestBusTime);
+    // nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
+    // nearestBusTime.setMinutes(startBus[0].boarding.arrival_time.split(":")[1]);
 
-    console.log(nearestBusTime, checkingTime);
+    // console.log(nearestBusTime, time);
+
+    // let start_bus_found = true;
+    // let end_bus_found = true;
+
+    // if (Math.abs(nearestBusTime - time) / (1000 * 60) > 30)
+    //   start_bus_found = false;
+
+    const timeZone = "Asia/Kolkata"; // Indian Standard Time (IST)
+
+    const nearestBusTime = moment.tz(
+      startBus[0].boarding.arrival_time,
+      "HH:mm",
+      timeZone
+    );
+    nearestBusTime.set({
+      hour: startBus[0].boarding.arrival_time.split(":")[0],
+      minute: startBus[0].boarding.arrival_time.split(":")[1],
+    });
+
+    const timeInIST = moment(time).tz(timeZone).toDate(); // Convert time to IST Date object
+
+    const timeDifferenceInMinutes = Math.abs(
+      nearestBusTime.diff(moment(timeInIST).tz(timeZone), "minutes")
+    );
+    const maximumTimeDifferenceInMinutes = 30;
 
     let start_bus_found = true;
     let end_bus_found = true;
 
-    if (Math.abs(nearestBusTime - time) / (1000 * 60) > 30)
+    if (timeDifferenceInMinutes > maximumTimeDifferenceInMinutes) {
       start_bus_found = false;
-
+    }
+    console.log(nearestBusTime.toDate(), time);
     let currBusTravel;
 
     if (startBus[0] && start_bus_found) {
-      time = nearestBusTime;
+      time = nearestBusTime.toDate();
 
       currBusTravel = {
         mode: "bus",
