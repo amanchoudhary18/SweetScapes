@@ -9,7 +9,7 @@ const PlanModel = require("../models/plan.model");
 require("dotenv").config({ path: "../.env" });
 const API_KEY = process.env.GOOGLE_MAPS_KEY;
 const userAuth = require("../middleware/userAuth");
-
+const moment = require("moment-timezone");
 const BIT_LOCATION = {
   map: {
     lat: "23.41656964288303",
@@ -79,21 +79,38 @@ function getTimeDifference(time1, time2) {
   return minutesDifference;
 }
 
-// compare epoch with "hh:mm
-const arr = [];
-function isTimestampBefore(timestamp, timeString) {
-  arr.push({ timestamp, timeString });
-  const currentTime = new Date();
-  const [hours, minutes] = timeString.split(":");
-  const comparisonTime = new Date(
-    currentTime.getFullYear(),
-    currentTime.getMonth(),
-    currentTime.getDate(),
-    hours,
-    minutes
-  );
+// compare epoch with "hh:mm"
+// function isTimestampBefore(timestamp, timeString) {
+//   const currentTime = new Date();
+//   const [hours, minutes] = timeString.split(":");
+//   const comparisonTime = new Date(
+//     currentTime.getFullYear(),
+//     currentTime.getMonth(),
+//     currentTime.getDate(),
+//     hours,
+//     minutes
+//   );
 
-  return timestamp < comparisonTime.getTime();
+//   return timestamp < comparisonTime.getTime();
+// }
+
+function isTimestampBefore(epochTimeMs, timestring) {
+  const istTimezone = "Asia/Kolkata";
+  const istDatetime = moment.tz(epochTimeMs, istTimezone);
+  const [providedHours, providedMinutes] = timestring.split(":").map(Number);
+
+  // Get the current IST time
+  const currentISTTime = moment.tz(istTimezone);
+
+  // Create a datetime object for the same date as the epoch timestamp with the provided time
+  const providedDatetime = currentISTTime.clone().set({
+    hours: providedHours,
+    minutes: providedMinutes,
+    seconds: 0,
+    milliseconds: 0,
+  });
+
+  return istDatetime.isBefore(providedDatetime);
 }
 
 // Extract file id from drive link
@@ -909,7 +926,6 @@ router.post("/createPlan", async (req, res) => {
         four_wheeler: completeFourWheeler,
       },
       availability,
-      arr,
     });
   } catch (error) {
     if (error.componentId)
@@ -917,7 +933,6 @@ router.post("/createPlan", async (req, res) => {
         status: "Failed",
         message: error.message,
         componentId: error.componentId,
-        arr,
       });
     else {
       console.log(error);
