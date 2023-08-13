@@ -44,20 +44,23 @@ function getDistance(origin, destination, mode) {
 }
 
 // compare time function
+
 const compareArrivalTime = (busA, busB, time) => {
-  const busATime = new Date(time);
-  const busBTime = new Date(time);
+  const istTimezone = "Asia/Kolkata";
+
+  const busATime = moment.tz(time, istTimezone);
+  const busBTime = moment.tz(time, istTimezone);
 
   const newATime = busA.boarding.arrival_time;
   const newBTime = busB.boarding.arrival_time;
 
-  busATime.setHours(newATime.split(":")[0]);
-  busATime.setMinutes(newATime.split(":")[1]);
-  busBTime.setHours(newBTime.split(":")[0]);
-  busBTime.setMinutes(newBTime.split(":")[1]);
+  busATime.hours(newATime.split(":")[0]);
+  busATime.minutes(newATime.split(":")[1]);
+  busBTime.hours(newBTime.split(":")[0]);
+  busBTime.minutes(newBTime.split(":")[1]);
 
-  const diff1 = Math.abs(busATime.getTime() - time.getTime());
-  const diff2 = Math.abs(busBTime.getTime() - time.getTime());
+  const diff1 = Math.abs(busATime.valueOf() - time);
+  const diff2 = Math.abs(busBTime.valueOf() - time);
 
   return diff1 < diff2;
 };
@@ -78,21 +81,6 @@ function getTimeDifference(time1, time2) {
 
   return minutesDifference;
 }
-
-// compare epoch with "hh:mm"
-// function isTimestampBefore(timestamp, timeString) {
-//   const currentTime = new Date();
-//   const [hours, minutes] = timeString.split(":");
-//   const comparisonTime = new Date(
-//     currentTime.getFullYear(),
-//     currentTime.getMonth(),
-//     currentTime.getDate(),
-//     hours,
-//     minutes
-//   );
-
-//   return timestamp < comparisonTime.getTime();
-// }
 
 function isTimestampBefore(epochTimeMs, timestring) {
   const istTimezone = "Asia/Kolkata";
