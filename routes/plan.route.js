@@ -65,6 +65,33 @@ const compareArrivalTime = (busA, busB, time) => {
   return diff1 < diff2;
 };
 
+const compareReturnArrivalTime = (busA, busB, time) => {
+  const istTimezone = "Asia/Kolkata";
+
+  const busATime = moment.tz(busA.boarding.arrival_time, "HH:mm", istTimezone);
+  const busBTime = moment.tz(busB.boarding.arrival_time, "HH:mm", istTimezone);
+
+  const currentTime = moment(time);
+
+  // Set the date of busATime and busBTime to match the date of currentTime
+  busATime.set({
+    year: currentTime.year(),
+    month: currentTime.month(),
+    date: currentTime.date(),
+  });
+  busBTime.set({
+    year: currentTime.year(),
+    month: currentTime.month(),
+    date: currentTime.date(),
+  });
+
+  // Calculate and store the difference in minutes in the bus objects
+  busA.diff = Math.abs(busATime.diff(currentTime, "minutes"));
+  busB.diff = Math.abs(busBTime.diff(currentTime, "minutes"));
+
+  return busA.diff < busB.diff;
+};
+
 //utility function
 function getTimeDifference(time1, time2) {
   const [hours1, minutes1] = time1.split(":");
@@ -558,7 +585,6 @@ router.post("/createPlan", async (req, res) => {
     if (timeDifferenceInMinutes > maximumTimeDifferenceInMinutes) {
       start_bus_found = false;
     }
-    console.log(nearestBusTime.toDate(), time);
     let currBusTravel;
 
     if (startBus[0] && start_bus_found) {
@@ -744,26 +770,50 @@ router.post("/createPlan", async (req, res) => {
       });
 
       endBus.sort((busA, busB) =>
-        compareArrivalTime(busA, busB, new Date(time))
+        compareReturnArrivalTime(busA, busB, new Date(time))
       );
     } else {
       endBus = [null];
     }
+    end_bus_found = true;
+    const minDiffBus =
+      endBus[0] != null
+        ? endBus.reduce((minBus, currentBus) =>
+            currentBus.diff < minBus.diff ? currentBus : minBus
+          )
+        : null;
 
     // checking is bus is available +30 minutes
     let nearestEndBusTime;
-    if (endBus[0] != null) {
-      nearestEndBusTime = new Date(time);
-      nearestEndBusTime.setHours(endBus[0].boarding.arrival_time.split(":")[0]);
-      nearestEndBusTime.setMinutes(
-        endBus[0].boarding.arrival_time.split(":")[1]
+    if (minDiffBus) {
+      nearestEndBusTime = moment.tz(
+        minDiffBus.boarding.arrival_time,
+        "HH:mm",
+        timeZone
+      );
+
+      const endTimeInIST = moment(time).tz(timeZone);
+
+      nearestEndBusTime.set({
+        year: endTimeInIST.year(),
+        month: endTimeInIST.month(),
+        date: endTimeInIST.date(),
+        hour: nearestEndBusTime.hours(), // Use hours from boarding.arrival_time
+        minute: nearestEndBusTime.minutes(), // Use minutes from boarding.arrival_time
+      });
+
+      const endTimeDifferenceInMinutes = nearestEndBusTime.diff(
+        moment(endTimeInIST).tz(timeZone),
+        "minutes"
       );
 
       if (
-        (nearestEndBusTime - time) / (1000 * 60) < 0 ||
-        (nearestEndBusTime - time) / (1000 * 60) > 30
-      )
+        !(endTimeDifferenceInMinutes <= 30 && endTimeDifferenceInMinutes >= 0)
+      ) {
         end_bus_found = false;
+      }
+
+      nearestEndBusTime = nearestEndBusTime.valueOf();
     } else {
       end_bus_found = false;
     }
@@ -771,20 +821,20 @@ router.post("/createPlan", async (req, res) => {
     if (end_bus_found) {
       currBusTravel = {
         mode: "bus",
-        duration: endBus[0].duration,
+        duration: minDiffBus.duration,
         distance: "Not Providing",
-        boarding_point: endBus[0].boarding.name,
-        boarding_time: nearestBusTime,
-        boarding_time_formatted: new Date(nearestBusTime).toLocaleTimeString(
+        boarding_point: minDiffBus.boarding.name,
+        boarding_time: nearestEndBusTime,
+        boarding_time_formatted: new Date(nearestEndBusTime).toLocaleTimeString(
           "en-IN",
           options
         ),
-        drop_point: endBus[0].drop.name,
-        drop_time: nearestBusTime + endBus[0].duration * 1000 * 60,
+        drop_point: minDiffBus.drop.name,
+        drop_time: nearestEndBusTime + minDiffBus.duration * 1000 * 60,
         drop_time_formatted: new Date(
-          nearestBusTime + endBus[0].duration * 1000 * 60
+          nearestEndBusTime + minDiffBus.duration * 1000 * 60
         ).toLocaleTimeString("en-IN", options),
-        price: endBus[0].student ? 0 : 40,
+        price: minDiffBus.student ? 0 : 40,
       };
       busTravel.push(currWalkToBus);
       busTravel.push(currBusTravel);
