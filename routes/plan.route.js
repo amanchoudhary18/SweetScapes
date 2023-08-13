@@ -917,6 +917,7 @@ router.post("/createPlan", async (req, res) => {
         status: "Failed",
         message: error.message,
         componentId: error.componentId,
+        arr,
       });
     else {
       console.log(error);
