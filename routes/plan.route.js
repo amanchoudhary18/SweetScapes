@@ -530,16 +530,16 @@ router.post("/createPlan", async (req, res) => {
     nearestBusTime.setUTCMinutes(
       startBus[0].boarding.arrival_time.split(":")[1]
     );
-    const utcTime = new Date(
+    const utcNearestBusTime = new Date(
       nearestBusTime.getTime() - 5.5 * 60 * 60 * 1000
     ).toISOString();
 
-    console.log("after", utcTime, time);
+    console.log("after", utcNearestBusTime, time);
 
     let start_bus_found = true;
     let end_bus_found = true;
 
-    if (Math.abs(nearestBusTime - time) / (1000 * 60) > 30)
+    if (Math.abs(utcNearestBusTime - time) / (1000 * 60) > 30)
       start_bus_found = false;
 
     let currBusTravel;
