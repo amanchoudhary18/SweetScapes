@@ -526,20 +526,15 @@ router.post("/createPlan", async (req, res) => {
     // Check if the bus is +- 30 minutes from start time
     const nearestBusTime = new Date(time);
     console.log("before", nearestBusTime);
-    nearestBusTime.setUTCHours(startBus[0].boarding.arrival_time.split(":")[0]);
-    nearestBusTime.setUTCMinutes(
-      startBus[0].boarding.arrival_time.split(":")[1]
-    );
-    const utcNearestBusTime = new Date(
-      nearestBusTime.getTime() - 5.5 * 60 * 60 * 1000
-    ).toISOString();
+    nearestBusTime.setHours(startBus[0].boarding.arrival_time.split(":")[0]);
+    nearestBusTime.setMinutes(startBus[0].boarding.arrival_time.split(":")[1]);
 
-    console.log("after", utcNearestBusTime, time);
+    console.log(nearestBusTime, time);
 
     let start_bus_found = true;
     let end_bus_found = true;
 
-    if (Math.abs(utcNearestBusTime - time) / (1000 * 60) > 30)
+    if (Math.abs(nearestBusTime - time) / (1000 * 60) > 30)
       start_bus_found = false;
 
     let currBusTravel;
