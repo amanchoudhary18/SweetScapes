@@ -222,7 +222,6 @@ class AuthViewModel with ChangeNotifier {
                 {
                   if (value.user!.isNew! == true)
                     {
-                      print ("Signup" + value.token.toString()),
                       userPreference.saveUser(
                         UserModel(
                           token: value.token.toString(),
@@ -232,12 +231,11 @@ class AuthViewModel with ChangeNotifier {
                         ),
                       ),
                       userData = ApiResponse.completed(value),
-                      Utils.goFlushBar('SignUp Successful', context),
+                      // Utils.goFlushBar('SignUp Successful', context),
                       AutoRouter.of(context).push(SetUpDetailsViewRoute()),
                     }
                   else
                     {
-                      print ("Login" + value.token.toString()),
                       userPreference.saveUser(
                         UserModel(
                           token: value.token.toString(),
@@ -247,7 +245,7 @@ class AuthViewModel with ChangeNotifier {
                         ),
                       ),
                       userData = ApiResponse.completed(value),
-                      Utils.goFlushBar('LogIn Successful', context),
+                      // Utils.goFlushBar('LogIn Successful', context),
                       AutoRouter.of(context).push(HomeScreenRoute()),
                     }
                 }

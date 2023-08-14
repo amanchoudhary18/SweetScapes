@@ -199,6 +199,7 @@ class UpdateTagsViewModel with ChangeNotifier {
                   Utils.goFlushBar('Preferences Updated', context),
                   userPreference.saveUser(
                     UserModel(
+                      token: token,
                       user: User(
                         isNew: false,
                       ),
