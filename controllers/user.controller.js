@@ -238,8 +238,8 @@ exports.update = async (req, res) => {
               .Dams_Waterfalls
               ? 1
               : 0;
-          if (preferences.Outing.Malls !== undefined)
-            user.preferences.Outing.Malls = preferences.Outing.Malls ? 1 : 0;
+          if (preferences.Outing.Arcade !== undefined)
+            user.preferences.Outing.Arcade = preferences.Outing.Arcade ? 1 : 0;
           if (preferences.Outing.Movie !== undefined)
             user.preferences.Outing.Movie = preferences.Outing.Movie ? 1 : 0;
           if (preferences.Outing.Park !== undefined)
@@ -248,8 +248,8 @@ exports.update = async (req, res) => {
             user.preferences.Outing.Picnics = preferences.Outing.Picnics
               ? 1
               : 0;
-          if (preferences.Outing.Clubbing !== undefined)
-            user.preferences.Outing.Clubbing = preferences.Outing.Clubbing
+          if (preferences.Outing.Clubs_Bars !== undefined)
+            user.preferences.Outing.Clubs_Bars = preferences.Outing.Clubs_Bars
               ? 1
               : 0;
           if (preferences.Outing.Night_Out !== undefined)
@@ -302,11 +302,11 @@ exports.updateInitial = async (req, res) => {
       const outing = [
         "Hills, Lakes",
         "Dams, Waterfalls",
-        "Malls",
+        "Arcade",
         "Movie",
         "Park",
         "Picnics",
-        "Clubbing",
+        "Clubs_Bars",
         "Night Out",
         "Window Shopping",
       ];
@@ -359,8 +359,8 @@ exports.setInitialPreferences = async (req, res) => {
               .Dams_Waterfalls
               ? 1
               : 0;
-          if (preferences.Outing.Malls !== undefined)
-            user.preferences.Outing.Malls = preferences.Outing.Malls ? 1 : 0;
+          if (preferences.Outing.Arcade !== undefined)
+            user.preferences.Outing.Arcade = preferences.Outing.Arcade ? 1 : 0;
           if (preferences.Outing.Movie_Halls !== undefined)
             user.preferences.Outing.Movie_Halls = preferences.Outing.Movie_Halls
               ? 1
@@ -368,8 +368,8 @@ exports.setInitialPreferences = async (req, res) => {
           if (preferences.Outing.Parks !== undefined)
             user.preferences.Outing.Parks = preferences.Outing.Parks ? 1 : 0;
 
-          if (preferences.Outing.Clubbing !== undefined)
-            user.preferences.Outing.Clubbing = preferences.Outing.Clubbing
+          if (preferences.Outing.Clubs_Bars !== undefined)
+            user.preferences.Outing.Clubs_Bars = preferences.Outing.Clubs_Bars
               ? 1
               : 0;
           if (preferences.Outing.Night_Out !== undefined)

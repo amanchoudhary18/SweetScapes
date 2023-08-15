@@ -983,25 +983,7 @@ router.post("/createPlan", async (req, res) => {
           (1000 * 60)
       ),
       price,
-    };
-
-    // Overall Availability
-    const availability = {
-      sunday: true,
-      monday: true,
-      tuesday: true,
-      wednesday: true,
-      thursday: true,
-      friday: true,
-      saturday: true,
-    };
-
-    components.forEach((component) => {
-      Object.keys(availability).forEach((day) => {
-        availability[day] =
-          availability[day] && component.details.availability[day];
-      });
-    });
+    };   
 
     res.status(200).json({
       status: "Successful",
@@ -1010,8 +992,8 @@ router.post("/createPlan", async (req, res) => {
         auto: completeAuto,
         rent_vehicle: completeRentVehicle,
       },
-      availability,
     });
+
   } catch (error) {
     if (error.componentId)
       res.status(500).json({
@@ -1093,10 +1075,10 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
           Hills: 0,
           Lakes: 0,
           Dams_Waterfalls: 0,
-          Malls: 0,
+          Arcade: 0,
           Movie_Halls: 0,
           Parks: 0,
-          Clubbing: 0,
+          Clubs_Bars: 0,
           Night_Out: 0,
           Shopping: 0,
           Places_Of_Worship: 0,
@@ -1165,11 +1147,11 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
           plan_preferences.Outing.Lakes * userPreferences.Outing.Lakes +
           plan_preferences.Outing.Dams_Waterfalls *
             userPreferences.Outing.Dams_Waterfalls +
-          plan_preferences.Outing.Malls * userPreferences.Outing.Malls +
+          plan_preferences.Outing.Arcade * userPreferences.Outing.Arcade +
           plan_preferences.Outing.Movie_Halls *
             userPreferences.Outing.Movie_Halls +
           plan_preferences.Outing.Parks * userPreferences.Outing.Parks +
-          plan_preferences.Outing.Clubbing * userPreferences.Outing.Clubbing +
+          plan_preferences.Outing.Clubs_Bars * userPreferences.Outing.Clubs_Bars +
           plan_preferences.Outing.Shopping * userPreferences.Outing.Shopping +
           plan_preferences.Outing.Night_Out * userPreferences.Outing.Night_Out +
           plan_preferences.Outing.Places_Of_Worship *

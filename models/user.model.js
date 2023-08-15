@@ -103,7 +103,7 @@ const userSchema = new mongoose.Schema(
           required: true,
           default: 0,
         },
-        Malls: {
+        Arcade: {
           type: Number,
           required: true,
           default: 0,
@@ -118,7 +118,7 @@ const userSchema = new mongoose.Schema(
           required: true,
           default: 0,
         },
-        Clubbing: {
+        Clubs_Bars: {
           type: Number,
           required: true,
           default: 0,
