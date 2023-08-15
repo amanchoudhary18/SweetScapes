@@ -411,7 +411,7 @@ router.post("/createPlan", async (req, res) => {
       }
 
       currTwoTravel = {
-        mode: "two wheeler",
+        mode: "rent_vehicle",
         duration: allDistancesandDurations[i].driving.duration,
         distance: allDistancesandDurations[i].driving.distance,
         boarding_point: allDistancesandDurations[i].boarding_point,
@@ -484,33 +484,19 @@ router.post("/createPlan", async (req, res) => {
       Math.ceil(bike_time_calculator) * 90 + (totalDistance / 40) * 100;
     bike_price = Math.max(rent_petrol_cost, odometer_cost);
 
-    const completeTwoWheeler = {
+    const completeRentVehicle = {
       route: twoTravel,
       duration: totalTime,
       distance: parseFloat(totalDistance.toFixed(2)),
       price: {
         scooty: Math.round(scooty_price / 5) * 5,
         bike: Math.round(bike_price / 5) * 5,
-      },
-    };
-
-    // Four Wheeler Travel
-
-    const completeFourWheeler = {
-      route: twoTravel.map((travel) => {
-        if (travel.mode === "two wheeler") {
-          return { ...travel, mode: "four wheeler" };
-        }
-        return travel;
-      }),
-      duration: totalTime,
-      distance: parseFloat(totalDistance.toFixed(2)),
-      price: {
         mid_size: 1800 + Math.ceil(((totalDistance / 16) * 94) / 10) * 10,
         suv: 6500 + Math.ceil(((totalDistance / 10) * 94) / 10) * 10,
       },
     };
 
+   
     //Bus Travel
     let busTravel = [];
     const start = components[0];
@@ -642,7 +628,7 @@ router.post("/createPlan", async (req, res) => {
       time = time + res.duration * 60 * 1000;
     } else {
       let startAuto = {
-        ...completeTwoWheeler.route[0],
+        ...completeRentVehicle.route[0],
         mode: "auto",
         price: Math.max(
           100,
@@ -657,7 +643,7 @@ router.post("/createPlan", async (req, res) => {
       };
 
       busTravel.push(startAuto);
-      time = time.getTime() + completeTwoWheeler.route[0].duration * 60 * 1000;
+      time = time.getTime() + completeRentVehicle.route[0].duration * 60 * 1000;
     }
 
     for (let i = 1; i < allDistancesandDurations.length; i++) {
@@ -1022,8 +1008,7 @@ router.post("/createPlan", async (req, res) => {
       allTravel: {
         bus: completeBus,
         auto: completeAuto,
-        two_wheeler: completeTwoWheeler,
-        four_wheeler: completeFourWheeler,
+        rent_vehicle: completeRentVehicle,
       },
       availability,
     });
