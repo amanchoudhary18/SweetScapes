@@ -496,7 +496,6 @@ router.post("/createPlan", async (req, res) => {
       },
     };
 
-   
     //Bus Travel
     let busTravel = [];
     const start = components[0];
@@ -983,7 +982,7 @@ router.post("/createPlan", async (req, res) => {
           (1000 * 60)
       ),
       price,
-    };   
+    };
 
     res.status(200).json({
       status: "Successful",
@@ -993,7 +992,6 @@ router.post("/createPlan", async (req, res) => {
         rent_vehicle: completeRentVehicle,
       },
     });
-
   } catch (error) {
     if (error.componentId)
       res.status(500).json({
@@ -1098,6 +1096,17 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
             _id: component.component_id,
           });
         }
+
+        const openingTime12Hour = moment
+          .tz(curr_component.opening_time, "HH:mm", "Asia/Kolkata")
+          .format("h:mm A");
+        const closingTime12Hour = moment
+          .tz(curr_component.closing_time, "HH:mm", "Asia/Kolkata")
+          .format("h:mm A");
+
+        curr_component.opening_time = openingTime12Hour;
+        curr_component.closing_time = closingTime12Hour;
+
         const componentWithHighlight = {
           is_highlight: component.is_highlight,
           order: component.order,
@@ -1151,7 +1160,8 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
           plan_preferences.Outing.Movie_Halls *
             userPreferences.Outing.Movie_Halls +
           plan_preferences.Outing.Parks * userPreferences.Outing.Parks +
-          plan_preferences.Outing.Clubs_Bars * userPreferences.Outing.Clubs_Bars +
+          plan_preferences.Outing.Clubs_Bars *
+            userPreferences.Outing.Clubs_Bars +
           plan_preferences.Outing.Shopping * userPreferences.Outing.Shopping +
           plan_preferences.Outing.Night_Out * userPreferences.Outing.Night_Out +
           plan_preferences.Outing.Places_Of_Worship *
@@ -1291,6 +1301,15 @@ router.post("/getComponentsByTag", userAuth, async (req, res) => {
 
     for (let i = 0; i < components.length; i++) {
       components[i].img = extractIdFromGoogleDriveLink(components[i].img);
+      const openingTime12Hour = moment
+        .tz(components[i].opening_time, "HH:mm", "Asia/Kolkata")
+        .format("h:mm A");
+      const closingTime12Hour = moment
+        .tz(components[i].closing_time, "HH:mm", "Asia/Kolkata")
+        .format("h:mm A");
+
+      components[i].closing_time = closingTime12Hour;
+      components[i].opening_time = openingTime12Hour;
 
       const sendingComponent = {
         is_highlight: false,
