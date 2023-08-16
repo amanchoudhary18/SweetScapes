@@ -411,7 +411,7 @@ router.post("/createPlan", async (req, res) => {
       }
 
       currTwoTravel = {
-        mode: "rent_vehicle",
+        mode: "scooty",
         duration: allDistancesandDurations[i].driving.duration,
         distance: allDistancesandDurations[i].driving.distance,
         boarding_point: allDistancesandDurations[i].boarding_point,
@@ -484,16 +484,32 @@ router.post("/createPlan", async (req, res) => {
       Math.ceil(bike_time_calculator) * 90 + (totalDistance / 40) * 100;
     bike_price = Math.max(rent_petrol_cost, odometer_cost);
 
-    const completeRentVehicle = {
+    const completeScooty = {
       route: twoTravel,
       duration: totalTime,
       distance: parseFloat(totalDistance.toFixed(2)),
-      price: {
-        scooty: Math.round(scooty_price / 5) * 5,
-        bike: Math.round(bike_price / 5) * 5,
-        mid_size: 1800 + Math.ceil(((totalDistance / 16) * 94) / 10) * 10,
-        suv: 6500 + Math.ceil(((totalDistance / 10) * 94) / 10) * 10,
-      },
+      price: Math.round(scooty_price / 5) * 5,
+    };
+
+    const completeBike = {
+      route: twoTravel.map((e) => ({ ...e, mode: "bike" })),
+      duration: totalTime,
+      distance: parseFloat(totalDistance.toFixed(2)),
+      price: Math.round(bike_price / 5) * 5,
+    };
+
+    const completeMidSize = {
+      route: twoTravel.map((e) => ({ ...e, mode: "mid_size" })),
+      duration: totalTime,
+      distance: parseFloat(totalDistance.toFixed(2)),
+      price: 1800 + Math.ceil(((totalDistance / 16) * 94) / 10) * 10,
+    };
+
+    const completeSuv = {
+      route: twoTravel.map((e) => ({ ...e, mode: "suv" })),
+      duration: totalTime,
+      distance: parseFloat(totalDistance.toFixed(2)),
+      price: 6500 + Math.ceil(((totalDistance / 10) * 94) / 10) * 10,
     };
 
     //Bus Travel
@@ -989,7 +1005,10 @@ router.post("/createPlan", async (req, res) => {
       allTravel: {
         bus: completeBus,
         auto: completeAuto,
-        rent_vehicle: completeRentVehicle,
+        scooty: completeScooty,
+        bike: completeBike,
+        mid_size: completeMidSize,
+        suv: completeSuv,
       },
     });
   } catch (error) {
