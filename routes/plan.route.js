@@ -294,7 +294,7 @@ router.post("/createPlan", async (req, res) => {
         : null;
 
     currDistanceandDuration = {
-      boarding_point: "BIT Mesra",
+      boarding_point: "PMC Bus Stop",
       drop_point:
         pointB.type === "Outing"
           ? pointB.details.place_name
@@ -378,7 +378,7 @@ router.post("/createPlan", async (req, res) => {
         pointA.type === "Outing"
           ? pointA.details.place_name
           : pointA.details.hotel_name,
-      drop_point: "BIT Mesra",
+      drop_point: "PMC Bus Stop",
 
       driving: currDrivingDistanceandDuration,
       walking: currWalkingDistanceandDuration,
@@ -520,7 +520,7 @@ router.post("/createPlan", async (req, res) => {
       const route = bus.route.find(
         (route) => route.name === start.details.bus_nodal_point
       );
-      const bit_start = bus.route.filter((e) => e.name === "BIT Mesra")[0];
+      const bit_start = bus.route.filter((e) => e.name === "PMC Bus Stop")[0];
 
       return {
         student: bus.student,
@@ -751,7 +751,7 @@ router.post("/createPlan", async (req, res) => {
           (route) => route.name === end.details.bus_nodal_point
         );
 
-        const bit_end = bus.route.filter((e) => e.name === "BIT Mesra")[0];
+        const bit_end = bus.route.filter((e) => e.name === "PMC Bus Stop")[0];
 
         return {
           student: bus.student,
@@ -849,7 +849,7 @@ router.post("/createPlan", async (req, res) => {
         boarding_time_formatted: new Date(
           time_before_walking
         ).toLocaleTimeString("en-IN", options),
-        drop_point: "BIT Mesra",
+        drop_point: "PMC Bus Stop",
         drop_time:
           time_before_walking +
           allDistancesandDurations[allDistancesandDurations.length - 1].driving
@@ -949,8 +949,8 @@ router.post("/createPlan", async (req, res) => {
                   moment.tz(time, "Asia/Kolkata").minute() >= 30
                     ? 100
                     : 0),
-                allDistancesandDurations[i].boarding_point === "BIT Mesra" ||
-                  allDistancesandDurations[i].drop_point === "BIT Mesra"
+                allDistancesandDurations[i].boarding_point === "PMC Bus Stop" ||
+                  allDistancesandDurations[i].drop_point === "PMC Bus Stop"
                   ? moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
                     moment.tz(time, "Asia/Kolkata").minute() >= 30
                     ? 150
