@@ -643,7 +643,7 @@ router.post("/createPlan", async (req, res) => {
       time = time + res.duration * 60 * 1000;
     } else {
       let startAuto = {
-        ...completeRentVehicle.route[0],
+        ...completeScooty.route[0],
         mode: "auto",
         price: Math.max(
           100,
@@ -658,7 +658,7 @@ router.post("/createPlan", async (req, res) => {
       };
 
       busTravel.push(startAuto);
-      time = time.getTime() + completeRentVehicle.route[0].duration * 60 * 1000;
+      time = time.getTime() + completeScooty.route[0].duration * 60 * 1000;
     }
 
     for (let i = 1; i < allDistancesandDurations.length; i++) {
@@ -1114,6 +1114,10 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
           curr_component = await Dining.findOne({
             _id: component.component_id,
           });
+
+          if (curr_component.hotel_name === "The Ruin House") {
+            console.log(curr_component, component.component_id);
+          }
         }
 
         const openingTime12Hour = moment
