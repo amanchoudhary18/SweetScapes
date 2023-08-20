@@ -1378,7 +1378,7 @@ router.post("/saveUserCreatedPlan", userAuth, async (req, res) => {
       $push: { createdPlans: userCreatedPlan._id },
     });
 
-    const res = await axios.get(
+    const response = await axios.get(
       `https://date-form-prod.onrender.com/api/v1/plan/getSavedUserCreatedPlan/${userCreatedPlan._id}`,
       {
         headers: {
@@ -1387,11 +1387,9 @@ router.post("/saveUserCreatedPlan", userAuth, async (req, res) => {
       }
     );
 
-    console.log(res);
-
     res.status(200).send({
       status: "Successful",
-      message: userCreatedPlan._id,
+      final_plan_details: response.data.final_plan_details,
     });
   } catch (error) {
     res.status(200).send({
