@@ -12,6 +12,7 @@ import 'package:sweetscapes/res/components/primary_button.dart';
 import 'package:sweetscapes/res/enums/Fonts.dart';
 import 'package:sweetscapes/res/fonts.dart';
 import 'package:sweetscapes/res/tags_directory.dart';
+import 'package:sweetscapes/view/date%20suggestions/bottomsheet_compareTransport.dart';
 import 'package:sweetscapes/view/date%20suggestions/bottomsheet_editcomponents.dart';
 import 'package:sweetscapes/view/date%20suggestions/date_details_viewmodel.dart';
 
@@ -264,7 +265,8 @@ class DateDetailsView extends StatelessWidget {
 
                                         return Chip(
                                           shape: const StadiumBorder(),
-                                          backgroundColor: AppColor.secondary,
+                                          backgroundColor:
+                                              AppColor.lightPositive,
                                           label: Wrap(
                                             spacing: 4,
                                             crossAxisAlignment:
@@ -352,9 +354,18 @@ class DateDetailsView extends StatelessWidget {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(0,16,0,24),
+                                padding:
+                                    const EdgeInsets.fromLTRB(0, 16, 0, 24),
                                 child: PrimaryButton(
-                                    title: 'Compare Transport', onPress: () {}),
+                                    title: 'Compare Transport',
+                                    onPress: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (BuildContext context) =>
+                                            BottomSheetCompareTransport(model),
+                                      );
+                                    }),
                               ),
                             ],
                           ),

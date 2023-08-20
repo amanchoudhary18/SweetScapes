@@ -3,11 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sweetscapes/data/response/api_response.dart';
 import 'package:sweetscapes/model/body/componentsByTag_body.dart';
+import 'package:sweetscapes/model/body/createPlan_body.dart';
 import 'package:sweetscapes/model/response/getAllPlans_response.dart';
 import 'package:sweetscapes/model/user_model.dart';
 import 'package:sweetscapes/repository/dates_repository.dart';
+import 'package:sweetscapes/res/transport_directory.dart';
 import 'package:sweetscapes/utils/utils.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
+import 'package:sweetscapes/model/response/createPlan_response.dart'
+    as createPlan_response;
 
 class DateDetailsViewModel extends BaseViewModel {
   late CompletedAllPlans plan;
@@ -83,5 +87,154 @@ class DateDetailsViewModel extends BaseViewModel {
         );
 
     return componentsByTag;
+  }
+
+  CreatePlanBody createPlanBody = CreatePlanBody();
+  List<FinalComponents> finalComponents = [];
+  bool showCompareTransportLoader = false;
+  String selectedModeOfTransport = "";
+
+  Map<String, bool> modesOfTransport = {
+    "bus": true,
+    "auto": false,
+    "scooty": false,
+    "bike": false,
+    "mid_size": false,
+    "suv": false,
+  };
+
+  Map<String, bool> modesOfTransportWithBus = {
+    "bus": true,
+    "auto": false,
+    "scooty": false,
+    "bike": false,
+    "mid_size": false,
+    "suv": false,
+  };
+
+  Map<String, bool> modesOfTransportWithoutBus = {
+    "auto": true,
+    "scooty": false,
+    "bike": false,
+    "mid_size": false,
+    "suv": false,
+  };
+
+  double busTravelAmount = 0;
+  double autoTravelAmount = 0;
+  double scootyTravelAmount = 0;
+  double bikeTravelAmount = 0;
+  double midSizeTravelAmount = 0;
+  double suvTravelAmount = 0;
+
+  double totalTravelAmount = 0;
+
+  void updateTransportMode(String label) {
+    modesOfTransport.forEach((key, value) {
+      modesOfTransport[key] = (key == label);
+      if (modesOfTransport[key]!) {
+        selectedModeOfTransport = TransportDirectory().getTransportLabel(key);
+      }
+    });
+
+    notifyListeners();
+  }
+
+  createPlan_response.AllTravel allTravel = createPlan_response.AllTravel();
+  createPlan_response.Bus busTravel = createPlan_response.Bus();
+  createPlan_response.Auto autoTravel = createPlan_response.Auto();
+  createPlan_response.Scooty scootyTravel = createPlan_response.Scooty();
+  createPlan_response.Bike bikeTravel = createPlan_response.Bike();
+  createPlan_response.MidSizeCar midSizeCarTravel =
+      createPlan_response.MidSizeCar();
+  createPlan_response.SUV suvTravel = createPlan_response.SUV();
+
+  bool busIsAvailable = true;
+
+  Future<List<createPlan_response.Route>> compareTransport(
+      BuildContext context) async {
+    showCompareTransportLoader = true;
+    createPlanBody.planStartTime = plan.planStartTime;
+    finalComponents = [];
+    for (Components component in plan.components!) {
+      finalComponents.add(FinalComponents(
+          order: component.order,
+          type: component.details!.type,
+          id: component.details!.sId));
+    }
+    createPlanBody.finalComponents = finalComponents;
+
+    final userPreference = Provider.of<UserViewModel>(context, listen: false);
+    UserModel loggedInUser = await userPreference.getUser();
+    String token = loggedInUser.token.toString();
+
+    dynamic createPlanBodyData = createPlanBody.toJson();
+
+    await _datesRepo
+        .createPlan(token, createPlanBodyData)
+        .then((value) => {
+              if (value.status.toString() == 'Successful')
+                {
+                  showCompareTransportLoader = false,
+                  allTravel = value.allTravel!,
+                  autoTravel = value.allTravel!.auto!,
+                  autoTravelAmount = value.allTravel!.auto!.price!,
+                  scootyTravel = value.allTravel!.scooty!,
+                  scootyTravelAmount = value.allTravel!.scooty!.price!,
+                  bikeTravel = value.allTravel!.bike!,
+                  bikeTravelAmount = value.allTravel!.bike!.price!,
+                  midSizeCarTravel = value.allTravel!.midSize!,
+                  midSizeTravelAmount = value.allTravel!.midSize!.price!,
+                  suvTravel = value.allTravel!.suv!,
+                  suvTravelAmount = value.allTravel!.suv!.price!,
+                  if (value.allTravel!.bus == null)
+                    {
+                      busIsAvailable = false,
+                      modesOfTransport = Map.from(modesOfTransportWithoutBus),
+                    }
+                  else
+                    {
+                      busIsAvailable = true,
+                      modesOfTransport = Map.from(modesOfTransportWithBus),
+                      busTravel = value.allTravel!.bus!,
+                      busTravelAmount = value.allTravel!.bus!.price!,
+                    }
+                }
+              else
+                {
+                  showCompareTransportLoader = false,
+                  Utils.goErrorFlush(value.message ?? 'Try Again', context),
+                },
+            })
+        .onError(
+          (error, stackTrace) => {
+            Utils.goErrorFlush(error.toString(), context),
+          },
+        );
+
+    showCompareTransportLoader = false;
+    notifyListeners();
+    if (busIsAvailable) {
+      totalTravelAmount = updateBusTravelAmount(busTravel.route!);
+      selectedModeOfTransport = "Bus";
+      return busTravel.route!;
+    } else {
+      totalTravelAmount = 2 * autoTravelAmount;
+      selectedModeOfTransport = "Auto";
+      return autoTravel.route!;
+    }
+  }
+
+  double updateBusTravelAmount(List<createPlan_response.Route> route) {
+    double newBusPrice = 0;
+    for (createPlan_response.Route routeComponent in route) {
+      if (routeComponent.mode == 'bus') {
+        newBusPrice =
+            newBusPrice + (2 * routeComponent.price!.toDouble());
+      } else if (routeComponent.mode == 'auto') {
+        newBusPrice = newBusPrice + routeComponent.price!;
+      }
+    }
+    return newBusPrice;
   }
 }

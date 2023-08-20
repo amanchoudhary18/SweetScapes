@@ -1,28 +1,27 @@
 class CreatePlanResponse {
   String? status;
+  String? message;
+  String? componentId;
   AllTravel? allTravel;
-  Availability? availability;
 
-  CreatePlanResponse({this.status, this.allTravel, this.availability});
+  CreatePlanResponse({this.status, this.message, this.componentId, this.allTravel});
 
   CreatePlanResponse.fromJson(Map<String, dynamic> json) {
     status = json['status'];
+    message = json['message'];
+    componentId = json['componentId'];
     allTravel = json['allTravel'] != null
         ? new AllTravel.fromJson(json['allTravel'])
-        : null;
-    availability = json['availability'] != null
-        ? new Availability.fromJson(json['availability'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['status'] = this.status;
+    data['message'] = this.message;
+    data['componentId'] = this.componentId;
     if (this.allTravel != null) {
       data['allTravel'] = this.allTravel!.toJson();
-    }
-    if (this.availability != null) {
-      data['availability'] = this.availability!.toJson();
     }
     return data;
   }
@@ -31,20 +30,24 @@ class CreatePlanResponse {
 class AllTravel {
   Bus? bus;
   Auto? auto;
-  TwoWheeler? twoWheeler;
-  FourWheeler? fourWheeler;
+  Scooty? scooty;
+  Bike? bike;
+  MidSizeCar? midSize;
+  SUV? suv;
 
-  AllTravel({this.bus, this.auto, this.twoWheeler, this.fourWheeler});
+  AllTravel(
+      {this.bus, this.auto, this.scooty, this.bike, this.midSize, this.suv});
 
   AllTravel.fromJson(Map<String, dynamic> json) {
     bus = json['bus'] != null ? new Bus.fromJson(json['bus']) : null;
     auto = json['auto'] != null ? new Auto.fromJson(json['auto']) : null;
-    twoWheeler = json['two_wheeler'] != null
-        ? new TwoWheeler.fromJson(json['two_wheeler'])
+    scooty =
+        json['scooty'] != null ? new Scooty.fromJson(json['scooty']) : null;
+    bike = json['bike'] != null ? new Bike.fromJson(json['bike']) : null;
+    midSize = json['mid_size'] != null
+        ? new MidSizeCar.fromJson(json['mid_size'])
         : null;
-    fourWheeler = json['four_wheeler'] != null
-        ? new FourWheeler.fromJson(json['four_wheeler'])
-        : null;
+    suv = json['suv'] != null ? new SUV.fromJson(json['suv']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -55,11 +58,17 @@ class AllTravel {
     if (this.auto != null) {
       data['auto'] = this.auto!.toJson();
     }
-    if (this.twoWheeler != null) {
-      data['two_wheeler'] = this.twoWheeler!.toJson();
+    if (this.scooty != null) {
+      data['scooty'] = this.scooty!.toJson();
     }
-    if (this.fourWheeler != null) {
-      data['four_wheeler'] = this.fourWheeler!.toJson();
+    if (this.bike != null) {
+      data['bike'] = this.bike!.toJson();
+    }
+    if (this.midSize != null) {
+      data['mid_size'] = this.midSize!.toJson();
+    }
+    if (this.suv != null) {
+      data['suv'] = this.suv!.toJson();
     }
     return data;
   }
@@ -68,8 +77,8 @@ class AllTravel {
 class Bus {
   List<Route>? route;
   String? distance;
-  int? duration;
-  int? price;
+  double? duration;
+  double? price;
 
   Bus({this.route, this.distance, this.duration, this.price});
 
@@ -81,8 +90,8 @@ class Bus {
       });
     }
     distance = json['distance'];
-    duration = json['duration'];
-    price = json['price'];
+    duration = json['duration'].toDouble();
+    price = json['price'].toDouble();
   }
 
   Map<String, dynamic> toJson() {
@@ -153,8 +162,8 @@ class Route {
 class Auto {
   List<Route>? route;
   double? distance;
-  int? duration;
-  int? price;
+  double? duration;
+  double? price;
 
   Auto({this.route, this.distance, this.duration, this.price});
 
@@ -165,9 +174,9 @@ class Auto {
         route!.add(new Route.fromJson(v));
       });
     }
-    distance = json['distance'];
-    duration = json['duration'];
-    price = json['price'];
+    distance = json['distance'].toDouble();
+    duration = json['duration'].toDouble();
+    price = json['price'].toDouble();
   }
 
   Map<String, dynamic> toJson() {
@@ -182,24 +191,24 @@ class Auto {
   }
 }
 
-class TwoWheeler {
+class Scooty {
   List<Route>? route;
-  int? duration;
   double? distance;
-  PriceForRide? price;
+  double? duration;
+  double? price;
 
-  TwoWheeler({this.route, this.duration, this.distance, this.price});
+  Scooty({this.route, this.distance, this.duration, this.price});
 
-  TwoWheeler.fromJson(Map<String, dynamic> json) {
+  Scooty.fromJson(Map<String, dynamic> json) {
     if (json['route'] != null) {
       route = <Route>[];
       json['route'].forEach((v) {
         route!.add(new Route.fromJson(v));
       });
     }
-    duration = json['duration'];
-    distance = json['distance'];
-    price = json['price'] != null ? new PriceForRide.fromJson(json['price']) : null;
+    distance = json['distance'].toDouble();
+    duration = json['duration'].toDouble();
+    price = json['price'].toDouble();
   }
 
   Map<String, dynamic> toJson() {
@@ -207,33 +216,31 @@ class TwoWheeler {
     if (this.route != null) {
       data['route'] = this.route!.map((v) => v.toJson()).toList();
     }
-    data['duration'] = this.duration;
     data['distance'] = this.distance;
-    if (this.price != null) {
-      data['price'] = this.price!.toJson();
-    }
+    data['duration'] = this.duration;
+    data['price'] = this.price;
     return data;
   }
 }
 
-class FourWheeler {
+class Bike {
   List<Route>? route;
-  int? duration;
   double? distance;
-  PriceForCar? price;
+  double? duration;
+  double? price;
 
-  FourWheeler({this.route, this.duration, this.distance, this.price});
+  Bike({this.route, this.distance, this.duration, this.price});
 
-  FourWheeler.fromJson(Map<String, dynamic> json) {
+  Bike.fromJson(Map<String, dynamic> json) {
     if (json['route'] != null) {
       route = <Route>[];
       json['route'].forEach((v) {
         route!.add(new Route.fromJson(v));
       });
     }
-    duration = json['duration'];
-    distance = json['distance'];
-    price = json['price'] != null ? new PriceForCar.fromJson(json['price']) : null;
+    distance = json['distance'].toDouble();
+    duration = json['duration'].toDouble();
+    price = json['price'].toDouble();
   }
 
   Map<String, dynamic> toJson() {
@@ -241,90 +248,73 @@ class FourWheeler {
     if (this.route != null) {
       data['route'] = this.route!.map((v) => v.toJson()).toList();
     }
-    data['duration'] = this.duration;
     data['distance'] = this.distance;
-    if (this.price != null) {
-      data['price'] = this.price!.toJson();
+    data['duration'] = this.duration;
+    data['price'] = this.price;
+    return data;
+  }
+}
+
+class MidSizeCar {
+  List<Route>? route;
+  double? distance;
+  double? duration;
+  double? price;
+
+  MidSizeCar({this.route, this.distance, this.duration, this.price});
+
+  MidSizeCar.fromJson(Map<String, dynamic> json) {
+    if (json['route'] != null) {
+      route = <Route>[];
+      json['route'].forEach((v) {
+        route!.add(new Route.fromJson(v));
+      });
     }
-    return data;
-  }
-}
-
-class PriceForRide {
-  int? scooty;
-  int? bike;
-
-  PriceForRide({this.scooty, this.bike});
-
-  PriceForRide.fromJson(Map<String, dynamic> json) {
-    scooty = json['scooty'];
-    bike = json['bike'];
+    distance = json['distance'].toDouble();
+    duration = json['duration'].toDouble();
+    price = json['price'].toDouble();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['scooty'] = this.scooty;
-    data['bike'] = this.bike;
+    if (this.route != null) {
+      data['route'] = this.route!.map((v) => v.toJson()).toList();
+    }
+    data['distance'] = this.distance;
+    data['duration'] = this.duration;
+    data['price'] = this.price;
     return data;
   }
 }
 
-class PriceForCar {
-  int? midSize;
-  int? suv;
+class SUV {
+  List<Route>? route;
+  double? distance;
+  double? duration;
+  double? price;
 
-  PriceForCar({this.midSize, this.suv});
+  SUV({this.route, this.distance, this.duration, this.price});
 
-  PriceForCar.fromJson(Map<String, dynamic> json) {
-    midSize = json['mid_size'];
-    suv = json['suv'];
+  SUV.fromJson(Map<String, dynamic> json) {
+    if (json['route'] != null) {
+      route = <Route>[];
+      json['route'].forEach((v) {
+        route!.add(new Route.fromJson(v));
+      });
+    }
+    distance = json['distance'].toDouble();
+    duration = json['duration'].toDouble();
+    price = json['price'].toDouble();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['mid_size'] = this.midSize;
-    data['suv'] = this.suv;
-    return data;
-  }
-}
-
-class Availability {
-  bool? sunday;
-  bool? monday;
-  bool? tuesday;
-  bool? wednesday;
-  bool? thursday;
-  bool? friday;
-  bool? saturday;
-
-  Availability(
-      {this.sunday,
-      this.monday,
-      this.tuesday,
-      this.wednesday,
-      this.thursday,
-      this.friday,
-      this.saturday});
-
-  Availability.fromJson(Map<String, dynamic> json) {
-    sunday = json['sunday'];
-    monday = json['monday'];
-    tuesday = json['tuesday'];
-    wednesday = json['wednesday'];
-    thursday = json['thursday'];
-    friday = json['friday'];
-    saturday = json['saturday'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['sunday'] = this.sunday;
-    data['monday'] = this.monday;
-    data['tuesday'] = this.tuesday;
-    data['wednesday'] = this.wednesday;
-    data['thursday'] = this.thursday;
-    data['friday'] = this.friday;
-    data['saturday'] = this.saturday;
+    if (this.route != null) {
+      data['route'] = this.route!.map((v) => v.toJson()).toList();
+    }
+    data['distance'] = this.distance;
+    data['duration'] = this.duration;
+    data['price'] = this.price;
     return data;
   }
 }

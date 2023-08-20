@@ -116,7 +116,7 @@ class DateSuggestionView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   Row(
@@ -161,7 +161,7 @@ class DateSuggestionView extends StatelessWidget {
                                     BottomSheetTags(model.allTags),
                               ).then(
                                 (value) => {
-                                 model.filterPlans(value??[]),
+                                  model.filterPlans(value ?? []),
                                 },
                               );
                               ;
@@ -193,6 +193,8 @@ class DateSuggestionView extends StatelessWidget {
                                       itemBuilder: (context, index) =>
                                           SuggestionTile(
                                         plan: plans[index],
+                                        isActive:
+                                            model.isPlanAvailable(plans[index]),
                                       ),
                                     ),
                                   );
@@ -205,6 +207,8 @@ class DateSuggestionView extends StatelessWidget {
                                 itemCount: model.plans.length,
                                 itemBuilder: (context, index) => SuggestionTile(
                                   plan: model.plans[index],
+                                  isActive:
+                                      model.isPlanAvailable(model.plans[index]),
                                 ),
                               ),
                             ),

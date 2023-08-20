@@ -108,6 +108,22 @@ class DateSuggestionViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  bool isPlanAvailable(CompletedAllPlans plan) {
+    String planDay = _planDate.weekday.toString();
+
+    Map<String, bool> dayAvailabilityMap = {
+      '1': plan.availability!.monday!,
+      '2': plan.availability!.tuesday!,
+      '3': plan.availability!.wednesday!,
+      '4': plan.availability!.thursday!,
+      '5': plan.availability!.friday!,
+      '6': plan.availability!.saturday!,
+      '7': plan.availability!.sunday!,
+    };
+
+    return dayAvailabilityMap[planDay] ?? false;
+  }
+
   void filterPlans(List<String> filterTags) async {
     if (filterTags.isEmpty) {
       resetPlansOrder();
