@@ -10,6 +10,8 @@ require("dotenv").config({ path: "../.env" });
 const API_KEY = process.env.GOOGLE_MAPS_KEY;
 const userAuth = require("../middleware/userAuth");
 const moment = require("moment-timezone");
+const CreatedPlanModel = require("../models/created_plan.model");
+const User = require("../models/user.model");
 const BIT_LOCATION = {
   map: {
     lat: "23.41656964288303",
@@ -1111,6 +1113,7 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         let curr_component;
 
         if (component.type === "Outing") {
+          console.log(component.component_id);
           curr_component = await Outing.findOne({
             _id: component.component_id,
           });
@@ -1352,6 +1355,202 @@ router.post("/getComponentsByTag", userAuth, async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send({ status: "Failed", message: error.message });
+  }
+});
+
+router.post("/saveUserCreatedPlan", userAuth, async (req, res) => {
+  try {
+    const token = req.header("Authorization").replace("Bearer ", "");
+    const { people_count, finalComponents, finalTravel, tile_content } = {
+      ...req.body,
+    };
+
+    const createdPlanBody = {
+      travel: finalTravel,
+      people_count,
+      components: finalComponents,
+      tile_content,
+      createdBy: req.user._id,
+    };
+    const userCreatedPlan = new CreatedPlanModel(createdPlanBody);
+    await userCreatedPlan.save();
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: { createdPlans: userCreatedPlan._id },
+    });
+
+    const res = await axios.get(
+      `https://date-form-prod.onrender.com/api/v1/plan/getSavedUserCreatedPlan/${userCreatedPlan._id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the request header
+        },
+      }
+    );
+
+    console.log(res);
+
+    res.status(200).send({
+      status: "Successful",
+      message: userCreatedPlan._id,
+    });
+  } catch (error) {
+    res.status(200).send({
+      status: "Failed",
+      message: error.message,
+    });
+  }
+});
+
+router.get("/getSavedUserCreatedPlan/:id", userAuth, async (req, res) => {
+  const planId = req.params.id;
+  const userId = req.user._id;
+
+  try {
+    const plan = await CreatedPlanModel.findById(planId).exec();
+
+    if (!plan) {
+      return res
+        .status(404)
+        .json({ status: "Failed", message: "Plan not found." });
+    }
+
+    if (plan.createdBy._id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        status: "Failed",
+        message: "You do not have permission to access this plan.",
+      });
+    }
+
+    const populatedComponents = [];
+    const tags = new Set();
+    const images = [];
+
+    let component_price = 0;
+    const tile_content = plan.tile_content;
+
+    for (const component of plan.components) {
+      let curr_component;
+
+      if (component.type === "Outing") {
+        console.log(component._id);
+        curr_component = await Outing.findOne({
+          _id: component.component_id,
+        });
+      } else if (component.type === "Dining") {
+        curr_component = await Dining.findOne({
+          _id: component.component_id,
+        });
+      }
+
+      const componentWithHighlight = {
+        is_highlight: component.is_highlight,
+        details: curr_component,
+      };
+
+      populatedComponents.push(componentWithHighlight);
+      tags.add(curr_component.tags[0]);
+
+      images.push({
+        img_link: extractIdFromGoogleDriveLink(curr_component.img),
+        img_name:
+          curr_component.type === "Outing"
+            ? curr_component.place_name
+            : curr_component.hotel_name,
+        order: component.order,
+      });
+
+      component_price += curr_component.price_per_head;
+    }
+
+    const uniqueTags = Array.from(tags);
+
+    // Final Component
+
+    const filteredComponents = populatedComponents.map((component) => {
+      const { is_highlight } = component;
+      const { hotel_name, place_name, tags, price_per_head, duration } =
+        component.details;
+      let locationName =
+        component.details.type === "Outing" ? place_name : hotel_name;
+      return {
+        is_highlight,
+        name: locationName,
+        tag: tags[0], // Assuming tags is an array
+        price_per_head,
+        duration,
+      };
+    });
+
+    const route = plan.travel.route;
+    console.log(route);
+    const updatedRoute = [];
+
+    route.forEach((routeItem) => {
+      const matchingComponent = filteredComponents.find(
+        (component) => component.name === routeItem.drop_point
+      );
+
+      console.log(matchingComponent);
+
+      const {
+        mode,
+        duration,
+        distance,
+        boarding_point,
+        boarding_time,
+        boarding_time_formatted,
+        drop_point,
+        drop_time,
+        drop_time_formatted,
+        price,
+      } = routeItem;
+
+      const update = {
+        mode,
+        duration,
+        distance,
+        boarding_point,
+        boarding_time,
+        boarding_time_formatted,
+        drop_point,
+        drop_time,
+        drop_time_formatted,
+        price,
+        drop_point_component: matchingComponent ? matchingComponent : null,
+      };
+
+      // if (matchingComponent) {
+      //   updatedRoute.push({
+      //     ...routeItem,
+      //     drop_point_component: matchingComponent,
+      //   });
+      // } else {
+      updatedRoute.push(update);
+      // }
+    });
+
+    const updatedTravel = { ...plan.travel, route: updatedRoute };
+
+    const planDetails = {
+      plan_start_time: updatedTravel.route[0].boarding_time,
+      images: images.sort((a, b) => a.order - b.order),
+      no_of_components: filteredComponents.length,
+      tile_content,
+      tags: uniqueTags,
+      complete_travel: updatedTravel.route,
+      component_price,
+      travel_price: updatedTravel.price,
+      people_count: plan.people_count,
+    };
+
+    res
+      .status(200)
+      .json({ status: "Successfull", final_plan_details: planDetails });
+  } catch (error) {
+    res.status(500).json({
+      status: "Failed",
+      message: error.message,
+    });
   }
 });
 

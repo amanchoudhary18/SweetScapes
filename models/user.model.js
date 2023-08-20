@@ -169,6 +169,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    createdPlans: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CreatedPlan",
+      },
+    ],
 
     pairedWith: {
       type: mongoose.Schema.Types.ObjectId,
