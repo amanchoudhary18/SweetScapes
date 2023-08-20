@@ -1216,7 +1216,7 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
     res.status(200).send({ status: "Successful", completedAllPlans });
   } catch (error) {
     console.log(error);
-    res.status(200).send({ status: "Failed", message: error.message });
+    res.status(500).send({ status: "Failed", message: error.message });
   }
 });
 
@@ -1304,7 +1304,7 @@ router.get("/getPlanDetails/:id", userAuth, async (req, res) => {
     res.status(200).send({ status: "Successful", planDetails });
   } catch (error) {
     console.log(error);
-    res.status(200).send({ status: "Failed", message: error.message });
+    res.status(500).send({ status: "Failed", message: error.message });
   }
 });
 
@@ -1351,7 +1351,7 @@ router.post("/getComponentsByTag", userAuth, async (req, res) => {
       .send({ status: "Successful", components: sendingComponents });
   } catch (error) {
     console.log(error);
-    res.status(200).send({ status: "Failed", message: error.message });
+    res.status(500).send({ status: "Failed", message: error.message });
   }
 });
 
