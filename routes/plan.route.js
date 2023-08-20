@@ -903,7 +903,6 @@ router.post("/createPlan", async (req, res) => {
         ),
       };
 
-      console.log(time_before_walking);
       busTravel.push(currBusTravel);
     }
 
@@ -1113,7 +1112,6 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         let curr_component;
 
         if (component.type === "Outing") {
-          console.log(component.component_id);
           curr_component = await Outing.findOne({
             _id: component.component_id,
           });
@@ -1121,10 +1119,6 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
           curr_component = await Dining.findOne({
             _id: component.component_id,
           });
-
-          if (curr_component.hotel_name === "The Ruin House") {
-            console.log(curr_component, component.component_id);
-          }
         }
 
         const openingTime12Hour = moment
@@ -1430,7 +1424,6 @@ router.get("/getSavedUserCreatedPlan/:id", userAuth, async (req, res) => {
       let curr_component;
 
       if (component.type === "Outing") {
-        console.log(component._id);
         curr_component = await Outing.findOne({
           _id: component.component_id,
         });
@@ -1480,15 +1473,13 @@ router.get("/getSavedUserCreatedPlan/:id", userAuth, async (req, res) => {
     });
 
     const route = plan.travel.route;
-    console.log(route);
+
     const updatedRoute = [];
 
     route.forEach((routeItem) => {
       const matchingComponent = filteredComponents.find(
         (component) => component.name === routeItem.drop_point
       );
-
-      console.log(matchingComponent);
 
       const {
         mode,
