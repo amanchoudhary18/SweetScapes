@@ -1017,7 +1017,7 @@ router.post("/createPlan", async (req, res) => {
     });
   } catch (error) {
     if (error.componentId)
-      res.status(500).json({
+      res.status(200).json({
         status: "Failed",
         message: error.message,
         componentId: error.componentId,
