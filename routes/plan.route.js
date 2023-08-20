@@ -549,43 +549,47 @@ router.post("/createPlan", async (req, res) => {
       };
     });
 
-    // Sorting based on closest time of boarding
-    startBus.sort((busA, busB) =>
-      compareArrivalTime(busA, busB, time) ? -1 : 1
-    );
-
-    const timeZone = "Asia/Kolkata"; // Indian Standard Time (IST)
-
-    const nearestBusTime = moment.tz(
-      startBus[0].boarding.arrival_time,
-      "HH:mm",
-      timeZone
-    );
-
-    // Convert time to IST Date object
-    const timeInIST = moment(time).tz(timeZone).toDate();
-
-    // Set the date of nearestBusTime to match the date of timeInIST
-    nearestBusTime.set({
-      year: timeInIST.getFullYear(),
-      month: timeInIST.getMonth(),
-      date: timeInIST.getDate(),
-      hour: startBus[0].boarding.arrival_time.split(":")[0],
-      minute: startBus[0].boarding.arrival_time.split(":")[1],
-    });
-
-    const timeDifferenceInMinutes = Math.abs(
-      nearestBusTime.diff(moment(timeInIST).tz(timeZone), "minutes")
-    );
-
-    const maximumTimeDifferenceInMinutes = 30;
-
+    let nearestBusTime;
     let start_bus_found = true;
     let end_bus_found = true;
+    const timeZone = "Asia/Kolkata"; // Indian Standard Time (IST)
+    if (startBus.length != 0) {
+      // Sorting based on closest time of boarding
+      startBus.sort((busA, busB) =>
+        compareArrivalTime(busA, busB, time) ? -1 : 1
+      );
 
-    if (timeDifferenceInMinutes > maximumTimeDifferenceInMinutes) {
+      nearestBusTime = moment.tz(
+        startBus[0].boarding.arrival_time,
+        "HH:mm",
+        timeZone
+      );
+
+      // Convert time to IST Date object
+      const timeInIST = moment(time).tz(timeZone).toDate();
+
+      // Set the date of nearestBusTime to match the date of timeInIST
+      nearestBusTime.set({
+        year: timeInIST.getFullYear(),
+        month: timeInIST.getMonth(),
+        date: timeInIST.getDate(),
+        hour: startBus[0].boarding.arrival_time.split(":")[0],
+        minute: startBus[0].boarding.arrival_time.split(":")[1],
+      });
+
+      const timeDifferenceInMinutes = Math.abs(
+        nearestBusTime.diff(moment(timeInIST).tz(timeZone), "minutes")
+      );
+
+      const maximumTimeDifferenceInMinutes = 30;
+
+      if (timeDifferenceInMinutes > maximumTimeDifferenceInMinutes) {
+        start_bus_found = false;
+      }
+    } else {
       start_bus_found = false;
     }
+
     let currBusTravel;
 
     if (startBus[0] && start_bus_found) {
