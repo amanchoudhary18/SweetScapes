@@ -25,6 +25,10 @@ const planSchema = {
     },
   ],
 
+  preferred_transport: {
+    type: String,
+  },
+
   tile_content: {
     type: String,
   },

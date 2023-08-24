@@ -6,6 +6,8 @@ const { sendotp } = require("../utils/sendOTP");
 const OtpModel = require("../models/otp.model");
 const generateUsername = require("../utils/generateUsername");
 const generateAge = require("../utils/generateAge");
+const sgMail = require("@sendgrid/mail");
+require("dotenv").config({ path: "../.env" });
 
 //register function
 exports.register = async (req, res) => {
@@ -13,47 +15,63 @@ exports.register = async (req, res) => {
 
   if (!userBody.email.includes("@bitmesra.ac.in")) {
     res
-      .status(200)
+      .status(400)
       .send({ status: "Failed", message: "Enter your institute email id" });
   } else {
     try {
-      otp = generateOTP(4);
-      // await sendotp(user.mobileNumber, otp);
-      var otpModel = {
-        otp: otp,
-        status: true,
-        email: userBody.email,
+      const otp = generateOTP(4);
+
+      sgMail.setApiKey(process.env.SG_GRID_API);
+
+      const msg = {
+        to: userBody.email,
+        from: "sweetscapes.organization@gmail.com",
+        subject: "OTP for Registration",
+        text: `Your OTP is: ${otp}`,
       };
-      const otpDb = new OtpModel(otpModel);
-      otpsave = await otpDb.save();
-      setTimeout(async () => {
-        console.log("executing otp timeout");
-        const otpupdate = await OtpModel.findOneAndUpdate(
-          { _id: otpsave._id },
-          { otp: otp, status: false }
-        );
-        console.log(otpupdate);
-      }, 100000);
-      if (otpsave)
-        res.status(200).send({
-          status: "Successful",
-          message: "otp sent",
-          otpId: otpsave._id,
-        });
-      else
-        res.send({
-          status: "Failed",
-          message: otpsave,
+
+      sgMail
+        .send(msg)
+        .then(async () => {
+          const otpModel = {
+            otp: otp,
+            status: true,
+            email: userBody.email,
+          };
+          const otpDb = new OtpModel(otpModel);
+          const otpsave = await otpDb.save();
+
+          setTimeout(async () => {
+            console.log("executing otp timeout");
+            const otpupdate = await OtpModel.findOneAndUpdate(
+              { _id: otpsave._id },
+              { otp: otp, status: false }
+            );
+            console.log(otpupdate);
+          }, 100000);
+
+          res.status(200).send({
+            status: "Successful",
+            message: "OTP sent to email",
+            otpId: otpsave._id,
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send({
+            status: "Failed",
+            message: "Failed to send OTP email",
+          });
         });
     } catch (err) {
-      res.status(200).send({
+      console.error(err);
+      res.status(500).send({
         status: "Failed",
         message: err.message,
       });
     }
   }
 };
-
 // login function
 exports.login = async (req, res) => {
   const userBody = req.body;
@@ -205,8 +223,17 @@ exports.update = async (req, res) => {
             user.preferences.Dine.Fine_Dining = preferences.Dine.Fine_Dining
               ? 1
               : 0;
-          if (preferences.Dine.Decent_Dining !== undefined)
-            user.preferences.Dine.Decent_Dining = preferences.Dine.Decent_Dining
+          if (preferences.Dine.Foodcourt !== undefined)
+            user.preferences.Dine.Foodcourt = preferences.Dine.Foodcourt
+              ? 1
+              : 0;
+          if (preferences.Dine.RestroBar !== undefined)
+            user.preferences.Dine.RestroBar = preferences.Dine.RestroBar
+              ? 1
+              : 0;
+          if (preferences.Dine.Classic_Dine_In !== undefined)
+            user.preferences.Dine.Classic_Dine_In = preferences.Dine
+              .Classic_Dine_In
               ? 1
               : 0;
           if (preferences.Dine.Dhabas !== undefined)
@@ -337,8 +364,17 @@ exports.setInitialPreferences = async (req, res) => {
             user.preferences.Dine.Fine_Dining = preferences.Dine.Fine_Dining
               ? 1
               : 0;
-          if (preferences.Dine.Decent_Dining !== undefined)
-            user.preferences.Dine.Decent_Dining = preferences.Dine.Decent_Dining
+          if (preferences.Dine.Foodcourt !== undefined)
+            user.preferences.Dine.Foodcourt = preferences.Dine.Foodcourt
+              ? 1
+              : 0;
+          if (preferences.Dine.RestroBar !== undefined)
+            user.preferences.Dine.RestroBar = preferences.Dine.RestroBar
+              ? 1
+              : 0;
+          if (preferences.Dine.Classic_Dine_In !== undefined)
+            user.preferences.Dine.Classic_Dine_In = preferences.Dine
+              .Classic_Dine_In
               ? 1
               : 0;
           if (preferences.Dine.Dhabas !== undefined)

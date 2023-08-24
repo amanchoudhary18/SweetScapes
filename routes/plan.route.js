@@ -34,6 +34,7 @@ function getDistance(origin, destination, mode) {
           const durationInMinutes = Math.round(
             data.rows[0].elements[0].duration.value / 60
           );
+          console.log(distance, Math.ceil(durationInMinutes / 5) * 5);
           resolve({ distance, duration: Math.ceil(durationInMinutes / 5) * 5 });
         } else {
           reject(new Error("Invalid request"));
@@ -44,6 +45,82 @@ function getDistance(origin, destination, mode) {
       });
   });
 }
+
+// 16.4 km 35
+// 1.8 km 10
+// 1.0 km 5
+// 15.5 km 40
+// 2.5 km 35
+
+// 15.5 km 45
+// 1.9 km 10
+// 1.2 km 5
+// 17.6 km 55
+// 2.8 km 35
+
+// Open Street Map
+
+// function getDistance(origin, destination, mode) {
+//   const modeMapping = {
+//     driving: "cycling-electric",
+//     walking: "foot-walking",
+//   };
+
+//   const openRouteApiKey =
+//     "5b3ce3597851110001cf6248dcae9403f22e404fac54f97b25d258b5";
+//   const baseUrl = "https://api.openrouteservice.org/v2/directions";
+
+//   return new Promise((resolve, reject) => {
+//     const url = `${baseUrl}/${modeMapping[mode]}?api_key=${openRouteApiKey}&start=${origin.lng},${origin.lat}&end=${destination.lng},${destination.lat}`;
+
+//     axios
+//       .get(url)
+//       .then((response) => {
+//         const data = response.data;
+
+//         if (
+//           response.status === 200 &&
+//           data.type === "FeatureCollection" &&
+//           data.features.length > 0
+//         ) {
+//           const route = data.features[0];
+//           const distanceInMeters = route.properties.segments[0].distance;
+//           const durationInSeconds = route.properties.segments[0].duration;
+
+//           const distanceInKm = distanceInMeters / 1000;
+//           const roundedDistance = distanceInKm.toFixed(1);
+//           const estimatedDurationInMinutes =
+//             Math.ceil(durationInSeconds / 60 / 5) * 5; // Convert and round to the nearest 5-minute interval
+
+//           console.log(`${roundedDistance} km`, estimatedDurationInMinutes);
+
+//           resolve({
+//             distance: `${roundedDistance} km`,
+//             duration: estimatedDurationInMinutes,
+//           });
+//         } else {
+//           reject(new Error("Invalid request"));
+//         }
+//       })
+//       .catch((error) => {
+//         console.error(error.message);
+//         reject(new Error("Failed to fetch distance"));
+//       });
+//   });
+// }
+
+// // Example usage
+// const origin = { lat: 37.7749, lng: -122.4194 };
+// const destination = { lat: 34.0522, lng: -118.2437 };
+// const mode = "driving-car"; // You can use 'foot-walking', 'cycling-regular', 'driving-car', etc.
+
+// getDistance(origin, destination, mode, apiKey)
+//   .then((result) => {
+//     console.log(result);
+//   })
+//   .catch((error) => {
+//     console.error(error);
+//   });
 
 // compare time function
 
@@ -554,9 +631,8 @@ router.post("/createPlan", async (req, res) => {
     let nearestBusTime;
     let start_bus_found = true;
     let end_bus_found = true;
-    const timeZone = "Asia/Kolkata"; // Indian Standard Time (IST)
+    const timeZone = "Asia/Kolkata";
     if (startBus.length != 0) {
-      // Sorting based on closest time of boarding
       startBus.sort((busA, busB) =>
         compareArrivalTime(busA, busB, time) ? -1 : 1
       );
@@ -596,10 +672,10 @@ router.post("/createPlan", async (req, res) => {
 
     if (startBus[0] && start_bus_found) {
       time = nearestBusTime.toDate();
-
+      console.log(startBus[0]);
       currBusTravel = {
         mode: "bus",
-        distance: "Not Providing",
+        distance: startBus[0].drop.map.distance,
         duration: startBus[0].duration,
         boarding_point: startBus[0].boarding.name,
         boarding_time: time.getTime(),
@@ -839,7 +915,7 @@ router.post("/createPlan", async (req, res) => {
       currBusTravel = {
         mode: "bus",
         duration: minDiffBus.duration,
-        distance: "Not Providing",
+        distance: minDiffBus.drop.map.distance,
         boarding_point: minDiffBus.boarding.name,
         boarding_time: nearestEndBusTime,
         boarding_time_formatted: new Date(nearestEndBusTime).toLocaleTimeString(
@@ -908,6 +984,7 @@ router.post("/createPlan", async (req, res) => {
 
     price = 0;
     let completeBus;
+    distance = 0;
     if (!start_bus_found && !end_bus_found) {
       completeBus = null;
     } else {
@@ -915,9 +992,19 @@ router.post("/createPlan", async (req, res) => {
         price += busTravel[i].price;
       }
 
+      for (let i = 0; i < busTravel.length; i++) {
+        if (busTravel[i].distance.includes("km")) {
+          distanceValue = parseFloat(busTravel[i].distance.replace(" km", ""));
+        } else if (busTravel[i].distance.includes("m")) {
+          distanceValue =
+            parseFloat(busTravel[i].distance.replace(" m", "")) / 1000;
+        }
+        distance += distanceValue;
+      }
+
       completeBus = {
         route: busTravel,
-        distance: "Not Providing",
+        distance: distance,
         duration: Math.round(
           (busTravel[busTravel.length - 1].drop_time -
             busTravel[0].boarding_time) /
@@ -1032,7 +1119,8 @@ router.post("/createPlan", async (req, res) => {
 });
 
 router.post("/savePlan", async (req, res) => {
-  const { plan_start_time, components, tile_content } = req.body;
+  const { plan_start_time, components, tile_content, preferred_transport } =
+    req.body;
   components.sort((a, b) => a.component_id.localeCompare(b.component_id));
   let idString = "";
   components.map((e) => {
@@ -1048,6 +1136,7 @@ router.post("/savePlan", async (req, res) => {
         components,
         plan_id: idString,
         tile_content,
+        preferred_transport,
       });
       await plan.save();
       res.status(200).send({ status: "Successful", plan });
@@ -1085,10 +1174,13 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
       const plan_start_time = allPlans[i].plan_start_time;
       let price = 0;
       const tile_content = allPlans[i].tile_content;
+      const preferred_transport = allPlans[i].preferred_transport;
       const plan_preferences = {
         Dine: {
           Fine_Dining: 0,
-          Decent_Dining: 0,
+          RestroBar: 0,
+          Foodcourt: 0,
+          Classic_Dine_In: 0,
           Dhabas: 0,
           Cafes: 0,
           Streetfood: 0,
@@ -1171,8 +1263,10 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
 
       const likeness =
         (plan_preferences.Dine.Fine_Dining * userPreferences.Dine.Fine_Dining +
-          plan_preferences.Dine.Decent_Dining *
-            userPreferences.Dine.Decent_Dining +
+          plan_preferences.Dine.Foodcourt * userPreferences.Dine.Foodcourt +
+          plan_preferences.Dine.RestroBar * userPreferences.Dine.RestroBar +
+          plan_preferences.Dine.Classic_Dine_In *
+            userPreferences.Dine.Classic_Dine_In +
           plan_preferences.Dine.Dhabas * userPreferences.Dine.Dhabas +
           plan_preferences.Dine.Cafes * userPreferences.Dine.Cafes +
           plan_preferences.Dine.Streetfood * userPreferences.Dine.Streetfood +
@@ -1205,6 +1299,7 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         tile_content,
         likeness: parseFloat(likeness),
         components: populatedComponents.sort((a, b) => a.order - b.order),
+        preferred_transport,
       });
     }
 

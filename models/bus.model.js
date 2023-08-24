@@ -41,6 +41,12 @@ const busModel = new mongoose.Schema({
         lng: {
           type: String,
         },
+        distance: {
+          type: String,
+        },
+        duration: {
+          type: Number,
+        },
       },
     },
   ],

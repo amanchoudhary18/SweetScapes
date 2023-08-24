@@ -64,7 +64,17 @@ const userSchema = new mongoose.Schema(
           required: true,
           default: 0,
         },
-        Decent_Dining: {
+        RestroBar: {
+          type: Number,
+          required: true,
+          default: 0,
+        },
+        Foodcourt: {
+          type: Number,
+          required: true,
+          default: 0,
+        },
+        Classic_Dine_In: {
           type: Number,
           required: true,
           default: 0,
