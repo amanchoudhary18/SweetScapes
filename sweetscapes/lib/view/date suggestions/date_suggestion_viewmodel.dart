@@ -103,6 +103,8 @@ class DateSuggestionViewModel extends BaseViewModel {
     'Museum': false,
   };
 
+  List<String> selectedTags = [];
+
   void updateOutingTags(String label) {
     outingTags[label] = !outingTags[label]!;
     notifyListeners();
@@ -154,6 +156,11 @@ class DateSuggestionViewModel extends BaseViewModel {
 
   void resetPlansOrder() {
     plans.sort((a, b) => b.likeness!.compareTo(a.likeness as num));
+    notifyListeners();
+  }
+
+  void refreshPlan(List<CompletedAllPlans> newPlans) {
+    plans = List<CompletedAllPlans>.from(newPlans);
     notifyListeners();
   }
 

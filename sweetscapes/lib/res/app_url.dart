@@ -13,4 +13,5 @@ class AppUrl {
   static var getPlanDetails = '$baseUrl/api/v1/plan/getPlanDetails/';
   static var getComponentsByTag = '$baseUrl/api/v1/plan/getComponentsByTag';
   static var createPlan = '$baseUrl/api/v1/plan/createPlan';
+  static var saveUserCreatedPlan = '$baseUrl/api/v1/plan/saveUserCreatedPlan';
 }

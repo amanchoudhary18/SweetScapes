@@ -1,17 +1,20 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stacked/stacked.dart';
+import 'package:sweetscapes/app/routes/router.gr.dart';
 import 'package:sweetscapes/data/response/api_response.dart';
 import 'package:sweetscapes/model/body/componentsByTag_body.dart';
 import 'package:sweetscapes/model/body/createPlan_body.dart';
+import 'package:sweetscapes/model/body/saveUserCreatedPlan_body.dart';
+import 'package:sweetscapes/model/response/createPlan_response.dart'
+    as createPlan_response;
 import 'package:sweetscapes/model/response/getAllPlans_response.dart';
 import 'package:sweetscapes/model/user_model.dart';
 import 'package:sweetscapes/repository/dates_repository.dart';
 import 'package:sweetscapes/res/transport_directory.dart';
 import 'package:sweetscapes/utils/utils.dart';
 import 'package:sweetscapes/view_model/user_view_model.dart';
-import 'package:sweetscapes/model/response/createPlan_response.dart'
-    as createPlan_response;
 
 class DateDetailsViewModel extends BaseViewModel {
   late CompletedAllPlans plan;
@@ -219,7 +222,7 @@ class DateDetailsViewModel extends BaseViewModel {
       selectedModeOfTransport = "Bus";
       return busTravel.route!;
     } else {
-      totalTravelAmount = 2 * autoTravelAmount;
+      totalTravelAmount = autoTravelAmount;
       selectedModeOfTransport = "Auto";
       return autoTravel.route!;
     }
@@ -229,12 +232,88 @@ class DateDetailsViewModel extends BaseViewModel {
     double newBusPrice = 0;
     for (createPlan_response.Route routeComponent in route) {
       if (routeComponent.mode == 'bus') {
-        newBusPrice =
-            newBusPrice + (2 * routeComponent.price!.toDouble());
+        newBusPrice = newBusPrice + (2 * routeComponent.price!.toDouble());
       } else if (routeComponent.mode == 'auto') {
         newBusPrice = newBusPrice + routeComponent.price!;
       }
     }
     return newBusPrice;
+  }
+
+  SaveUserCreatedPlanBody saveUserCreatedPlanBody = SaveUserCreatedPlanBody();
+
+  Future<void> gotoViewPlan(BuildContext context, int peopleCount) async {
+    saveUserCreatedPlanBody.peopleCount = peopleCount;
+    saveUserCreatedPlanBody.tileContent = plan.tileContent;
+
+    List<FinalComponentsforViewPlan> finalComponentsforViewPlan = [];
+    for (Components component in plan.components!) {
+      finalComponentsforViewPlan.add(FinalComponentsforViewPlan(
+          order: component.order,
+          type: component.details!.type,
+          componentId: component.details!.sId,
+          isHighlight: component.isHighlight));
+    }
+    saveUserCreatedPlanBody.finalComponents = finalComponentsforViewPlan;
+
+    FinalTravel finalTravelForViewPlan = FinalTravel();
+
+    if (selectedModeOfTransport == "Bus") {
+      finalTravelForViewPlan.distance = busTravel.distance;
+      finalTravelForViewPlan.duration = busTravel.duration;
+      finalTravelForViewPlan.price = busTravel.price;
+      finalTravelForViewPlan.route = busTravel.route;
+    } else if (selectedModeOfTransport == "Auto") {
+      finalTravelForViewPlan.distance = autoTravel.distance;
+      finalTravelForViewPlan.duration = autoTravel.duration;
+      finalTravelForViewPlan.price = autoTravel.price;
+      finalTravelForViewPlan.route = autoTravel.route;
+    } else if (selectedModeOfTransport == "Scooty") {
+      finalTravelForViewPlan.distance = scootyTravel.distance;
+      finalTravelForViewPlan.duration = scootyTravel.duration;
+      finalTravelForViewPlan.price = scootyTravel.price;
+      finalTravelForViewPlan.route = scootyTravel.route;
+    } else if (selectedModeOfTransport == "Bike") {
+      finalTravelForViewPlan.distance = bikeTravel.distance;
+      finalTravelForViewPlan.duration = bikeTravel.duration;
+      finalTravelForViewPlan.price = bikeTravel.price;
+      finalTravelForViewPlan.route = bikeTravel.route;
+    } else if (selectedModeOfTransport == "Mid-Size Car") {
+      finalTravelForViewPlan.distance = midSizeCarTravel.distance;
+      finalTravelForViewPlan.duration = midSizeCarTravel.duration;
+      finalTravelForViewPlan.price = midSizeCarTravel.price;
+      finalTravelForViewPlan.route = midSizeCarTravel.route;
+    } else {
+      finalTravelForViewPlan.distance = suvTravel.distance;
+      finalTravelForViewPlan.duration = suvTravel.duration;
+      finalTravelForViewPlan.price = suvTravel.price;
+      finalTravelForViewPlan.route = suvTravel.route;
+    }
+
+    saveUserCreatedPlanBody.finalTravel = finalTravelForViewPlan;
+
+    AutoRouter.of(context).push(DateViewPlanViewRoute(
+        saveUserCreatedPlanBody: saveUserCreatedPlanBody));
+
+    // await _datesRepo
+    //     .saveUserCreatedPlan(token, saveUserCreatedPlanBodyJson)
+    //     .then((value) => {
+    //           if (value.status.toString() == 'Successful')
+    //             {
+    //               print('Here'),
+    //               finalPlanDetails = value.finalPlanDetails!,
+    //             }
+    //           else
+    //             {
+    //               Utils.goErrorFlush('Try Again', context),
+    //             },
+    //         })
+    //     .onError(
+    //       (error, stackTrace) => {
+    //         Utils.goErrorFlush(error.toString(), context),
+    //       },
+    //     );
+
+    // notifyListeners();
   }
 }

@@ -161,6 +161,7 @@ class DateSuggestionView extends StatelessWidget {
                                     BottomSheetTags(model.allTags),
                               ).then(
                                 (value) => {
+                                  model.selectedTags = List<String>.from(value),
                                   model.filterPlans(value ?? []),
                                 },
                               );
@@ -187,7 +188,14 @@ class DateSuggestionView extends StatelessWidget {
                                 } else if (snapshot.hasData) {
                                   List<CompletedAllPlans> plans =
                                       snapshot.data!;
-                                  return CupertinoScrollbar(
+                                  return RefreshIndicator(
+                                    color: AppColor.primary,
+                                    onRefresh: () async {
+                                      List<CompletedAllPlans> refreshedPlans =
+                                          await model.fetchPlans(context);
+                                      model.refreshPlan(refreshedPlans);
+                                      model.filterPlans(model.selectedTags);
+                                    },
                                     child: ListView.builder(
                                       itemCount: plans.length,
                                       itemBuilder: (context, index) =>
@@ -202,7 +210,13 @@ class DateSuggestionView extends StatelessWidget {
                                 return const Text('Not able to fetch plans');
                               },
                             )
-                          : CupertinoScrollbar(
+                          : RefreshIndicator(
+                              onRefresh: () async {
+                                List<CompletedAllPlans> refreshedPlans =
+                                    await model.fetchPlans(context);
+                                model.refreshPlan(refreshedPlans);
+                                model.filterPlans(model.selectedTags);
+                              },
                               child: ListView.builder(
                                 itemCount: model.plans.length,
                                 itemBuilder: (context, index) => SuggestionTile(

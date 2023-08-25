@@ -59,7 +59,9 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
                   width: 2,
                   color: AppColor.secondary,
                   height: (showDetails)
-                      ? 250
+                      ? (widget.component.isHighlight!)
+                          ? 282
+                          : 250
                       : (widget.component.isHighlight! || widget.isEditable)
                           ? 56
                           : 24,
@@ -146,6 +148,36 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
                             ),
                           ),
                         ],
+                      ),
+                      Visibility(
+                        visible: widget.component.isHighlight ?? false,
+                        child: Chip(
+                          shape: const StadiumBorder(),
+                          backgroundColor: AppColor.primary.withOpacity(0.3),
+                          label: Wrap(
+                            spacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            // crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                child: SvgPicture.asset(
+                                  'assets/svgFiles/highlight.svg',
+                                  color: AppColor.black,
+                                ),
+                              ),
+                              const Text(
+                                'Highlight',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: AppFonts.title,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColor.black,
+                                  letterSpacing: 0.14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       (showDetails)
                           ? Column(
@@ -368,72 +400,42 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
                                 ),
                               ],
                             )
-                          : (widget.component.isHighlight ?? false)
-                              ? Chip(
-                                  shape: const StadiumBorder(),
-                                  backgroundColor:
-                                      AppColor.primary.withOpacity(0.3),
-                                  label: Wrap(
-                                    spacing: 4,
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    // crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        child: SvgPicture.asset(
-                                          'assets/svgFiles/highlight.svg',
-                                          color: AppColor.black,
+                          : (widget.isEditable)
+                              ? GestureDetector(
+                                  onTap: () {
+                                    widget.onChangePressed(
+                                        widget.component.details!.type,
+                                        widget.component.details!.tags![0],
+                                        widget.component.order);
+                                  },
+                                  child: const Chip(
+                                    shape: StadiumBorder(
+                                        side: BorderSide(
+                                      color: AppColor.black,
+                                      width: 1,
+                                    )),
+                                    backgroundColor: AppColor.white,
+                                    label: Wrap(
+                                      spacing: 4,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      // crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Change',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: AppFonts.title,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColor.black,
+                                            letterSpacing: 0.14,
+                                          ),
                                         ),
-                                      ),
-                                      const Text(
-                                        'Highlight',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontFamily: AppFonts.title,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppColor.black,
-                                          letterSpacing: 0.14,
-                                        ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 )
-                              : (widget.isEditable)
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        widget.onChangePressed(
-                                            widget.component.details!.type,
-                                            widget.component.details!.tags![0],
-                                            widget.component.order);
-                                      },
-                                      child: const Chip(
-                                        shape: StadiumBorder(
-                                            side: BorderSide(
-                                          color: AppColor.black,
-                                          width: 1,
-                                        )),
-                                        backgroundColor: AppColor.white,
-                                        label: Wrap(
-                                          spacing: 4,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.center,
-                                          // crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              'Change',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontFamily: AppFonts.title,
-                                                fontWeight: FontWeight.w500,
-                                                color: AppColor.black,
-                                                letterSpacing: 0.14,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  : Container(),
+                              : Container(),
                     ],
                   ),
                 ),

@@ -76,7 +76,7 @@ class AllTravel {
 
 class Bus {
   List<Route>? route;
-  String? distance;
+  double? distance;
   double? duration;
   double? price;
 
@@ -89,7 +89,7 @@ class Bus {
         route!.add(new Route.fromJson(v));
       });
     }
-    distance = json['distance'];
+    distance = json['distance'].toDouble();
     duration = json['duration'].toDouble();
     price = json['price'].toDouble();
   }

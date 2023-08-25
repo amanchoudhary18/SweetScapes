@@ -114,13 +114,15 @@ class _BottomSheetCompareTransportState
                   return CompareTransportPage(
                       screenWidth, screenheight, context);
                 }
-                return Center(child: AppText(
-              text: 'Not able to fetch route',
-              size: 20,
-              font: Fonts.TITLE,
-              weight: FontWeight.w700,
-              color: AppColor.black,
-            ),);
+                return Center(
+                  child: AppText(
+                    text: 'Not able to fetch route',
+                    size: 20,
+                    font: Fonts.TITLE,
+                    weight: FontWeight.w700,
+                    color: AppColor.black,
+                  ),
+                );
               },
             )
           : CompareTransportPage(screenWidth, screenheight, context),
@@ -361,6 +363,7 @@ class _BottomSheetCompareTransportState
                   child: PrimaryButton(
                       title: 'View Plan',
                       onPress: () {
+                        widget.model.gotoViewPlan(context, numberofPeople);
                         Navigator.pop(context);
                       }),
                 ),

@@ -27,5 +27,6 @@ class AppRouter extends $AppRouter {
         AutoRoute(page: IntroScreen3Route.page),
         AutoRoute(page: VerifyEmailViewRoute.page),
         AutoRoute(page: VerifyOTPViewRoute.page),
+        CustomRoute(page: DateViewPlanViewRoute.page, transitionsBuilder: TransitionsBuilders.slideTop),
       ];
 }
