@@ -42,12 +42,10 @@ exports.register = async (req, res) => {
           const otpsave = await otpDb.save();
 
           setTimeout(async () => {
-            console.log("executing otp timeout");
             const otpupdate = await OtpModel.findOneAndUpdate(
               { _id: otpsave._id },
               { otp: otp, status: false }
             );
-            console.log(otpupdate);
           }, 100000);
 
           res.status(200).send({
@@ -81,7 +79,7 @@ exports.login = async (req, res) => {
       const user = await User.findOne({
         email: userBody.email,
       });
-      console.log(user);
+
       if (user) {
         otp = generateOTP(4);
         // await sendotp(user.mobileNumber, otp);
@@ -93,12 +91,10 @@ exports.login = async (req, res) => {
         const otpDb = new OtpModel(otpModel);
         otpsave = await otpDb.save();
         setTimeout(async () => {
-          console.log("executing otp timeout");
           const otpupdate = await OtpModel.findOneAndUpdate(
             { _id: otpsave._id },
             { otp: otp, status: false }
           );
-          console.log(otpupdate);
         }, 100000);
         if (otpsave)
           res.status(200).send({
@@ -112,7 +108,6 @@ exports.login = async (req, res) => {
             message: otpsave,
           });
       } else {
-        console.log("No value found case");
         res.status(200).send({
           status: "Failed",
           message: "No user found",
@@ -140,14 +135,13 @@ exports.loginotpverification = async (req, res) => {
     const otpDB = await OtpModel.findById(otpId);
     const email = otpDB.email;
 
-    console.log(otp, otpId, otpDB, email);
     if (
       otpDB.otp == otp &&
       otpDB.status &&
       req.body.user.email == otpDB.email
     ) {
       const user = await User.findOne({ email });
-      console.log(user);
+
       const token = await user.generateAuthToken();
 
       otpDB.status = false;
@@ -190,8 +184,6 @@ exports.update = async (req, res) => {
     location,
   } = req.body;
 
-  console.log(req.body);
-
   const user = await User.findById(req.user._id);
   if (!user) {
     res.status(404);
@@ -217,7 +209,6 @@ exports.update = async (req, res) => {
 
       if (preferences) {
         if (preferences.Dine) {
-          console.log(preferences.Dine);
           //Dining Preferences
           if (preferences.Dine.Fine_Dining !== undefined)
             user.preferences.Dine.Fine_Dining = preferences.Dine.Fine_Dining
@@ -306,8 +297,6 @@ exports.update = async (req, res) => {
 exports.updateInitial = async (req, res) => {
   const { gender, birthday } = req.body;
 
-  console.log(req.body);
-
   const user = await User.findById(req.user._id);
   if (!user) {
     res.status(404);
@@ -358,7 +347,6 @@ exports.setInitialPreferences = async (req, res) => {
     try {
       if (preferences) {
         if (preferences.Dine) {
-          console.log(preferences.Dine);
           //Dining Preferences
           if (preferences.Dine.Fine_Dining !== undefined)
             user.preferences.Dine.Fine_Dining = preferences.Dine.Fine_Dining
@@ -483,18 +471,17 @@ exports.otpverification = async (req, res) => {
 //generate paircode function
 exports.generatePairCode = async (req, res) => {
   const genPairCode = generateOTP(6);
-  console.log(genPairCode);
+
   const paircodebody = {
     owner: req.user,
     paircode: genPairCode,
   };
 
   const paircode = new Paircode(paircodebody);
-  console.log(paircode);
+
   await paircode.save();
 
   setTimeout(async () => {
-    console.log("Deleted the Paircode ");
     await Paircode.findByIdAndDelete({ _id: paircode._id });
   }, 100000);
 
@@ -509,7 +496,7 @@ exports.matchPairCode = async (req, res) => {
   const paircode = req.body.paircode;
 
   const pairbody = await Paircode.findOne({ paircode });
-  console.log(pairbody);
+
   const userA = await User.findOneAndUpdate(
     { _id: pairbody.owner },
     { pairedWith: req.user, isPaired: true }

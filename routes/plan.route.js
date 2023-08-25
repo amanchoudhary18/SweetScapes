@@ -34,7 +34,7 @@ function getDistance(origin, destination, mode) {
           const durationInMinutes = Math.round(
             data.rows[0].elements[0].duration.value / 60
           );
-          console.log(distance, Math.ceil(durationInMinutes / 5) * 5);
+
           resolve({ distance, duration: Math.ceil(durationInMinutes / 5) * 5 });
         } else {
           reject(new Error("Invalid request"));
@@ -672,7 +672,7 @@ router.post("/createPlan", async (req, res) => {
 
     if (startBus[0] && start_bus_found) {
       time = nearestBusTime.toDate();
-      console.log(startBus[0]);
+
       currBusTravel = {
         mode: "bus",
         distance: startBus[0].drop.map.distance,
@@ -694,14 +694,21 @@ router.post("/createPlan", async (req, res) => {
       const start_walk_board = startBus[0].drop.map;
       const start_walk_drop = components[0].details.map;
 
-      const res = await getDistance(
-        start_walk_board,
-        start_walk_drop,
-        "walking"
-      );
+      let res = await getDistance(start_walk_board, start_walk_drop, "driving");
+      let startBusDistance;
+
+      if (res.distance.includes("km")) {
+        startBusDistance = parseFloat(res.distance.replace(" km", ""));
+      } else if (res.distance.includes("m")) {
+        startBusDistance = parseFloat(res.distance.replace(" m", "")) / 1000;
+      }
+
+      if (startBusDistance <= 0.7) {
+        res = await getDistance(end_walk_board, end_walk_drop_map, "walking");
+      }
 
       currBusTravel = {
-        mode: "walking",
+        mode: startBusDistance <= 0.7 ? "walking" : "auto",
         duration: res.duration,
         distance: res.distance,
         boarding_point: startBus[0].drop.name,
@@ -815,14 +822,31 @@ router.post("/createPlan", async (req, res) => {
         }
       }
 
-      const resDistance = await getDistance(
+      let resDistance = await getDistance(
         end_walk_board,
         end_walk_drop_map,
-        "walking"
+        "driving"
       );
 
+      let endBusDistance;
+
+      if (resDistance.distance.includes("km")) {
+        endBusDistance = parseFloat(resDistance.distance.replace(" km", ""));
+      } else if (resDistance.distance.includes("m")) {
+        endBusDistance =
+          parseFloat(resDistance.distance.replace(" m", "")) / 1000;
+      }
+
+      if (endBusDistance <= 0.7) {
+        resDistance = await getDistance(
+          end_walk_board,
+          end_walk_drop_map,
+          "walking"
+        );
+      }
+
       currWalkToBus = {
-        mode: "walking",
+        mode: endBusDistance <= 0.7 ? "walking" : "auto",
         duration: resDistance.duration,
         distance: resDistance.distance,
         boarding_point:

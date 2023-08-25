@@ -10,7 +10,6 @@ const convertToEpoch = (timeString) => {
 
 // Function to convert epoch time to a formatted time string
 const convertFromEpoch = (epochTime) => {
-  console.log(epochTime);
   const date = new Date(epochTime);
 
   const hours = date.getUTCHours().toString().padStart(2, "0");

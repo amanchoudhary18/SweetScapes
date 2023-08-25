@@ -1,5 +1,5 @@
 const fast2sms = require("fast-two-sms");
-const axios = require("axios")
+const axios = require("axios");
 
 const sendotp = async (mobile, otp) => {
   try {
@@ -12,4 +12,4 @@ const sendotp = async (mobile, otp) => {
   }
 };
 
-exports.sendotp=sendotp
+exports.sendotp = sendotp;
