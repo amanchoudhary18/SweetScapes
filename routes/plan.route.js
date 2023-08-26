@@ -733,8 +733,9 @@ router.post("/createPlan", async (req, res) => {
             ? 0
             : Math.max(
                 Math.ceil((parseFloat(res.distance) * 20) / 50) * 50 +
-                  (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
-                  moment.tz(time, "Asia/Kolkata").minute() >= 30
+                  (moment
+                    .tz(time, "Asia/Kolkata")
+                    .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
                     ? 100
                     : 0),
                 100
@@ -811,8 +812,9 @@ router.post("/createPlan", async (req, res) => {
           checkDistance <= 0.7
             ? 0
             : Math.ceil((parseFloat(selectiveDistance) * 2 * 10) / 50) * 50 +
-              (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
-              moment.tz(time, "Asia/Kolkata").minute() >= 30
+              (moment
+                .tz(time, "Asia/Kolkata")
+                .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
                 ? 100
                 : 0),
       };
@@ -894,8 +896,9 @@ router.post("/createPlan", async (req, res) => {
             ? 0
             : Math.max(
                 Math.ceil((parseFloat(resDistance.distance) * 20) / 50) * 50 +
-                  (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
-                  moment.tz(time, "Asia/Kolkata").minute() >= 30
+                  (moment
+                    .tz(time, "Asia/Kolkata")
+                    .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
                     ? 100
                     : 0),
                 100
@@ -1031,8 +1034,9 @@ router.post("/createPlan", async (req, res) => {
               50
           ) *
             50 +
-            (moment.tz(time_before_walking, "Asia/Kolkata").hour() >= 17 &&
-            moment.tz(time_before_walking, "Asia/Kolkata").minute() >= 30
+            (moment
+              .tz(time_before_walking, "Asia/Kolkata")
+              .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
               ? 100
               : 0),
           100
@@ -1126,8 +1130,9 @@ router.post("/createPlan", async (req, res) => {
             : Math.ceil(
                 Math.max(
                   Math.round(parseFloat(selectiveDistance) * 2) * 10 +
-                    (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
-                    moment.tz(time, "Asia/Kolkata").minute() >= 30
+                    (moment
+                      .tz(time, "Asia/Kolkata")
+                      .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
                       ? 100
                       : 0),
                   allDistancesandDurations[i].boarding_point ===
@@ -1141,6 +1146,16 @@ router.post("/createPlan", async (req, res) => {
                 ) / 50
               ) * 50,
       };
+
+      console.log(
+        currAutoTravel.boarding_time_formatted,
+        currAutoTravel.price,
+        moment
+          .tz(time, "Asia/Kolkata")
+          .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
+          ? 100
+          : 0
+      );
 
       autoTravel.push(currAutoTravel);
 
