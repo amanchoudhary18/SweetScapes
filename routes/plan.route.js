@@ -35,8 +35,6 @@ function getDistance(origin, destination, mode) {
             data.rows[0].elements[0].duration.value / 60
           );
 
-          console.log(mode, distance, Math.ceil(durationInMinutes / 5) * 5);
-
           resolve({ distance, duration: Math.ceil(durationInMinutes / 5) * 5 });
         } else {
           reject(new Error("Invalid request"));
@@ -708,8 +706,6 @@ router.post("/createPlan", async (req, res) => {
         startBusDistance = parseFloat(res.distance.replace(" m", "")) / 1000;
       }
 
-      console.log("start", startBusDistance);
-
       if (startBusDistance > 0.7) {
         res = await getDistance(start_walk_board, start_walk_drop, "driving");
       }
@@ -732,7 +728,17 @@ router.post("/createPlan", async (req, res) => {
         drop_time_formatted: new Date(
           time + res.duration * 60 * 1000
         ).toLocaleTimeString("en-IN", options),
-        price: 0,
+        price:
+          startBusDistance <= 0.7
+            ? 0
+            : Math.max(
+                Math.ceil((parseFloat(res.distance) * 20) / 50) * 50 +
+                  (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
+                  moment.tz(time, "Asia/Kolkata").minute() >= 30
+                    ? 100
+                    : 0),
+                100
+              ),
       };
 
       busTravel.push(currBusTravel);
@@ -765,8 +771,6 @@ router.post("/createPlan", async (req, res) => {
       if (i === allDistancesandDurations.length - 1) {
         break;
       }
-
-      console.log(allDistancesandDurations[i]);
 
       let checkDistance = allDistancesandDurations[i].walking.distance.includes(
         "km"
@@ -803,13 +807,14 @@ router.post("/createPlan", async (req, res) => {
         drop_time_formatted: new Date(
           time + selectiveDuration * 60 * 1000
         ).toLocaleTimeString("en-IN", options),
-        price: allDistancesandDurations[i].walking
-          ? 0
-          : Math.ceil((parseFloat(selectiveDistance) * 2 * 10) / 50) * 50 +
-            (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
-            moment.tz(time, "Asia/Kolkata").minute() >= 30
-              ? 100
-              : 0),
+        price:
+          checkDistance <= 0.7
+            ? 0
+            : Math.ceil((parseFloat(selectiveDistance) * 2 * 10) / 50) * 50 +
+              (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
+              moment.tz(time, "Asia/Kolkata").minute() >= 30
+                ? 100
+                : 0),
       };
 
       busTravel.push(currBusTravel);
@@ -884,7 +889,17 @@ router.post("/createPlan", async (req, res) => {
         drop_time_formatted: new Date(
           time + resDistance.duration * 60 * 1000
         ).toLocaleTimeString("en-IN", options),
-        price: 0,
+        price:
+          endBusDistance <= 0.7
+            ? 0
+            : Math.max(
+                Math.ceil((parseFloat(resDistance.distance) * 20) / 50) * 50 +
+                  (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
+                  moment.tz(time, "Asia/Kolkata").minute() >= 30
+                    ? 100
+                    : 0),
+                100
+              ),
       };
 
       time = time + resDistance.duration * 60 * 1000;
@@ -1070,16 +1085,28 @@ router.post("/createPlan", async (req, res) => {
         time = time + components[i - 1].details.duration * 60 * 1000;
       }
 
-      let selectiveDuration = allDistancesandDurations[i].driving
-        ? allDistancesandDurations[i].driving.duration
-        : allDistancesandDurations[i].walking.duration;
+      let checkDistance = allDistancesandDurations[i].walking.distance.includes(
+        "km"
+      )
+        ? parseFloat(
+            allDistancesandDurations[i].walking.distance.replace(" km", "")
+          )
+        : parseFloat(
+            allDistancesandDurations[i].walking.distance.replace(" m", "")
+          );
 
-      let selectiveDistance = allDistancesandDurations[i].driving
-        ? allDistancesandDurations[i].driving.distance
-        : allDistancesandDurations[i].walking.distance;
+      let selectiveDuration =
+        checkDistance <= 0.7
+          ? allDistancesandDurations[i].walking.duration
+          : allDistancesandDurations[i].driving.duration;
+
+      let selectiveDistance =
+        checkDistance <= 0.7
+          ? allDistancesandDurations[i].walking.distance
+          : allDistancesandDurations[i].driving.distance;
 
       currAutoTravel = {
-        mode: allDistancesandDurations[i].driving ? "auto" : "walking",
+        mode: checkDistance <= 0.7 ? "walking" : "auto",
         duration: selectiveDuration,
         distance: selectiveDistance,
         boarding_point: allDistancesandDurations[i].boarding_point,
@@ -1093,24 +1120,26 @@ router.post("/createPlan", async (req, res) => {
         drop_time_formatted: new Date(
           time + selectiveDuration * 1000 * 60
         ).toLocaleTimeString("en-IN", options),
-        price: allDistancesandDurations[i].walking
-          ? 0
-          : Math.ceil(
-              Math.max(
-                Math.round(parseFloat(selectiveDistance) * 2) * 10 +
-                  (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
-                  moment.tz(time, "Asia/Kolkata").minute() >= 30
-                    ? 100
-                    : 0),
-                allDistancesandDurations[i].boarding_point === "PMC Bus Stop" ||
-                  allDistancesandDurations[i].drop_point === "PMC Bus Stop"
-                  ? moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
+        price:
+          checkDistance <= 0.7
+            ? 0
+            : Math.ceil(
+                Math.max(
+                  Math.round(parseFloat(selectiveDistance) * 2) * 10 +
+                    (moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
                     moment.tz(time, "Asia/Kolkata").minute() >= 30
-                    ? 150
-                    : 100
-                  : 0
-              ) / 50
-            ) * 50,
+                      ? 100
+                      : 0),
+                  allDistancesandDurations[i].boarding_point ===
+                    "PMC Bus Stop" ||
+                    allDistancesandDurations[i].drop_point === "PMC Bus Stop"
+                    ? moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
+                      moment.tz(time, "Asia/Kolkata").minute() >= 30
+                      ? 150
+                      : 100
+                    : 0
+                ) / 50
+              ) * 50,
       };
 
       autoTravel.push(currAutoTravel);
