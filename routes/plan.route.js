@@ -1647,7 +1647,7 @@ router.get("/getSavedUserCreatedPlan/:id", userAuth, async (req, res) => {
     const updatedTravel = { ...plan.travel, route: updatedRoute };
 
     const planDetails = {
-      plan_start_time: updatedTravel.route[0].boarding_time,
+      plan_start_time: plan.plan_date,
       images: images.sort((a, b) => a.order - b.order),
       no_of_components: filteredComponents.length,
       tile_content,
@@ -1656,7 +1656,6 @@ router.get("/getSavedUserCreatedPlan/:id", userAuth, async (req, res) => {
       component_price: component_price * plan.people_count,
       travel_price: updatedTravel.price,
       people_count: plan.people_count,
-      plan_date: plan.plan_date,
     };
 
     res
