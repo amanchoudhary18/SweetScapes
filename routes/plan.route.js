@@ -35,6 +35,8 @@ function getDistance(origin, destination, mode) {
             data.rows[0].elements[0].duration.value / 60
           );
 
+          console.log(mode, distance, Math.ceil(durationInMinutes / 5) * 5);
+
           resolve({ distance, duration: Math.ceil(durationInMinutes / 5) * 5 });
         } else {
           reject(new Error("Invalid request"));
@@ -351,26 +353,27 @@ router.post("/createPlan", async (req, res) => {
     pointA = BIT_LOCATION;
     pointB = components[0];
 
+    currWalkingDistanceandDuration = await getDistance(
+      pointA.map,
+      pointB.details.map,
+      "walking"
+    );
+
+    if (currWalkingDistanceandDuration.distance.includes("km")) {
+      distanceValue = parseFloat(
+        currWalkingDistanceandDuration.distance.replace(" km", "")
+      );
+    } else if (currWalkingDistanceandDuration.distance.includes("m")) {
+      distanceValue =
+        parseFloat(currWalkingDistanceandDuration.distance.replace(" m", "")) /
+        1000;
+    }
+
     currDrivingDistanceandDuration = await getDistance(
       pointA.map,
       pointB.details.map,
       "driving"
     );
-
-    if (currDrivingDistanceandDuration.distance.includes("km")) {
-      distanceValue = parseFloat(
-        currDrivingDistanceandDuration.distance.replace(" km", "")
-      );
-    } else if (currDrivingDistanceandDuration.distance.includes("m")) {
-      distanceValue =
-        parseFloat(currDrivingDistanceandDuration.distance.replace(" m", "")) /
-        1000;
-    }
-
-    currWalkingDistanceandDuration =
-      distanceValue <= 0.7
-        ? await getDistance(pointA.map, pointB.details.map, "walking")
-        : null;
 
     currDistanceandDuration = {
       boarding_point: "PMC Bus Stop",
@@ -388,29 +391,30 @@ router.post("/createPlan", async (req, res) => {
       pointA = components[i];
       pointB = components[i + 1];
 
+      currWalkingDistanceandDuration = await getDistance(
+        pointA.details.map,
+        pointB.details.map,
+        "walking"
+      );
+
+      let distanceValue;
+
+      if (currWalkingDistanceandDuration.distance.includes("km")) {
+        distanceValue = parseFloat(
+          currWalkingDistanceandDuration.distance.replace(" km", "")
+        );
+      } else if (currWalkingDistanceandDuration.distance.includes("m")) {
+        distanceValue =
+          parseFloat(
+            currWalkingDistanceandDuration.distance.replace(" m", "")
+          ) / 1000;
+      }
+
       currDrivingDistanceandDuration = await getDistance(
         pointA.details.map,
         pointB.details.map,
         "driving"
       );
-
-      let distanceValue;
-
-      if (currDrivingDistanceandDuration.distance.includes("km")) {
-        distanceValue = parseFloat(
-          currDrivingDistanceandDuration.distance.replace(" km", "")
-        );
-      } else if (currDrivingDistanceandDuration.distance.includes("m")) {
-        distanceValue =
-          parseFloat(
-            currDrivingDistanceandDuration.distance.replace(" m", "")
-          ) / 1000;
-      }
-
-      currWalkingDistanceandDuration =
-        distanceValue <= 0.7
-          ? await getDistance(pointA.details.map, pointB.details.map, "walking")
-          : null;
 
       currDistanceandDuration = {
         boarding_point:
@@ -431,26 +435,27 @@ router.post("/createPlan", async (req, res) => {
     pointA = components[components.length - 1];
     pointB = BIT_LOCATION;
 
+    currWalkingDistanceandDuration = await getDistance(
+      pointA.details.map,
+      pointB.map,
+      "walking"
+    );
+
+    if (currWalkingDistanceandDuration.distance.includes("km")) {
+      distanceValue = parseFloat(
+        currWalkingDistanceandDuration.distance.replace(" km", "")
+      );
+    } else if (currWalkingDistanceandDuration.distance.includes("m")) {
+      distanceValue =
+        parseFloat(currWalkingDistanceandDuration.distance.replace(" m", "")) /
+        1000;
+    }
+
     currDrivingDistanceandDuration = await getDistance(
       pointA.details.map,
       pointB.map,
       "driving"
     );
-
-    if (currDrivingDistanceandDuration.distance.includes("km")) {
-      distanceValue = parseFloat(
-        currDrivingDistanceandDuration.distance.replace(" km", "")
-      );
-    } else if (currDrivingDistanceandDuration.distance.includes("m")) {
-      distanceValue =
-        parseFloat(currDrivingDistanceandDuration.distance.replace(" m", "")) /
-        1000;
-    }
-
-    currWalkingDistanceandDuration =
-      distanceValue <= 0.7
-        ? await getDistance(pointA.details.map, pointB.map, "walking")
-        : null;
 
     currDistanceandDuration = {
       boarding_point:
@@ -703,6 +708,8 @@ router.post("/createPlan", async (req, res) => {
         startBusDistance = parseFloat(res.distance.replace(" m", "")) / 1000;
       }
 
+      console.log("start", startBusDistance);
+
       if (startBusDistance > 0.7) {
         res = await getDistance(start_walk_board, start_walk_drop, "driving");
       }
@@ -759,16 +766,30 @@ router.post("/createPlan", async (req, res) => {
         break;
       }
 
-      let selectiveDuration = allDistancesandDurations[i].walking
-        ? allDistancesandDurations[i].walking.duration
-        : allDistancesandDurations[i].driving.duration;
+      console.log(allDistancesandDurations[i]);
 
-      let selectiveDistance = allDistancesandDurations[i].walking
-        ? allDistancesandDurations[i].walking.distance
-        : allDistancesandDurations[i].driving.distance;
+      let checkDistance = allDistancesandDurations[i].walking.distance.includes(
+        "km"
+      )
+        ? parseFloat(
+            allDistancesandDurations[i].walking.distance.replace(" km", "")
+          )
+        : parseFloat(
+            allDistancesandDurations[i].walking.distance.replace(" m", "")
+          );
+
+      let selectiveDuration =
+        checkDistance <= 0.7
+          ? allDistancesandDurations[i].walking.duration
+          : allDistancesandDurations[i].driving.duration;
+
+      let selectiveDistance =
+        checkDistance <= 0.7
+          ? allDistancesandDurations[i].walking.distance
+          : allDistancesandDurations[i].driving.distance;
 
       currBusTravel = {
-        mode: allDistancesandDurations[i].walking ? "walking" : "auto",
+        mode: checkDistance <= 0.7 ? "walking" : "auto",
         duration: selectiveDuration,
         distance: selectiveDistance,
         boarding_point: allDistancesandDurations[i].boarding_point,
@@ -1049,16 +1070,16 @@ router.post("/createPlan", async (req, res) => {
         time = time + components[i - 1].details.duration * 60 * 1000;
       }
 
-      let selectiveDuration = allDistancesandDurations[i].walking
-        ? allDistancesandDurations[i].walking.duration
-        : allDistancesandDurations[i].driving.duration;
+      let selectiveDuration = allDistancesandDurations[i].driving
+        ? allDistancesandDurations[i].driving.duration
+        : allDistancesandDurations[i].walking.duration;
 
-      let selectiveDistance = allDistancesandDurations[i].walking
-        ? allDistancesandDurations[i].walking.distance
-        : allDistancesandDurations[i].driving.distance;
+      let selectiveDistance = allDistancesandDurations[i].driving
+        ? allDistancesandDurations[i].driving.distance
+        : allDistancesandDurations[i].walking.distance;
 
       currAutoTravel = {
-        mode: allDistancesandDurations[i].walking ? "walking" : "auto",
+        mode: allDistancesandDurations[i].driving ? "auto" : "walking",
         duration: selectiveDuration,
         distance: selectiveDistance,
         boarding_point: allDistancesandDurations[i].boarding_point,
