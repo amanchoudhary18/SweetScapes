@@ -4,6 +4,10 @@ const createdPlanSchema = {
   people_count: {
     type: Number,
   },
+
+  plan_date: {
+    type: Number,
+  },
   components: [
     {
       order: {

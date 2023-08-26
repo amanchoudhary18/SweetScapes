@@ -1474,7 +1474,13 @@ router.post("/getComponentsByTag", userAuth, async (req, res) => {
 router.post("/saveUserCreatedPlan", userAuth, async (req, res) => {
   try {
     const token = req.header("Authorization").replace("Bearer ", "");
-    const { people_count, finalComponents, finalTravel, tile_content } = {
+    const {
+      plan_date,
+      people_count,
+      finalComponents,
+      finalTravel,
+      tile_content,
+    } = {
       ...req.body,
     };
 
@@ -1484,6 +1490,7 @@ router.post("/saveUserCreatedPlan", userAuth, async (req, res) => {
       components: finalComponents,
       tile_content,
       createdBy: req.user._id,
+      plan_date,
     };
     const userCreatedPlan = new CreatedPlanModel(createdPlanBody);
     await userCreatedPlan.save();
@@ -1649,6 +1656,7 @@ router.get("/getSavedUserCreatedPlan/:id", userAuth, async (req, res) => {
       component_price: component_price * plan.people_count,
       travel_price: updatedTravel.price,
       people_count: plan.people_count,
+      plan_date: plan.plan_date,
     };
 
     res
