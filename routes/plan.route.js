@@ -431,25 +431,25 @@ router.post("/createPlan", async (req, res) => {
     pointA = components[components.length - 1];
     pointB = BIT_LOCATION;
 
-    currWalkingDistanceandDuration = await getDistance(
+    currDrivingDistanceandDuration = await getDistance(
       pointA.details.map,
       pointB.map,
-      "walking"
+      "driving"
     );
 
-    if (currWalkingDistanceandDuration.distance.includes("km")) {
+    if (currDrivingDistanceandDuration.distance.includes("km")) {
       distanceValue = parseFloat(
-        currWalkingDistanceandDuration.distance.replace(" km", "")
+        currDrivingDistanceandDuration.distance.replace(" km", "")
       );
-    } else if (currWalkingDistanceandDuration.distance.includes("m")) {
+    } else if (currDrivingDistanceandDuration.distance.includes("m")) {
       distanceValue =
-        parseFloat(currWalkingDistanceandDuration.distance.replace(" m", "")) /
+        parseFloat(currDrivingDistanceandDuration.distance.replace(" m", "")) /
         1000;
     }
 
-    currDrivingDistanceandDuration =
-      distanceValue > 0.7
-        ? await getDistance(pointA.details.map, pointB.map, "driving")
+    currWalkingDistanceandDuration =
+      distanceValue <= 0.7
+        ? await getDistance(pointA.details.map, pointB.map, "walking")
         : null;
 
     currDistanceandDuration = {
@@ -704,7 +704,7 @@ router.post("/createPlan", async (req, res) => {
       }
 
       if (startBusDistance > 0.7) {
-        res = await getDistance(end_walk_board, end_walk_drop_map, "driving");
+        res = await getDistance(start_walk_board, start_walk_drop, "driving");
       }
 
       currBusTravel = {
