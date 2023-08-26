@@ -1634,12 +1634,6 @@ router.get("/getSavedUserCreatedPlan/:id", userAuth, async (req, res) => {
         drop_point_component: matchingComponent ? matchingComponent : null,
       };
 
-      // if (matchingComponent) {
-      //   updatedRoute.push({
-      //     ...routeItem,
-      //     drop_point_component: matchingComponent,
-      //   });
-      // } else {
       updatedRoute.push(update);
       // }
     });
