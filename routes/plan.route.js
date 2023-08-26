@@ -431,25 +431,25 @@ router.post("/createPlan", async (req, res) => {
     pointA = components[components.length - 1];
     pointB = BIT_LOCATION;
 
-    currDrivingDistanceandDuration = await getDistance(
+    currWalkingDistanceandDuration = await getDistance(
       pointA.details.map,
       pointB.map,
-      "driving"
+      "walking"
     );
 
-    if (currDrivingDistanceandDuration.distance.includes("km")) {
+    if (currWalkingDistanceandDuration.distance.includes("km")) {
       distanceValue = parseFloat(
-        currDrivingDistanceandDuration.distance.replace(" km", "")
+        currWalkingDistanceandDuration.distance.replace(" km", "")
       );
-    } else if (currDrivingDistanceandDuration.distance.includes("m")) {
+    } else if (currWalkingDistanceandDuration.distance.includes("m")) {
       distanceValue =
-        parseFloat(currDrivingDistanceandDuration.distance.replace(" m", "")) /
+        parseFloat(currWalkingDistanceandDuration.distance.replace(" m", "")) /
         1000;
     }
 
-    currWalkingDistanceandDuration =
-      distanceValue <= 0.7
-        ? await getDistance(pointA.details.map, pointB.map, "walking")
+    currDrivingDistanceandDuration =
+      distanceValue > 0.7
+        ? await getDistance(pointA.details.map, pointB.map, "driving")
         : null;
 
     currDistanceandDuration = {
@@ -694,7 +694,7 @@ router.post("/createPlan", async (req, res) => {
       const start_walk_board = startBus[0].drop.map;
       const start_walk_drop = components[0].details.map;
 
-      let res = await getDistance(start_walk_board, start_walk_drop, "driving");
+      let res = await getDistance(start_walk_board, start_walk_drop, "walking");
       let startBusDistance;
 
       if (res.distance.includes("km")) {
@@ -703,8 +703,8 @@ router.post("/createPlan", async (req, res) => {
         startBusDistance = parseFloat(res.distance.replace(" m", "")) / 1000;
       }
 
-      if (startBusDistance <= 0.7) {
-        res = await getDistance(end_walk_board, end_walk_drop_map, "walking");
+      if (startBusDistance > 0.7) {
+        res = await getDistance(end_walk_board, end_walk_drop_map, "driving");
       }
 
       currBusTravel = {
@@ -825,7 +825,7 @@ router.post("/createPlan", async (req, res) => {
       let resDistance = await getDistance(
         end_walk_board,
         end_walk_drop_map,
-        "driving"
+        "walking"
       );
 
       let endBusDistance;
@@ -837,11 +837,11 @@ router.post("/createPlan", async (req, res) => {
           parseFloat(resDistance.distance.replace(" m", "")) / 1000;
       }
 
-      if (endBusDistance <= 0.7) {
+      if (endBusDistance > 0.7) {
         resDistance = await getDistance(
           end_walk_board,
           end_walk_drop_map,
-          "walking"
+          "driving"
         );
       }
 
