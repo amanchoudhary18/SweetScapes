@@ -1646,7 +1646,7 @@ router.get("/getSavedUserCreatedPlan/:id", userAuth, async (req, res) => {
       tile_content,
       tags: uniqueTags,
       complete_travel: updatedTravel.route,
-      component_price,
+      component_price: component_price * plan.people_count,
       travel_price: updatedTravel.price,
       people_count: plan.people_count,
     };
