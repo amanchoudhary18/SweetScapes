@@ -20,31 +20,31 @@ const BIT_LOCATION = {
 };
 
 // get google map distance and duration
-// function getDistance(origin, destination, mode) {
-//   return new Promise((resolve, reject) => {
-//     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${origin.lat},${origin.lng}&destinations=${destination.lat},${destination.lng}&mode=${mode}&key=${API_KEY}`;
+function getGoogleDistance(origin, destination, mode) {
+  return new Promise((resolve, reject) => {
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${origin.lat},${origin.lng}&destinations=${destination.lat},${destination.lng}&mode=${mode}&key=${API_KEY}`;
 
-//     axios
-//       .get(url)
-//       .then((response) => {
-//         const data = response.data;
+    axios
+      .get(url)
+      .then((response) => {
+        const data = response.data;
 
-//         if (data.status === "OK") {
-//           const distance = data.rows[0].elements[0].distance.text;
-//           const durationInMinutes = Math.round(
-//             data.rows[0].elements[0].duration.value / 60
-//           );
+        if (data.status === "OK") {
+          const distance = data.rows[0].elements[0].distance.text;
+          const durationInMinutes = Math.round(
+            data.rows[0].elements[0].duration.value / 60
+          );
 
-//           resolve({ distance, duration: Math.ceil(durationInMinutes / 5) * 5 });
-//         } else {
-//           reject(new Error("Invalid request"));
-//         }
-//       })
-//       .catch((error) => {
-//         reject(new Error("Failed to fetch distance"));
-//       });
-//   });
-// }
+          resolve({ distance, duration: Math.ceil(durationInMinutes / 5) * 5 });
+        } else {
+          reject(new Error("Invalid request"));
+        }
+      })
+      .catch((error) => {
+        reject(new Error("Failed to fetch distance"));
+      });
+  });
+}
 
 // 16.4 km 35
 // 1.8 km 10
@@ -60,7 +60,7 @@ const BIT_LOCATION = {
 
 // Open Street Map
 
-function getDistance(origin, destination, mode) {
+function getOpenDistance(origin, destination, mode) {
   const modeMapping = {
     driving: "cycling-electric",
     walking: "foot-walking",
@@ -114,7 +114,7 @@ function getDistance(origin, destination, mode) {
 // const destination = { lat: 34.0522, lng: -118.2437 };
 // const mode = "driving-car"; // You can use 'foot-walking', 'cycling-regular', 'driving-car', etc.
 
-// getDistance(origin, destination, mode, apiKey)
+// getGoogleDistance(origin, destination, mode, apiKey)
 //   .then((result) => {
 //     console.log(result);
 //   })
@@ -321,8 +321,8 @@ router.get("/getOutings", async (req, res) => {
   }
 });
 
-// Create a plan
-router.post("/createPlan", async (req, res) => {
+// Check before making
+router.post("/checkCreatePlan", async (req, res) => {
   try {
     const plan_start_time = req.body.plan_start_time;
     const requestData = req.body.components;
@@ -371,7 +371,7 @@ router.post("/createPlan", async (req, res) => {
     pointA = BIT_LOCATION;
     pointB = components[0];
 
-    currWalkingDistanceandDuration = await getDistance(
+    currWalkingDistanceandDuration = await getOpenDistance(
       pointA.map,
       pointB.details.map,
       "walking"
@@ -387,7 +387,7 @@ router.post("/createPlan", async (req, res) => {
         1000;
     }
 
-    currDrivingDistanceandDuration = await getDistance(
+    currDrivingDistanceandDuration = await getOpenDistance(
       pointA.map,
       pointB.details.map,
       "driving"
@@ -409,7 +409,7 @@ router.post("/createPlan", async (req, res) => {
       pointA = components[i];
       pointB = components[i + 1];
 
-      currWalkingDistanceandDuration = await getDistance(
+      currWalkingDistanceandDuration = await getOpenDistance(
         pointA.details.map,
         pointB.details.map,
         "walking"
@@ -428,7 +428,7 @@ router.post("/createPlan", async (req, res) => {
           ) / 1000;
       }
 
-      currDrivingDistanceandDuration = await getDistance(
+      currDrivingDistanceandDuration = await getOpenDistance(
         pointA.details.map,
         pointB.details.map,
         "driving"
@@ -453,7 +453,7 @@ router.post("/createPlan", async (req, res) => {
     pointA = components[components.length - 1];
     pointB = BIT_LOCATION;
 
-    currWalkingDistanceandDuration = await getDistance(
+    currWalkingDistanceandDuration = await getOpenDistance(
       pointA.details.map,
       pointB.map,
       "walking"
@@ -469,7 +469,7 @@ router.post("/createPlan", async (req, res) => {
         1000;
     }
 
-    currDrivingDistanceandDuration = await getDistance(
+    currDrivingDistanceandDuration = await getOpenDistance(
       pointA.details.map,
       pointB.map,
       "driving"
@@ -717,7 +717,11 @@ router.post("/createPlan", async (req, res) => {
       const start_walk_board = startBus[0].drop.map;
       const start_walk_drop = components[0].details.map;
 
-      let res = await getDistance(start_walk_board, start_walk_drop, "walking");
+      let res = await getOpenDistance(
+        start_walk_board,
+        start_walk_drop,
+        "walking"
+      );
       let startBusDistance;
 
       if (res.distance.includes("km")) {
@@ -727,7 +731,11 @@ router.post("/createPlan", async (req, res) => {
       }
 
       if (startBusDistance > 0.7) {
-        res = await getDistance(start_walk_board, start_walk_drop, "driving");
+        res = await getOpenDistance(
+          start_walk_board,
+          start_walk_drop,
+          "driving"
+        );
       }
 
       currBusTravel = {
@@ -870,7 +878,7 @@ router.post("/createPlan", async (req, res) => {
         }
       }
 
-      let resDistance = await getDistance(
+      let resDistance = await getOpenDistance(
         end_walk_board,
         end_walk_drop_map,
         "walking"
@@ -886,7 +894,920 @@ router.post("/createPlan", async (req, res) => {
       }
 
       if (endBusDistance > 0.7) {
-        resDistance = await getDistance(
+        resDistance = await getOpenDistance(
+          end_walk_board,
+          end_walk_drop_map,
+          "driving"
+        );
+      }
+
+      currWalkToBus = {
+        mode: endBusDistance <= 0.7 ? "walking" : "auto",
+        duration: resDistance.duration,
+        distance: resDistance.distance,
+        boarding_point:
+          end.type == "Outing"
+            ? end.details.place_name
+            : end.details.hotel_name,
+        boarding_time: time,
+        boarding_time_formatted: new Date(time).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
+        drop_point: end_walk_drop,
+        drop_time: time + resDistance.duration * 60 * 1000,
+        drop_time_formatted: new Date(
+          time + resDistance.duration * 60 * 1000
+        ).toLocaleTimeString("en-IN", options),
+        price:
+          endBusDistance <= 0.7
+            ? 0
+            : Math.max(
+                Math.ceil((parseFloat(resDistance.distance) * 20) / 50) * 50 +
+                  (moment
+                    .tz(time, "Asia/Kolkata")
+                    .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
+                    ? 100
+                    : 0),
+                100
+              ),
+      };
+
+      time = time + resDistance.duration * 60 * 1000;
+
+      endBus = endBus.map((bus) => {
+        const route = bus.route.find(
+          (route) => route.name === end.details.bus_nodal_point
+        );
+
+        const bit_end = bus.route.filter((e) => e.name === "PMC Bus Stop")[0];
+
+        return {
+          student: bus.student,
+          busId: bus._id,
+          boarding: route,
+          drop: bit_end,
+          duration: Math.abs(
+            getTimeDifference(bit_end.arrival_time, route.arrival_time)
+          ),
+        };
+      });
+
+      endBus.sort((busA, busB) =>
+        compareReturnArrivalTime(busA, busB, new Date(time))
+      );
+    } else {
+      endBus = [null];
+    }
+    end_bus_found = true;
+    const minDiffBus =
+      endBus[0] != null
+        ? endBus.reduce((minBus, currentBus) =>
+            currentBus.diff < minBus.diff ? currentBus : minBus
+          )
+        : null;
+
+    // checking is bus is available +30 minutes
+    let nearestEndBusTime;
+    if (minDiffBus) {
+      nearestEndBusTime = moment.tz(
+        minDiffBus.boarding.arrival_time,
+        "HH:mm",
+        timeZone
+      );
+
+      const endTimeInIST = moment(time).tz(timeZone);
+
+      nearestEndBusTime.set({
+        year: endTimeInIST.year(),
+        month: endTimeInIST.month(),
+        date: endTimeInIST.date(),
+        hour: nearestEndBusTime.hours(), // Use hours from boarding.arrival_time
+        minute: nearestEndBusTime.minutes(), // Use minutes from boarding.arrival_time
+      });
+
+      const endTimeDifferenceInMinutes = nearestEndBusTime.diff(
+        moment(endTimeInIST).tz(timeZone),
+        "minutes"
+      );
+
+      if (
+        !(endTimeDifferenceInMinutes <= 30 && endTimeDifferenceInMinutes >= 0)
+      ) {
+        end_bus_found = false;
+      }
+
+      nearestEndBusTime = nearestEndBusTime.valueOf();
+    } else {
+      end_bus_found = false;
+    }
+
+    if (end_bus_found) {
+      currBusTravel = {
+        mode: "bus",
+        duration: minDiffBus.duration,
+        distance: minDiffBus.drop.map.distance,
+        boarding_point: minDiffBus.boarding.name,
+        boarding_time: nearestEndBusTime,
+        boarding_time_formatted: new Date(nearestEndBusTime).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
+        drop_point: minDiffBus.drop.name,
+        drop_time: nearestEndBusTime + minDiffBus.duration * 1000 * 60,
+        drop_time_formatted: new Date(
+          nearestEndBusTime + minDiffBus.duration * 1000 * 60
+        ).toLocaleTimeString("en-IN", options),
+        price: minDiffBus.student ? 0 : 40,
+      };
+      busTravel.push(currWalkToBus);
+      busTravel.push(currBusTravel);
+    } else {
+      currBusTravel = {
+        mode: "auto",
+        duration:
+          allDistancesandDurations[allDistancesandDurations.length - 1].driving
+            .duration,
+        distance:
+          allDistancesandDurations[allDistancesandDurations.length - 1].driving
+            .distance,
+        boarding_point:
+          allDistancesandDurations[allDistancesandDurations.length - 1]
+            .boarding_point,
+        boarding_time: time_before_walking,
+        boarding_time_formatted: new Date(
+          time_before_walking
+        ).toLocaleTimeString("en-IN", options),
+        drop_point: "PMC Bus Stop",
+        drop_time:
+          time_before_walking +
+          allDistancesandDurations[allDistancesandDurations.length - 1].driving
+            .duration *
+            60 *
+            1000,
+        drop_time_formatted: new Date(
+          time_before_walking +
+            allDistancesandDurations[allDistancesandDurations.length - 1]
+              .driving.duration *
+              60 *
+              1000
+        ).toLocaleTimeString("en-IN", options),
+        price: Math.max(
+          Math.ceil(
+            (parseFloat(
+              allDistancesandDurations[allDistancesandDurations.length - 1]
+                .driving.distance
+            ) *
+              20) /
+              50
+          ) *
+            50 +
+            (moment
+              .tz(time_before_walking, "Asia/Kolkata")
+              .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
+              ? 100
+              : 0),
+          100
+        ),
+      };
+
+      busTravel.push(currBusTravel);
+    }
+
+    price = 0;
+    let completeBus;
+    distance = 0;
+    if (!start_bus_found && !end_bus_found) {
+      completeBus = null;
+    } else {
+      for (let i = 0; i < busTravel.length; i++) {
+        price += busTravel[i].price;
+      }
+
+      for (let i = 0; i < busTravel.length; i++) {
+        if (busTravel[i].distance.includes("km")) {
+          distanceValue = parseFloat(busTravel[i].distance.replace(" km", ""));
+        } else if (busTravel[i].distance.includes("m")) {
+          distanceValue =
+            parseFloat(busTravel[i].distance.replace(" m", "")) / 1000;
+        }
+        distance += distanceValue;
+      }
+
+      completeBus = {
+        route: busTravel,
+        distance: distance,
+        duration: Math.round(
+          (busTravel[busTravel.length - 1].drop_time -
+            busTravel[0].boarding_time) /
+            (1000 * 60)
+        ),
+        price,
+      };
+    }
+
+    // Auto Travel
+    let autoTravel = [];
+    let currAutoTravel;
+    time = new Date(date).getTime();
+
+    totalDistance = 0;
+    for (let i = 0; i < allDistancesandDurations.length; i++) {
+      if (i !== 0) {
+        time = time + components[i - 1].details.duration * 60 * 1000;
+      }
+
+      let checkDistance = allDistancesandDurations[i].walking.distance.includes(
+        "km"
+      )
+        ? parseFloat(
+            allDistancesandDurations[i].walking.distance.replace(" km", "")
+          )
+        : parseFloat(
+            allDistancesandDurations[i].walking.distance.replace(" m", "")
+          );
+
+      let selectiveDuration =
+        checkDistance <= 0.7
+          ? allDistancesandDurations[i].walking.duration
+          : allDistancesandDurations[i].driving.duration;
+
+      let selectiveDistance =
+        checkDistance <= 0.7
+          ? allDistancesandDurations[i].walking.distance
+          : allDistancesandDurations[i].driving.distance;
+
+      currAutoTravel = {
+        mode: checkDistance <= 0.7 ? "walking" : "auto",
+        duration: selectiveDuration,
+        distance: selectiveDistance,
+        boarding_point: allDistancesandDurations[i].boarding_point,
+        boarding_time: time,
+        boarding_time_formatted: new Date(time).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
+        drop_point: allDistancesandDurations[i].drop_point,
+        drop_time: time + selectiveDuration * 1000 * 60,
+        drop_time_formatted: new Date(
+          time + selectiveDuration * 1000 * 60
+        ).toLocaleTimeString("en-IN", options),
+        price:
+          checkDistance <= 0.7
+            ? 0
+            : Math.ceil(
+                Math.max(
+                  Math.round(parseFloat(selectiveDistance) * 2) * 10 +
+                    (moment
+                      .tz(time, "Asia/Kolkata")
+                      .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
+                      ? 100
+                      : 0),
+                  allDistancesandDurations[i].boarding_point ===
+                    "PMC Bus Stop" ||
+                    allDistancesandDurations[i].drop_point === "PMC Bus Stop"
+                    ? moment.tz(time, "Asia/Kolkata").hour() >= 17 &&
+                      moment.tz(time, "Asia/Kolkata").minute() >= 30
+                      ? 150
+                      : 100
+                    : 0
+                ) / 50
+              ) * 50,
+      };
+
+      console.log(
+        currAutoTravel.boarding_time_formatted,
+        currAutoTravel.price,
+        moment
+          .tz(time, "Asia/Kolkata")
+          .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
+          ? 100
+          : 0
+      );
+
+      autoTravel.push(currAutoTravel);
+
+      time = time + selectiveDuration * 60 * 1000;
+
+      totalDistance += parseFloat(selectiveDistance);
+    }
+
+    price = 0;
+
+    for (let i = 0; i < autoTravel.length; i++) {
+      price += autoTravel[i].price;
+    }
+
+    const completeAuto = {
+      route: autoTravel,
+      distance: totalDistance,
+      duration: Math.round(
+        (autoTravel[autoTravel.length - 1].drop_time -
+          autoTravel[0].boarding_time) /
+          (1000 * 60)
+      ),
+      price,
+    };
+
+    res.status(200).json({
+      status: "Successful",
+      allTravel: {
+        bus: completeBus,
+        auto: completeAuto,
+        scooty: completeScooty,
+        bike: completeBike,
+        mid_size: completeMidSize,
+        suv: completeSuv,
+      },
+    });
+  } catch (error) {
+    if (error.componentId)
+      res.status(500).json({
+        status: "Failed",
+        message: error.message,
+        componentId: error.componentId,
+      });
+    else {
+      console.log(error);
+      res.status(500).json({ status: "Failed", message: error.message });
+    }
+  }
+});
+
+// Create a plan
+router.post("/createPlan", async (req, res) => {
+  try {
+    const plan_start_time = req.body.plan_start_time;
+    const requestData = req.body.components;
+
+    // Calculating initial time
+    let options = { weekday: "long", timeZone: "Asia/Kolkata" };
+    const date = new Date(plan_start_time);
+
+    const dayoftheweek = date
+      .toLocaleDateString("en-IN", options)
+      .toLowerCase();
+
+    // details of all components of the plan
+    const components = [];
+    for (const item of requestData) {
+      const { order, type, id } = item;
+      let details = null;
+      if (type === "Outing") {
+        details = await Outing.findById(id);
+      } else if (type === "Dining") {
+        details = await Dining.findById(id);
+      }
+
+      if (!details.availability[dayoftheweek]) {
+        throw {
+          message: `${
+            type === "Outing" ? details.place_name : details.hotel_name
+          } is not available on ${dayoftheweek}s`,
+          componentId: id,
+        };
+      }
+      components.push({ id, order, type, details });
+    }
+
+    components.sort((a, b) => a.order - b.order);
+
+    // All distance and duration
+    const allDistancesandDurations = [];
+
+    let currDistanceandDuration;
+    let currDrivingDistanceandDuration;
+    let currWalkingDistanceandDuration;
+    let pointA;
+    let pointB;
+
+    pointA = BIT_LOCATION;
+    pointB = components[0];
+
+    currWalkingDistanceandDuration = await getGoogleDistance(
+      pointA.map,
+      pointB.details.map,
+      "walking"
+    );
+
+    if (currWalkingDistanceandDuration.distance.includes("km")) {
+      distanceValue = parseFloat(
+        currWalkingDistanceandDuration.distance.replace(" km", "")
+      );
+    } else if (currWalkingDistanceandDuration.distance.includes("m")) {
+      distanceValue =
+        parseFloat(currWalkingDistanceandDuration.distance.replace(" m", "")) /
+        1000;
+    }
+
+    currDrivingDistanceandDuration = await getGoogleDistance(
+      pointA.map,
+      pointB.details.map,
+      "driving"
+    );
+
+    currDistanceandDuration = {
+      boarding_point: "PMC Bus Stop",
+      drop_point:
+        pointB.type === "Outing"
+          ? pointB.details.place_name
+          : pointB.details.hotel_name,
+      driving: currDrivingDistanceandDuration,
+      walking: currWalkingDistanceandDuration,
+    };
+
+    allDistancesandDurations.push(currDistanceandDuration);
+
+    for (let i = 0; i < components.length - 1; i++) {
+      pointA = components[i];
+      pointB = components[i + 1];
+
+      currWalkingDistanceandDuration = await getGoogleDistance(
+        pointA.details.map,
+        pointB.details.map,
+        "walking"
+      );
+
+      let distanceValue;
+
+      if (currWalkingDistanceandDuration.distance.includes("km")) {
+        distanceValue = parseFloat(
+          currWalkingDistanceandDuration.distance.replace(" km", "")
+        );
+      } else if (currWalkingDistanceandDuration.distance.includes("m")) {
+        distanceValue =
+          parseFloat(
+            currWalkingDistanceandDuration.distance.replace(" m", "")
+          ) / 1000;
+      }
+
+      currDrivingDistanceandDuration = await getGoogleDistance(
+        pointA.details.map,
+        pointB.details.map,
+        "driving"
+      );
+
+      currDistanceandDuration = {
+        boarding_point:
+          pointA.type === "Outing"
+            ? pointA.details.place_name
+            : pointA.details.hotel_name,
+        drop_point:
+          pointB.type === "Outing"
+            ? pointB.details.place_name
+            : pointB.details.hotel_name,
+        driving: currDrivingDistanceandDuration,
+        walking: currWalkingDistanceandDuration,
+      };
+
+      allDistancesandDurations.push(currDistanceandDuration);
+    }
+
+    pointA = components[components.length - 1];
+    pointB = BIT_LOCATION;
+
+    currWalkingDistanceandDuration = await getGoogleDistance(
+      pointA.details.map,
+      pointB.map,
+      "walking"
+    );
+
+    if (currWalkingDistanceandDuration.distance.includes("km")) {
+      distanceValue = parseFloat(
+        currWalkingDistanceandDuration.distance.replace(" km", "")
+      );
+    } else if (currWalkingDistanceandDuration.distance.includes("m")) {
+      distanceValue =
+        parseFloat(currWalkingDistanceandDuration.distance.replace(" m", "")) /
+        1000;
+    }
+
+    currDrivingDistanceandDuration = await getGoogleDistance(
+      pointA.details.map,
+      pointB.map,
+      "driving"
+    );
+
+    currDistanceandDuration = {
+      boarding_point:
+        pointA.type === "Outing"
+          ? pointA.details.place_name
+          : pointA.details.hotel_name,
+      drop_point: "PMC Bus Stop",
+
+      driving: currDrivingDistanceandDuration,
+      walking: currWalkingDistanceandDuration,
+    };
+
+    allDistancesandDurations.push(currDistanceandDuration);
+    options = { timeZone: "Asia/Kolkata" };
+    // Two Wheeler Travel
+    let twoTravel = [];
+    let time = new Date(date);
+    let currTwoTravel;
+    let totalDistance = 0;
+
+    for (let i = 0; i < allDistancesandDurations.length; i++) {
+      if (i != 0) {
+        time.setTime(
+          time.getTime() + components[i - 1].details.duration * 60 * 1000
+        );
+
+        if (!isTimestampBefore(time, components[i - 1].details.closing_time)) {
+          throw {
+            message: `${
+              components[i - 1].type === "Outing"
+                ? components[i - 1].details.place_name
+                : components[i - 1].details.hotel_name
+            } gets closed at ${components[i - 1].details.closing_time}`,
+            componentId: components[i - 1].id,
+          };
+        }
+      }
+
+      currTwoTravel = {
+        mode: "scooty",
+        duration: allDistancesandDurations[i].driving.duration,
+        distance: allDistancesandDurations[i].driving.distance,
+        boarding_point: allDistancesandDurations[i].boarding_point,
+        boarding_time: time.getTime(),
+        boarding_time_formatted: new Date(time.getTime()).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
+        drop_point: allDistancesandDurations[i].drop_point,
+        drop_time: time.setTime(
+          time.getTime() +
+            allDistancesandDurations[i].driving.duration * 60 * 1000
+        ),
+        drop_time_formatted: new Date(time.getTime()).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
+        price: 0,
+      };
+
+      if (i !== allDistancesandDurations.length - 1) {
+        if (isTimestampBefore(time, components[i].details.opening_time)) {
+          throw {
+            message: `${
+              components[i].type === "Outing"
+                ? components[i].details.place_name
+                : components[i].details.hotel_name
+            } is not open before ${components[i].details.opening_time}`,
+            componentId: components[i].id,
+          };
+        }
+      }
+
+      twoTravel.push(currTwoTravel);
+
+      totalDistance += parseFloat(allDistancesandDurations[i].driving.distance);
+    }
+
+    const totalTime = Math.floor(
+      (twoTravel[twoTravel.length - 1].drop_time - twoTravel[0].boarding_time) /
+        (1000 * 60)
+    );
+    // scooty
+    let scooty_price = 0;
+
+    if (
+      dayoftheweek === "monday" ||
+      dayoftheweek === "tuesday" ||
+      dayoftheweek === "wednesday" ||
+      dayoftheweek === "thursday"
+    ) {
+      let petrol_cost = (totalDistance / 40) * 100;
+      let hour_cost = (totalTime / 60) * 60;
+      scooty_price = petrol_cost + hour_cost;
+    } else {
+      let petrol_cost = (totalDistance / 40) * 100;
+      let hour_cost = (totalTime / 60) * 70;
+      scooty_price = petrol_cost + hour_cost;
+    }
+
+    let bike_price = 0;
+    let odometer_cost = totalDistance * 10;
+
+    let bike_time_calculator =
+      totalTime / 60 - Math.floor(totalTime / 60) <= 0.25
+        ? Math.floor(totalTime / 60)
+        : Math.ceil(totalTime / 60);
+
+    let rent_petrol_cost =
+      Math.ceil(bike_time_calculator) * 90 + (totalDistance / 40) * 100;
+    bike_price = Math.max(rent_petrol_cost, odometer_cost);
+
+    const completeScooty = {
+      route: twoTravel,
+      duration: totalTime,
+      distance: parseFloat(totalDistance.toFixed(2)),
+      price: Math.round(scooty_price / 5) * 5,
+    };
+
+    const completeBike = {
+      route: twoTravel.map((e) => ({ ...e, mode: "bike" })),
+      duration: totalTime,
+      distance: parseFloat(totalDistance.toFixed(2)),
+      price: Math.round(bike_price / 5) * 5,
+    };
+
+    const completeMidSize = {
+      route: twoTravel.map((e) => ({ ...e, mode: "mid_size" })),
+      duration: totalTime,
+      distance: parseFloat(totalDistance.toFixed(2)),
+      price: 1800 + Math.ceil(((totalDistance / 16) * 94) / 10) * 10,
+    };
+
+    const completeSuv = {
+      route: twoTravel.map((e) => ({ ...e, mode: "suv" })),
+      duration: totalTime,
+      distance: parseFloat(totalDistance.toFixed(2)),
+      price: 6500 + Math.ceil(((totalDistance / 10) * 94) / 10) * 10,
+    };
+
+    //Bus Travel
+    let busTravel = [];
+    const start = components[0];
+
+    time = new Date(date);
+
+    // Finding all the buses in the route
+    let startBus = await Bus.find({
+      route_type: { $in: start.details.bus_route_type },
+    }).then((result) =>
+      result.filter(
+        (obj) =>
+          obj.going &&
+          obj.route.some(
+            (route) => route.name === start.details.bus_nodal_point
+          )
+      )
+    );
+
+    // Allocating boarding and drop points
+    startBus = startBus.map((bus) => {
+      const route = bus.route.find(
+        (route) => route.name === start.details.bus_nodal_point
+      );
+      const bit_start = bus.route.filter((e) => e.name === "PMC Bus Stop")[0];
+
+      return {
+        student: bus.student,
+        busId: bus._id,
+        boarding: bit_start,
+        drop: route,
+        duration: Math.abs(
+          getTimeDifference(bit_start.arrival_time, route.arrival_time)
+        ),
+      };
+    });
+
+    let nearestBusTime;
+    let start_bus_found = true;
+    let end_bus_found = true;
+    const timeZone = "Asia/Kolkata";
+    if (startBus.length != 0) {
+      startBus.sort((busA, busB) =>
+        compareArrivalTime(busA, busB, time) ? -1 : 1
+      );
+
+      nearestBusTime = moment.tz(
+        startBus[0].boarding.arrival_time,
+        "HH:mm",
+        timeZone
+      );
+
+      // Convert time to IST Date object
+      const timeInIST = moment(time).tz(timeZone).toDate();
+
+      // Set the date of nearestBusTime to match the date of timeInIST
+      nearestBusTime.set({
+        year: timeInIST.getFullYear(),
+        month: timeInIST.getMonth(),
+        date: timeInIST.getDate(),
+        hour: startBus[0].boarding.arrival_time.split(":")[0],
+        minute: startBus[0].boarding.arrival_time.split(":")[1],
+      });
+
+      const timeDifferenceInMinutes = Math.abs(
+        nearestBusTime.diff(moment(timeInIST).tz(timeZone), "minutes")
+      );
+
+      const maximumTimeDifferenceInMinutes = 30;
+
+      if (timeDifferenceInMinutes > maximumTimeDifferenceInMinutes) {
+        start_bus_found = false;
+      }
+    } else {
+      start_bus_found = false;
+    }
+
+    let currBusTravel;
+
+    if (startBus[0] && start_bus_found) {
+      time = nearestBusTime.toDate();
+
+      currBusTravel = {
+        mode: "bus",
+        distance: startBus[0].drop.map.distance,
+        duration: startBus[0].duration,
+        boarding_point: startBus[0].boarding.name,
+        boarding_time: time.getTime(),
+        boarding_time_formatted: time.toLocaleTimeString("en-IN", options),
+        drop_point: startBus[0].drop.name,
+        drop_time: time.getTime() + startBus[0].duration * 60 * 1000,
+        drop_time_formatted: new Date(
+          time.getTime() + startBus[0].duration * 60 * 1000
+        ).toLocaleTimeString("en-IN", options),
+        price: startBus[0].student ? 0 : 40,
+      };
+      time = time.getTime() + startBus[0].duration * 60 * 1000;
+
+      busTravel.push(currBusTravel);
+
+      const start_walk_board = startBus[0].drop.map;
+      const start_walk_drop = components[0].details.map;
+
+      let res = await getGoogleDistance(
+        start_walk_board,
+        start_walk_drop,
+        "walking"
+      );
+      let startBusDistance;
+
+      if (res.distance.includes("km")) {
+        startBusDistance = parseFloat(res.distance.replace(" km", ""));
+      } else if (res.distance.includes("m")) {
+        startBusDistance = parseFloat(res.distance.replace(" m", "")) / 1000;
+      }
+
+      if (startBusDistance > 0.7) {
+        res = await getGoogleDistance(
+          start_walk_board,
+          start_walk_drop,
+          "driving"
+        );
+      }
+
+      currBusTravel = {
+        mode: startBusDistance <= 0.7 ? "walking" : "auto",
+        duration: res.duration,
+        distance: res.distance,
+        boarding_point: startBus[0].drop.name,
+        boarding_time: time,
+        boarding_time_formatted: new Date(time).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
+        drop_point:
+          components[0].type == "Outing"
+            ? components[0].details.place_name
+            : components[0].details.hotel_name,
+        drop_time: time + res.duration * 60 * 1000,
+        drop_time_formatted: new Date(
+          time + res.duration * 60 * 1000
+        ).toLocaleTimeString("en-IN", options),
+        price:
+          startBusDistance <= 0.7
+            ? 0
+            : Math.max(
+                Math.ceil((parseFloat(res.distance) * 20) / 50) * 50 +
+                  (moment
+                    .tz(time, "Asia/Kolkata")
+                    .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
+                    ? 100
+                    : 0),
+                100
+              ),
+      };
+
+      busTravel.push(currBusTravel);
+      time = time + res.duration * 60 * 1000;
+    } else {
+      let startAuto = {
+        ...completeScooty.route[0],
+        mode: "auto",
+        price: Math.max(
+          100,
+          Math.ceil(
+            (Math.round(
+              parseFloat(allDistancesandDurations[0].driving.distance) * 2
+            ) *
+              10) /
+              50
+          ) * 50
+        ),
+      };
+
+      busTravel.push(startAuto);
+      time = time.getTime() + completeScooty.route[0].duration * 60 * 1000;
+    }
+
+    for (let i = 1; i < allDistancesandDurations.length; i++) {
+      if (i !== 0) {
+        time = time + components[i - 1].details.duration * 60 * 1000;
+      }
+
+      if (i === allDistancesandDurations.length - 1) {
+        break;
+      }
+
+      let checkDistance = allDistancesandDurations[i].walking.distance.includes(
+        "km"
+      )
+        ? parseFloat(
+            allDistancesandDurations[i].walking.distance.replace(" km", "")
+          )
+        : parseFloat(
+            allDistancesandDurations[i].walking.distance.replace(" m", "")
+          );
+
+      let selectiveDuration =
+        checkDistance <= 0.7
+          ? allDistancesandDurations[i].walking.duration
+          : allDistancesandDurations[i].driving.duration;
+
+      let selectiveDistance =
+        checkDistance <= 0.7
+          ? allDistancesandDurations[i].walking.distance
+          : allDistancesandDurations[i].driving.distance;
+
+      currBusTravel = {
+        mode: checkDistance <= 0.7 ? "walking" : "auto",
+        duration: selectiveDuration,
+        distance: selectiveDistance,
+        boarding_point: allDistancesandDurations[i].boarding_point,
+        boarding_time: time,
+        boarding_time_formatted: new Date(time).toLocaleTimeString(
+          "en-IN",
+          options
+        ),
+        drop_point: allDistancesandDurations[i].drop_point,
+        drop_time: time + selectiveDuration * 60 * 1000,
+        drop_time_formatted: new Date(
+          time + selectiveDuration * 60 * 1000
+        ).toLocaleTimeString("en-IN", options),
+        price:
+          checkDistance <= 0.7
+            ? 0
+            : Math.ceil((parseFloat(selectiveDistance) * 2 * 10) / 50) * 50 +
+              (moment
+                .tz(time, "Asia/Kolkata")
+                .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
+                ? 100
+                : 0),
+      };
+
+      busTravel.push(currBusTravel);
+
+      time = time + selectiveDuration * 60 * 1000;
+      totalDistance += parseFloat(selectiveDuration);
+    }
+
+    const end = components[components.length - 1];
+    const end_walk_board = end.details.map;
+    let end_walk_drop = end.details.bus_nodal_point;
+    let end_walk_drop_map;
+
+    let endBus = await Bus.find({
+      route_type: { $in: end.details.bus_route_type },
+    }).then((result) =>
+      result.filter(
+        (obj) =>
+          !obj.going &&
+          obj.route.some((route) => route.name === end.details.bus_nodal_point)
+      )
+    );
+
+    let time_before_walking = new Date(time).getTime();
+    let currWalkToBus;
+    if (endBus[0]) {
+      for (const routeElement of endBus[0].route) {
+        if (routeElement.name === end_walk_drop) {
+          end_walk_drop_map = routeElement.map;
+          break;
+        }
+      }
+
+      let resDistance = await getGoogleDistance(
+        end_walk_board,
+        end_walk_drop_map,
+        "walking"
+      );
+
+      let endBusDistance;
+
+      if (resDistance.distance.includes("km")) {
+        endBusDistance = parseFloat(resDistance.distance.replace(" km", ""));
+      } else if (resDistance.distance.includes("m")) {
+        endBusDistance =
+          parseFloat(resDistance.distance.replace(" m", "")) / 1000;
+      }
+
+      if (endBusDistance > 0.7) {
+        resDistance = await getGoogleDistance(
           end_walk_board,
           end_walk_drop_map,
           "driving"
