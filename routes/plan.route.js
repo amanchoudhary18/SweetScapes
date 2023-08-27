@@ -20,31 +20,31 @@ const BIT_LOCATION = {
 };
 
 // get google map distance and duration
-function getDistance(origin, destination, mode) {
-  return new Promise((resolve, reject) => {
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${origin.lat},${origin.lng}&destinations=${destination.lat},${destination.lng}&mode=${mode}&key=${API_KEY}`;
+// function getDistance(origin, destination, mode) {
+//   return new Promise((resolve, reject) => {
+//     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${origin.lat},${origin.lng}&destinations=${destination.lat},${destination.lng}&mode=${mode}&key=${API_KEY}`;
 
-    axios
-      .get(url)
-      .then((response) => {
-        const data = response.data;
+//     axios
+//       .get(url)
+//       .then((response) => {
+//         const data = response.data;
 
-        if (data.status === "OK") {
-          const distance = data.rows[0].elements[0].distance.text;
-          const durationInMinutes = Math.round(
-            data.rows[0].elements[0].duration.value / 60
-          );
+//         if (data.status === "OK") {
+//           const distance = data.rows[0].elements[0].distance.text;
+//           const durationInMinutes = Math.round(
+//             data.rows[0].elements[0].duration.value / 60
+//           );
 
-          resolve({ distance, duration: Math.ceil(durationInMinutes / 5) * 5 });
-        } else {
-          reject(new Error("Invalid request"));
-        }
-      })
-      .catch((error) => {
-        reject(new Error("Failed to fetch distance"));
-      });
-  });
-}
+//           resolve({ distance, duration: Math.ceil(durationInMinutes / 5) * 5 });
+//         } else {
+//           reject(new Error("Invalid request"));
+//         }
+//       })
+//       .catch((error) => {
+//         reject(new Error("Failed to fetch distance"));
+//       });
+//   });
+// }
 
 // 16.4 km 35
 // 1.8 km 10
@@ -60,54 +60,54 @@ function getDistance(origin, destination, mode) {
 
 // Open Street Map
 
-// function getDistance(origin, destination, mode) {
-//   const modeMapping = {
-//     driving: "cycling-electric",
-//     walking: "foot-walking",
-//   };
+function getDistance(origin, destination, mode) {
+  const modeMapping = {
+    driving: "cycling-electric",
+    walking: "foot-walking",
+  };
 
-//   const openRouteApiKey =
-//     "5b3ce3597851110001cf6248dcae9403f22e404fac54f97b25d258b5";
-//   const baseUrl = "https://api.openrouteservice.org/v2/directions";
+  const openRouteApiKey =
+    "5b3ce3597851110001cf6248dcae9403f22e404fac54f97b25d258b5";
+  const baseUrl = "https://api.openrouteservice.org/v2/directions";
 
-//   return new Promise((resolve, reject) => {
-//     const url = `${baseUrl}/${modeMapping[mode]}?api_key=${openRouteApiKey}&start=${origin.lng},${origin.lat}&end=${destination.lng},${destination.lat}`;
+  return new Promise((resolve, reject) => {
+    const url = `${baseUrl}/${modeMapping[mode]}?api_key=${openRouteApiKey}&start=${origin.lng},${origin.lat}&end=${destination.lng},${destination.lat}`;
 
-//     axios
-//       .get(url)
-//       .then((response) => {
-//         const data = response.data;
+    axios
+      .get(url)
+      .then((response) => {
+        const data = response.data;
 
-//         if (
-//           response.status === 200 &&
-//           data.type === "FeatureCollection" &&
-//           data.features.length > 0
-//         ) {
-//           const route = data.features[0];
-//           const distanceInMeters = route.properties.segments[0].distance;
-//           const durationInSeconds = route.properties.segments[0].duration;
+        if (
+          response.status === 200 &&
+          data.type === "FeatureCollection" &&
+          data.features.length > 0
+        ) {
+          const route = data.features[0];
+          const distanceInMeters = route.properties.segments[0].distance;
+          const durationInSeconds = route.properties.segments[0].duration;
 
-//           const distanceInKm = distanceInMeters / 1000;
-//           const roundedDistance = distanceInKm.toFixed(1);
-//           const estimatedDurationInMinutes =
-//             Math.ceil(durationInSeconds / 60 / 5) * 5; // Convert and round to the nearest 5-minute interval
+          const distanceInKm = distanceInMeters / 1000;
+          const roundedDistance = distanceInKm.toFixed(1);
+          const estimatedDurationInMinutes =
+            Math.ceil(durationInSeconds / 60 / 5) * 5; // Convert and round to the nearest 5-minute interval
 
-//           console.log(`${roundedDistance} km`, estimatedDurationInMinutes);
+          console.log(`${roundedDistance} km`, estimatedDurationInMinutes);
 
-//           resolve({
-//             distance: `${roundedDistance} km`,
-//             duration: estimatedDurationInMinutes,
-//           });
-//         } else {
-//           reject(new Error("Invalid request"));
-//         }
-//       })
-//       .catch((error) => {
-//         console.error(error.message);
-//         reject(new Error("Failed to fetch distance"));
-//       });
-//   });
-// }
+          resolve({
+            distance: `${roundedDistance} km`,
+            duration: estimatedDurationInMinutes,
+          });
+        } else {
+          reject(new Error("Invalid request"));
+        }
+      })
+      .catch((error) => {
+        console.error(error.message);
+        reject(new Error("Failed to fetch distance"));
+      });
+  });
+}
 
 // // Example usage
 // const origin = { lat: 37.7749, lng: -122.4194 };
@@ -221,6 +221,26 @@ function extractIdFromGoogleDriveLink(url) {
     return null;
   }
 }
+
+router.post("/getMap", async (req, res) => {
+  const { id, type } = req.body;
+
+  try {
+    if (type === "Outing") {
+      const component = await Outing.findOne({ _id: id });
+      res.status(200).send({ map: component.map, name: component.place_name });
+
+      console.log(component);
+    } else {
+      const component = await Dining.findOne({ _id: id });
+      res.status(200).send({ map: component.map, name: component.hotel_name });
+      console.log(component);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred while adding the bus." });
+  }
+});
 
 // Add a new bus
 router.post("/addBus", async (req, res) => {
