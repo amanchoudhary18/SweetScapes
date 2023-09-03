@@ -2344,7 +2344,19 @@ router.post("/savePlan", async (req, res) => {
 
 router.get("/getAllPlans", userAuth, async (req, res) => {
   try {
-    const allPlans = await PlanModel.find({}).limit(8);
+    const page = parseInt(req.query.page) || 2;
+    const pageSize = parseInt(req.query.pageSize) || 8;
+    const skip = (page - 1) * pageSize;
+
+    console.log(page, pageSize);
+
+    const allPlansQuery = PlanModel.find({});
+
+    // Apply pagination
+    allPlansQuery.skip(skip).limit(pageSize);
+
+    const allPlans = await allPlansQuery.exec();
+
     const userPreferences = req.user.preferences;
 
     const completedAllPlans = [];
