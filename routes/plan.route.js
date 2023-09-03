@@ -2344,7 +2344,7 @@ router.post("/savePlan", async (req, res) => {
 
 router.get("/getAllPlans", userAuth, async (req, res) => {
   try {
-    const allPlans = await PlanModel.find({});
+    const allPlans = await PlanModel.find({}).limit(4);
     const userPreferences = req.user.preferences;
 
     const completedAllPlans = [];
@@ -2489,7 +2489,7 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
         price,
         tile_content,
         likeness: parseFloat(likeness),
-        // components: populatedComponents.sort((a, b) => a.order - b.order),
+        components: populatedComponents.sort((a, b) => a.order - b.order),
         preferred_transport,
       });
     }
