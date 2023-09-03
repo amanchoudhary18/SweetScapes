@@ -2344,7 +2344,7 @@ router.post("/savePlan", async (req, res) => {
 
 router.get("/getAllPlans", userAuth, async (req, res) => {
   try {
-    const allPlans = await PlanModel.find({}).limit(4);
+    const allPlans = await PlanModel.find({}).limit(8);
     const userPreferences = req.user.preferences;
 
     const completedAllPlans = [];
