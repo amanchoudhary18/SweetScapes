@@ -2183,7 +2183,7 @@ router.post("/savePlan", async (req, res) => {
 
 router.get("/getAllPlans", userAuth, async (req, res) => {
   try {
-    const allPlans = await PlanModel.find({}).lean().limit(4);
+    const allPlans = await PlanModel.find({}).lean();
 
     const userPreferences = req.user.preferences;
 
@@ -2345,6 +2345,179 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
     res.status(500).send({ status: "Failed", message: error.message });
   }
 });
+
+// router.get("/getAllPlans", userAuth, async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 2;
+//     const pageSize = parseInt(req.query.pageSize) || 8;
+//     const skip = (page - 1) * pageSize;
+
+//     console.log(page, pageSize);
+
+//     const allPlansQuery = PlanModel.find({});
+
+//     // Apply pagination
+//     allPlansQuery.skip(skip).limit(pageSize);
+
+//     const allPlans = await allPlansQuery.exec();
+
+//     const userPreferences = req.user.preferences;
+
+//     const completedAllPlans = [];
+
+//     for (let i = 0; i < allPlans.length; i++) {
+//       const populatedComponents = [];
+//       const tags = new Set();
+//       const images = [];
+//       let availability = {
+//         sunday: true,
+//         monday: true,
+//         tuesday: true,
+//         wednesday: true,
+//         thursday: true,
+//         friday: true,
+//         saturday: true,
+//       };
+//       const plan_start_time = allPlans[i].plan_start_time;
+//       let price = 0;
+//       const tile_content = allPlans[i].tile_content;
+//       const preferred_transport = allPlans[i].preferred_transport;
+//       const plan_preferences = {
+//         Dine: {
+//           Fine_Dining: 0,
+//           RestroBar: 0,
+//           Foodcourt: 0,
+//           Classic_Dine_In: 0,
+//           Dhabas: 0,
+//           Cafes: 0,
+//           Streetfood: 0,
+//         },
+//         Outing: {
+//           Hills: 0,
+//           Lakes: 0,
+//           Dams_Waterfalls: 0,
+//           Arcade: 0,
+//           Movie_Halls: 0,
+//           Parks: 0,
+//           Clubs_Bars: 0,
+//           Night_Out: 0,
+//           Shopping: 0,
+//           Places_Of_Worship: 0,
+//           Museum: 0,
+//         },
+//       };
+
+//       for (const component of allPlans[i].components) {
+//         let curr_component;
+
+//         if (component.type === "Outing") {
+//           curr_component = await Outing.findOne({
+//             _id: component.component_id,
+//           });
+//         } else if (component.type === "Dining") {
+//           curr_component = await Dining.findOne({
+//             _id: component.component_id,
+//           });
+//         }
+
+//         const openingTime12Hour = moment
+//           .tz(curr_component.opening_time, "HH:mm", "Asia/Kolkata")
+//           .format("h:mm A");
+//         const closingTime12Hour = moment
+//           .tz(curr_component.closing_time, "HH:mm", "Asia/Kolkata")
+//           .format("h:mm A");
+
+//         curr_component.opening_time = openingTime12Hour;
+//         curr_component.closing_time = closingTime12Hour;
+
+//         const componentWithHighlight = {
+//           is_highlight: component.is_highlight,
+//           order: component.order,
+//           details: curr_component,
+//         };
+
+//         populatedComponents.push(componentWithHighlight);
+//         tags.add(curr_component.tags[0]);
+
+//         images.push({
+//           img_link: extractIdFromGoogleDriveLink(curr_component.img),
+//           img_name:
+//             curr_component.type === "Outing"
+//               ? curr_component.place_name
+//               : curr_component.hotel_name,
+//           order: component.order,
+//         });
+
+//         availability = {
+//           sunday: availability.sunday && curr_component.availability.sunday,
+//           monday: availability.monday && curr_component.availability.monday,
+//           tuesday: availability.tuesday && curr_component.availability.tuesday,
+//           wednesday:
+//             availability.wednesday && curr_component.availability.wednesday,
+//           thursday:
+//             availability.thursday && curr_component.availability.thursday,
+//           friday: availability.friday && curr_component.availability.friday,
+//           saturday:
+//             availability.saturday && curr_component.availability.saturday,
+//         };
+
+//         price += curr_component.price_per_head;
+
+//         plan_preferences[component.type === "Outing" ? "Outing" : "Dine"][
+//           curr_component.tags[0]
+//         ]++;
+//       }
+
+//       const likeness =
+//         (plan_preferences.Dine.Fine_Dining * userPreferences.Dine.Fine_Dining +
+//           plan_preferences.Dine.Foodcourt * userPreferences.Dine.Foodcourt +
+//           plan_preferences.Dine.RestroBar * userPreferences.Dine.RestroBar +
+//           plan_preferences.Dine.Classic_Dine_In *
+//             userPreferences.Dine.Classic_Dine_In +
+//           plan_preferences.Dine.Dhabas * userPreferences.Dine.Dhabas +
+//           plan_preferences.Dine.Cafes * userPreferences.Dine.Cafes +
+//           plan_preferences.Dine.Streetfood * userPreferences.Dine.Streetfood +
+//           plan_preferences.Outing.Hills * userPreferences.Outing.Hills +
+//           plan_preferences.Outing.Lakes * userPreferences.Outing.Lakes +
+//           plan_preferences.Outing.Dams_Waterfalls *
+//             userPreferences.Outing.Dams_Waterfalls +
+//           plan_preferences.Outing.Arcade * userPreferences.Outing.Arcade +
+//           plan_preferences.Outing.Movie_Halls *
+//             userPreferences.Outing.Movie_Halls +
+//           plan_preferences.Outing.Parks * userPreferences.Outing.Parks +
+//           plan_preferences.Outing.Clubs_Bars *
+//             userPreferences.Outing.Clubs_Bars +
+//           plan_preferences.Outing.Shopping * userPreferences.Outing.Shopping +
+//           plan_preferences.Outing.Night_Out * userPreferences.Outing.Night_Out +
+//           plan_preferences.Outing.Places_Of_Worship *
+//             userPreferences.Outing.Places_Of_Worship +
+//           plan_preferences.Outing.Museum * userPreferences.Outing.Museum) /
+//         18;
+
+//       const uniqueTags = Array.from(tags);
+
+//       completedAllPlans.push({
+//         id: allPlans[i].plan_id,
+//         tags: uniqueTags,
+//         images: images.sort((a, b) => a.order - b.order),
+//         availability,
+//         plan_start_time,
+//         price,
+//         tile_content,
+//         likeness: parseFloat(likeness),
+//         components: populatedComponents.sort((a, b) => a.order - b.order),
+//         preferred_transport,
+//       });
+//     }
+
+//     completedAllPlans.sort((a, b) => b.likeness - a.likeness);
+
+//     res.status(200).send({ status: "Successful", completedAllPlans });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({ status: "Failed", message: error.message });
+//   }
+// });
 
 router.get("/getPlanDetails/:id", userAuth, async (req, res) => {
   const plan_id = req.params.id;
