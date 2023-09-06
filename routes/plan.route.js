@@ -1003,7 +1003,7 @@ router.post("/checkCreatePlan", async (req, res) => {
       currBusTravel = {
         mode: "bus",
         duration: minDiffBus.duration,
-        distance: minDiffBus.drop.map.distance,
+        distance: minDiffBus.boarding.map.distance,
         boarding_point: minDiffBus.boarding.name,
         boarding_time: nearestEndBusTime,
         boarding_time_formatted: new Date(nearestEndBusTime).toLocaleTimeString(
@@ -2159,9 +2159,11 @@ router.post("/savePlan", adminAuth, async (req, res) => {
 
       res.status(200).send({ status: "Successful", plan });
     } else {
-      res
-        .status(500)
-        .send({ status: "Failed", message: "Already made", existingPlan });
+      res.status(500).send({
+        status: "Failed",
+        message: "This plan already exists!!",
+        existingPlan,
+      });
     }
   } catch (error) {
     console.log(error);
