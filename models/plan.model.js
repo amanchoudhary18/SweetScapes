@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const planSchema = {
   plan_id: { type: String, required: true, unique: true },
+
   plan_start_time: {
     type: Number,
   },
@@ -25,6 +26,14 @@ const planSchema = {
     },
   ],
 
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Admin",
+  },
+
+  owner_name: {
+    type: String,
+  },
   preferred_transport: {
     type: String,
   },
@@ -32,6 +41,8 @@ const planSchema = {
   tile_content: {
     type: String,
   },
+
+  created_at: { type: Date, required: true, default: Date.now },
 };
 
 const PlanModel = mongoose.model("Plan", planSchema);

@@ -12,6 +12,8 @@ const userAuth = require("../middleware/userAuth");
 const moment = require("moment-timezone");
 const CreatedPlanModel = require("../models/created_plan.model");
 const User = require("../models/user.model");
+const adminAuth = require("../middleware/adminAuth");
+
 const BIT_LOCATION = {
   map: {
     lat: "23.41656964288303",
@@ -2148,12 +2150,12 @@ router.post("/createPlan", async (req, res) => {
   }
 });
 
-router.post("/savePlan", async (req, res) => {
+router.post("/savePlan", adminAuth, async (req, res) => {
   const { plan_start_time, components, tile_content, preferred_transport } =
     req.body;
   components.sort((a, b) => a.component_id.localeCompare(b.component_id));
   let idString = "";
-  components.map((e) => {
+  components.forEach((e) => {
     idString += e.component_id;
   });
 
@@ -2161,14 +2163,26 @@ router.post("/savePlan", async (req, res) => {
     const existingPlan = await PlanModel.findOne({ plan_id: idString });
 
     if (!existingPlan) {
+      // Find the authenticated admin based on the token
+      const admin = req.user;
+      console.log(admin);
+
+      // Create a new plan and set the owner reference
       const plan = new PlanModel({
         plan_start_time,
         components,
         plan_id: idString,
         tile_content,
         preferred_transport,
+        owner: admin._id,
+        owner_name: admin.name,
       });
+
       await plan.save();
+
+      admin.plans.push(plan._id);
+      await admin.save();
+
       res.status(200).send({ status: "Successful", plan });
     } else {
       res
@@ -2183,7 +2197,7 @@ router.post("/savePlan", async (req, res) => {
 
 router.get("/getAllPlans", userAuth, async (req, res) => {
   try {
-    const allPlans = await PlanModel.find({}).lean();
+    const allPlans = await PlanModel.find({});
 
     const userPreferences = req.user.preferences;
 
@@ -2236,11 +2250,11 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
             if (component.type === "Outing") {
               curr_component = await Outing.findOne({
                 _id: component.component_id,
-              }).lean();
+              });
             } else if (component.type === "Dining") {
               curr_component = await Dining.findOne({
                 _id: component.component_id,
-              }).lean();
+              });
             }
 
             const openingTime12Hour = moment
@@ -2258,6 +2272,8 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
               order: component.order,
               details: curr_component,
             };
+
+            console.log(componentWithHighlight);
 
             populatedComponents.push(componentWithHighlight);
             tags.add(curr_component.tags[0]);

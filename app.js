@@ -31,6 +31,9 @@ app.use("/api/v1/email", emailRouter);
 const planRouter = require("./routes/plan.route");
 app.use("/api/v1/plan", planRouter);
 
+const adminRouter = require("./routes/admin.route");
+app.use("/api/v1/admin", adminRouter);
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
@@ -47,4 +50,3 @@ const deleteInactiveOTP = async () => {
 };
 
 setInterval(deleteInactiveOTP, 24 * 60 * 60 * 1000);
-
