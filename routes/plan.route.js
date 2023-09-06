@@ -391,7 +391,7 @@ router.post("/checkCreatePlan", async (req, res) => {
     );
 
     currDistanceandDuration = {
-      boarding_point: "PMC, BIT Mesra",
+      boarding_point: "BIT Mesra",
       drop_point:
         pointB.type === "Outing"
           ? pointB.details.place_name
@@ -477,7 +477,7 @@ router.post("/checkCreatePlan", async (req, res) => {
         pointA.type === "Outing"
           ? pointA.details.place_name
           : pointA.details.hotel_name,
-      drop_point: "PMC, BIT Mesra",
+      drop_point: "BIT Mesra",
 
       driving: currDrivingDistanceandDuration,
       walking: currWalkingDistanceandDuration,
@@ -1036,7 +1036,7 @@ router.post("/checkCreatePlan", async (req, res) => {
         boarding_time_formatted: new Date(
           time_before_walking
         ).toLocaleTimeString("en-IN", options),
-        drop_point: "PMC, BIT Mesra",
+        drop_point: "BIT Mesra",
         drop_time:
           time_before_walking +
           allDistancesandDurations[allDistancesandDurations.length - 1].driving
@@ -1295,7 +1295,7 @@ router.post("/createPlan", async (req, res) => {
     );
 
     currDistanceandDuration = {
-      boarding_point: "PMC, BIT Mesra",
+      boarding_point: "BIT Mesra",
       drop_point:
         pointB.type === "Outing"
           ? pointB.details.place_name
@@ -1381,7 +1381,7 @@ router.post("/createPlan", async (req, res) => {
         pointA.type === "Outing"
           ? pointA.details.place_name
           : pointA.details.hotel_name,
-      drop_point: "PMC, BIT Mesra",
+      drop_point: "BIT Mesra",
 
       driving: currDrivingDistanceandDuration,
       walking: currWalkingDistanceandDuration,
@@ -1939,7 +1939,7 @@ router.post("/createPlan", async (req, res) => {
         boarding_time_formatted: new Date(
           time_before_walking
         ).toLocaleTimeString("en-IN", options),
-        drop_point: "PMC, BIT Mesra",
+        drop_point: "BIT Mesra",
         drop_time:
           time_before_walking +
           allDistancesandDurations[allDistancesandDurations.length - 1].driving
