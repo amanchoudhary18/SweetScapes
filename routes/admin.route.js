@@ -25,6 +25,11 @@ router.post("/register", async (req, res) => {
       from: "sweetscapes.organization@gmail.com",
       subject: "Your Registration Details",
       text: `Welcome, ${name}! Your password: ${randomPassword}`,
+      cc: [
+        "sweetscapes.organization@gmail.com",
+        "aman.choudhary9785@gmail.com",
+        "srivastavarahul088@gmail.com",
+      ],
     };
 
     await sgMail.send(msg);
