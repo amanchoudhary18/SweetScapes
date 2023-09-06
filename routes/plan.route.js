@@ -2160,7 +2160,7 @@ router.post("/savePlan", adminAuth, async (req, res) => {
       res.status(200).send({ status: "Successful", plan });
     } else {
       res
-        .status(200)
+        .status(500)
         .send({ status: "Failed", message: "Already made", existingPlan });
     }
   } catch (error) {
