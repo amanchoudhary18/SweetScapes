@@ -94,8 +94,6 @@ function getOpenDistance(origin, destination, mode) {
           const estimatedDurationInMinutes =
             Math.ceil(durationInSeconds / 60 / 5) * 5; // Convert and round to the nearest 5-minute interval
 
-          console.log(`${roundedDistance} km`, estimatedDurationInMinutes);
-
           resolve({
             distance: `${roundedDistance} km`,
             duration: estimatedDurationInMinutes,
@@ -231,12 +229,9 @@ router.post("/getMap", async (req, res) => {
     if (type === "Outing") {
       const component = await Outing.findOne({ _id: id });
       res.status(200).send({ map: component.map, name: component.place_name });
-
-      console.log(component);
     } else {
       const component = await Dining.findOne({ _id: id });
       res.status(200).send({ map: component.map, name: component.hotel_name });
-      console.log(component);
     }
   } catch (error) {
     console.log(error);
@@ -1177,16 +1172,6 @@ router.post("/checkCreatePlan", async (req, res) => {
               ) * 50,
       };
 
-      console.log(
-        currAutoTravel.boarding_time_formatted,
-        currAutoTravel.price,
-        moment
-          .tz(time, "Asia/Kolkata")
-          .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
-          ? 100
-          : 0
-      );
-
       autoTravel.push(currAutoTravel);
 
       time = time + selectiveDuration * 60 * 1000;
@@ -2090,16 +2075,6 @@ router.post("/createPlan", async (req, res) => {
               ) * 50,
       };
 
-      console.log(
-        currAutoTravel.boarding_time_formatted,
-        currAutoTravel.price,
-        moment
-          .tz(time, "Asia/Kolkata")
-          .isAfter(moment.tz("17:30", "HH:mm", "Asia/Kolkata"))
-          ? 100
-          : 0
-      );
-
       autoTravel.push(currAutoTravel);
 
       time = time + selectiveDuration * 60 * 1000;
@@ -2165,7 +2140,6 @@ router.post("/savePlan", adminAuth, async (req, res) => {
     if (!existingPlan) {
       // Find the authenticated admin based on the token
       const admin = req.user;
-      console.log(admin);
 
       // Create a new plan and set the owner reference
       const plan = new PlanModel({
@@ -2272,8 +2246,6 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
               order: component.order,
               details: curr_component,
             };
-
-            console.log(componentWithHighlight);
 
             populatedComponents.push(componentWithHighlight);
             tags.add(curr_component.tags[0]);
@@ -2537,7 +2509,7 @@ router.get("/getAllPlans", userAuth, async (req, res) => {
 
 router.get("/getPlanDetails/:id", userAuth, async (req, res) => {
   const plan_id = req.params.id;
-  console.log(plan_id);
+
   try {
     const plan = await PlanModel.findOne({
       plan_id: "64b3e0e9702372d2582a01e164bd746ddcc20bbdfa61dcde",
