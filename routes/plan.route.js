@@ -1000,6 +1000,7 @@ router.post("/checkCreatePlan", async (req, res) => {
     }
 
     if (end_bus_found) {
+      console.log(minDiffBus.boarding.map.distance);
       currBusTravel = {
         mode: "bus",
         duration: minDiffBus.duration,
