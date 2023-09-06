@@ -966,6 +966,7 @@ router.post("/checkCreatePlan", async (req, res) => {
 
     // checking is bus is available +30 minutes
     let nearestEndBusTime;
+
     if (minDiffBus) {
       nearestEndBusTime = moment.tz(
         minDiffBus.boarding.arrival_time,
@@ -1000,7 +1001,6 @@ router.post("/checkCreatePlan", async (req, res) => {
     }
 
     if (end_bus_found) {
-      console.log(minDiffBus.boarding.map.distance);
       currBusTravel = {
         mode: "bus",
         duration: minDiffBus.duration,
@@ -1907,7 +1907,7 @@ router.post("/createPlan", async (req, res) => {
       currBusTravel = {
         mode: "bus",
         duration: minDiffBus.duration,
-        distance: minDiffBus.drop.map.distance,
+        distance: minDiffBus.boarding.map.distance,
         boarding_point: minDiffBus.boarding.name,
         boarding_time: nearestEndBusTime,
         boarding_time_formatted: new Date(nearestEndBusTime).toLocaleTimeString(
