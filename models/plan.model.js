@@ -22,6 +22,7 @@ const planSchema = {
       },
       component_id: {
         type: mongoose.Schema.Types.ObjectId,
+        refPath: "components.type",
       },
     },
   ],
@@ -32,9 +33,6 @@ const planSchema = {
   },
 
   owner_name: {
-    type: String,
-  },
-  preferred_transport: {
     type: String,
   },
 
