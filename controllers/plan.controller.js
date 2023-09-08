@@ -9,6 +9,8 @@ const API_KEY = process.env.GOOGLE_MAPS_KEY;
 const moment = require("moment-timezone");
 const CreatedPlanModel = require("../models/created_plan.model");
 const User = require("../models/user.model");
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 3600 });
 
 const BIT_LOCATION = {
   map: {
@@ -1378,6 +1380,17 @@ exports.savePlan = async (req, res) => {
 exports.getAllPlans = async (req, res) => {
   try {
     // Fetch all plans from the database
+    const cachedData = cache.get("allPlans");
+    if (cachedData) {
+      console.log("Cache hit");
+      return res
+        .status(200)
+        .send({
+          status: "Successful",
+          completedAllPlans: JSON.parse(cachedData),
+        });
+    }
+
     const allPlans = await PlanModel.find({}).exec();
 
     // Assuming you have the user's preferences available
@@ -1545,6 +1558,10 @@ exports.getAllPlans = async (req, res) => {
     );
 
     completedAllPlans.sort((a, b) => b.likeness - a.likeness);
+
+    // Cache the data for future requests
+    const serializedData = JSON.stringify(completedAllPlans);
+    cache.set("allPlans", serializedData);
 
     res.status(200).send({ status: "Successful", completedAllPlans });
   } catch (error) {

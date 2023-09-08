@@ -22,12 +22,13 @@
     "jsonwebtoken": "^9.0.0",
     "moment-timezone": "^0.5.43",
     "mongoose": "^6.8.3",
-  
+    "node-cache": "^5.1.2",
     "nodemailer": "^6.9.4",
     "nodemon": "^2.0.21",
     "passport": "^0.6.0",
     "passport-google-oauth2": "^0.2.0",
     "path": "^0.12.7",
+    "redis": "^4.6.8",
     "sendotp": "^1.2.9",
     "unirest": "^0.6.0",
     "validator": "^13.7.0"
