@@ -10,7 +10,7 @@ const moment = require("moment-timezone");
 const CreatedPlanModel = require("../models/created_plan.model");
 const User = require("../models/user.model");
 const NodeCache = require("node-cache");
-const cache = new NodeCache({ stdTTL: 3600 });
+const cache = new NodeCache({ stdTTL: 300 });
 
 const BIT_LOCATION = {
   map: {
@@ -1383,12 +1383,10 @@ exports.getAllPlans = async (req, res) => {
     const cachedData = cache.get("allPlans");
     if (cachedData) {
       console.log("Cache hit");
-      return res
-        .status(200)
-        .send({
-          status: "Successful",
-          completedAllPlans: JSON.parse(cachedData),
-        });
+      return res.status(200).send({
+        status: "Successful",
+        completedAllPlans: JSON.parse(cachedData),
+      });
     }
 
     const allPlans = await PlanModel.find({}).exec();
