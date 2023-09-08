@@ -1377,22 +1377,66 @@ exports.savePlan = async (req, res) => {
   }
 };
 
+const calculateLikeness = (plan_preferences, userPreferences) => {
+  // console.log(plan_preferences, userPreferences);
+  const dinePreferences = userPreferences.Dine;
+  const outingPreferences = userPreferences.Outing;
+  const dinePlanPreferences = plan_preferences.Dine;
+  const outingPlanPreferences = plan_preferences.Outing;
+
+  const dineLikeness =
+    dinePlanPreferences.Fine_Dining * dinePreferences.Fine_Dining +
+    dinePlanPreferences.Foodcourt * dinePreferences.Foodcourt +
+    dinePlanPreferences.Classic_Dine_In * dinePreferences.Classic_Dine_In +
+    dinePlanPreferences.Dhabas * dinePreferences.Dhabas +
+    dinePlanPreferences.Cafes * dinePreferences.Cafes +
+    dinePlanPreferences.Streetfood * dinePreferences.Streetfood;
+
+  const outingLikeness =
+    outingPlanPreferences.Hills * outingPreferences.Hills +
+    outingPlanPreferences.Lakes * outingPreferences.Lakes +
+    outingPlanPreferences.Dams_Waterfalls * outingPreferences.Dams_Waterfalls +
+    outingPlanPreferences.Arcade * outingPreferences.Arcade +
+    outingPlanPreferences.Movie_Halls * outingPreferences.Movie_Halls +
+    outingPlanPreferences.Parks * outingPreferences.Parks +
+    outingPlanPreferences.Clubs_Bars * outingPreferences.Clubs_Bars +
+    outingPlanPreferences.Shopping * outingPreferences.Shopping +
+    outingPlanPreferences.Night_Out * outingPreferences.Night_Out +
+    outingPlanPreferences.Places_Of_Worship *
+      outingPreferences.Places_Of_Worship +
+    outingPlanPreferences.Museum * outingPreferences.Museum;
+
+  const likeness = (dineLikeness + outingLikeness) / 16;
+
+  return likeness;
+};
+
 exports.getAllPlans = async (req, res) => {
   try {
+    // Assuming you have the user's preferences available
+    const userPreferences = req.user.preferences;
+
     // Fetch all plans from the database
     const cachedData = cache.get("allPlans");
     if (cachedData) {
       console.log("Cache hit");
+
+      let cachedPlans = JSON.parse(cachedData);
+
+      const updatedCachedPlans = cachedPlans.map((plan) => ({
+        ...plan,
+        likeness: calculateLikeness(plan.plan_preferences, userPreferences),
+      }));
+
+      updatedCachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
+
       return res.status(200).send({
         status: "Successful",
-        completedAllPlans: JSON.parse(cachedData),
+        completedAllPlans: updatedCachedPlans[0],
       });
     }
 
     const allPlans = await PlanModel.find({}).exec();
-
-    // Assuming you have the user's preferences available
-    const userPreferences = req.user.preferences;
 
     const completedAllPlans = await Promise.all(
       allPlans.map(async (plan) => {
@@ -1410,7 +1454,6 @@ exports.getAllPlans = async (req, res) => {
         };
         let price = 0;
         const tile_content = plan.tile_content;
-        const preferred_transport = plan.preferred_transport;
         const plan_preferences = {
           Dine: {
             Fine_Dining: 0,
@@ -1511,33 +1554,6 @@ exports.getAllPlans = async (req, res) => {
           })
         );
 
-        const likeness =
-          (plan_preferences.Dine.Fine_Dining *
-            userPreferences.Dine.Fine_Dining +
-            plan_preferences.Dine.Foodcourt * userPreferences.Dine.Foodcourt +
-            plan_preferences.Dine.Classic_Dine_In *
-              userPreferences.Dine.Classic_Dine_In +
-            plan_preferences.Dine.Dhabas * userPreferences.Dine.Dhabas +
-            plan_preferences.Dine.Cafes * userPreferences.Dine.Cafes +
-            plan_preferences.Dine.Streetfood * userPreferences.Dine.Streetfood +
-            plan_preferences.Outing.Hills * userPreferences.Outing.Hills +
-            plan_preferences.Outing.Lakes * userPreferences.Outing.Lakes +
-            plan_preferences.Outing.Dams_Waterfalls *
-              userPreferences.Outing.Dams_Waterfalls +
-            plan_preferences.Outing.Arcade * userPreferences.Outing.Arcade +
-            plan_preferences.Outing.Movie_Halls *
-              userPreferences.Outing.Movie_Halls +
-            plan_preferences.Outing.Parks * userPreferences.Outing.Parks +
-            plan_preferences.Outing.Clubs_Bars *
-              userPreferences.Outing.Clubs_Bars +
-            plan_preferences.Outing.Shopping * userPreferences.Outing.Shopping +
-            plan_preferences.Outing.Night_Out *
-              userPreferences.Outing.Night_Out +
-            plan_preferences.Outing.Places_Of_Worship *
-              userPreferences.Outing.Places_Of_Worship +
-            plan_preferences.Outing.Museum * userPreferences.Outing.Museum) /
-          16;
-
         const uniqueTags = Array.from(tags);
 
         return {
@@ -1548,9 +1564,11 @@ exports.getAllPlans = async (req, res) => {
           plan_start_time: plan.plan_start_time,
           price,
           tile_content,
-          likeness: parseFloat(likeness),
+          likeness: parseFloat(
+            calculateLikeness(plan_preferences, userPreferences)
+          ),
           components: populatedComponents.sort((a, b) => a.order - b.order),
-          preferred_transport,
+          plan_preferences,
         };
       })
     );
@@ -1558,6 +1576,7 @@ exports.getAllPlans = async (req, res) => {
     completedAllPlans.sort((a, b) => b.likeness - a.likeness);
 
     // Cache the data for future requests
+
     const serializedData = JSON.stringify(completedAllPlans);
     cache.set("allPlans", serializedData);
 
