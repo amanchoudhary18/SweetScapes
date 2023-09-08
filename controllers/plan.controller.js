@@ -1425,13 +1425,15 @@ exports.getAllPlans = async (req, res) => {
 
       // const updatedCachedPlans = [];
 
-      // cachedPlans.forEach((plan) => {
-      //   const likeness = calculateLikeness(
-      //     plan.plan_preferences,
-      //     userPreferences
-      //   );
-      //   updatedCachedPlans.push({ ...plan, likeness });
-      // });
+      cachedPlans.map((plan) => {
+        const likeness = calculateLikeness(
+          plan.plan_preferences,
+          userPreferences
+        );
+        return { ...plan, likeness };
+      });
+
+      console.log(cachedPlans);
 
       // updatedCachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
 
