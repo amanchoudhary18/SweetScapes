@@ -57,12 +57,16 @@ const diningModel = new mongoose.Schema({
   duration: {
     type: Number,
   },
-  opening_time: {
-    type: String,
-  },
-  closing_time: {
-    type: String,
-  },
+  time_slots: [
+    {
+      opening_time: {
+        type: String,
+      },
+      closing_time: {
+        type: String,
+      },
+    },
+  ],
   img: {
     type: String,
   },

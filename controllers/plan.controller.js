@@ -205,6 +205,87 @@ function isTimestampBefore(epochTimeMs, timestring) {
   return istDatetime.isBefore(providedDatetime);
 }
 
+// Helper function to find the closest opening time in the time_slots array
+
+function findClosestTimeSlots(time, timeSlots) {
+  const istTimezone = "Asia/Kolkata";
+  const istDatetime = moment.tz(time, istTimezone);
+  console.log(timeSlots);
+  console.log(istDatetime);
+
+  let closestOpeningTime = null;
+  let closestClosingTime = null;
+  let minOpeningTimeDifference = Infinity;
+  let minClosingTimeDifference = Infinity;
+  let closestOpeningDate = null;
+  let closestClosingDate = null;
+
+  for (const timeSlot of timeSlots) {
+    console.log(timeSlot);
+    const [openingProvidedHours, openingProvidedMinutes] = timeSlot.opening_time
+      .split(":")
+      .map(Number);
+    const [closingProvidedHours, closingProvidedMinutes] = timeSlot.closing_time
+      .split(":")
+      .map(Number);
+
+    const currentISTTime = moment.tz(istTimezone);
+    const epochDate = new Date(time);
+
+    const openingProvidedDatetime = currentISTTime.clone().set({
+      year: epochDate.getFullYear(),
+      month: epochDate.getMonth(),
+      date: epochDate.getDate(),
+      hours: openingProvidedHours,
+      minutes: openingProvidedMinutes,
+      seconds: 0,
+      milliseconds: 0,
+    });
+
+    const closingProvidedDatetime = currentISTTime.clone().set({
+      year: epochDate.getFullYear(),
+      month: epochDate.getMonth(),
+      date: epochDate.getDate(),
+      hours: closingProvidedHours,
+      minutes: closingProvidedMinutes,
+      seconds: 0,
+      milliseconds: 0,
+    });
+
+    console.log(openingProvidedDatetime, closingProvidedDatetime);
+
+    const openingTimeDifference = Math.abs(
+      istDatetime.diff(openingProvidedDatetime)
+    );
+    if (
+      openingTimeDifference > 0 &&
+      openingTimeDifference < minOpeningTimeDifference
+    ) {
+      minOpeningTimeDifference = openingTimeDifference;
+      closestOpeningTime = timeSlot.opening_time;
+      closestOpeningDate = openingProvidedDatetime;
+    }
+
+    const closingTimeDifference = Math.abs(
+      istDatetime.diff(closingProvidedDatetime)
+    );
+    if (
+      closingTimeDifference > 0 &&
+      closingTimeDifference < minClosingTimeDifference
+    ) {
+      minClosingTimeDifference = closingTimeDifference;
+      closestClosingTime = timeSlot.closing_time;
+      closestClosingDate = closingProvidedDatetime;
+    }
+  }
+
+  return {
+    opening_time: closestOpeningTime,
+    closing_time: closestClosingTime,
+    isWithin: istDatetime.isBetween(closestOpeningDate, closestClosingDate),
+  };
+}
+
 // Extract file id from drive link
 function extractIdFromGoogleDriveLink(url) {
   const regex = /\/file\/d\/([a-zA-Z0-9_-]+)\/view/i;
@@ -395,13 +476,17 @@ const getTransport = async (req, res, getDistance) => {
           time.getTime() + components[i - 1].details.duration * 60 * 1000
         );
 
-        if (!isTimestampBefore(time, components[i - 1].details.closing_time)) {
+        let closestClosingTime = findClosestTimeSlots(
+          time,
+          components[i - 1].details.time_slots
+        );
+        if (!closestClosingTime.isWithin) {
           throw {
             message: `${
               components[i - 1].type === "Outing"
                 ? components[i - 1].details.place_name
                 : components[i - 1].details.hotel_name
-            } gets closed at ${components[i - 1].details.closing_time}`,
+            } gets closed at ${closestClosingTime.closing_time}`,
             componentId: components[i - 1].id,
           };
         }
@@ -430,13 +515,20 @@ const getTransport = async (req, res, getDistance) => {
       };
 
       if (i !== allDistancesandDurations.length - 1) {
-        if (isTimestampBefore(time, components[i].details.opening_time)) {
+        console.log(components[i]);
+        let closestOpeningTime = findClosestTimeSlots(
+          time,
+          components[i].details.time_slots
+        );
+
+        console.log(closestOpeningTime);
+        if (!closestOpeningTime.isWithin) {
           throw {
             message: `${
               components[i].type === "Outing"
                 ? components[i].details.place_name
                 : components[i].details.hotel_name
-            } is not open before ${components[i].details.opening_time}`,
+            } gets closed at ${closestOpeningTime.closing_time}`,
             componentId: components[i].id,
           };
         }
@@ -1568,15 +1660,15 @@ exports.getAllPlans = async (req, res) => {
                 .exec();
 
               if (curr_component) {
-                const openingTime12Hour = moment
-                  .tz(curr_component.opening_time, "HH:mm", "Asia/Kolkata")
-                  .format("h:mm A");
-                const closingTime12Hour = moment
-                  .tz(curr_component.closing_time, "HH:mm", "Asia/Kolkata")
-                  .format("h:mm A");
+                for (const time_slots of curr_component.time_slots) {
+                  time_slots.opening_time = moment
+                    .tz(time_slots.opening_time, "HH:mm", "Asia/Kolkata")
+                    .format("h:mm A");
 
-                curr_component.opening_time = openingTime12Hour;
-                curr_component.closing_time = closingTime12Hour;
+                  time_slots.closing_time = moment
+                    .tz(time_slots.closing_time, "HH:mm", "Asia/Kolkata")
+                    .format("h:mm A");
+                }
 
                 const componentWithHighlight = {
                   is_highlight: component.is_highlight,
