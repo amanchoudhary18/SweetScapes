@@ -66,7 +66,7 @@ router.post("/login", async (req, res) => {
 
     res.status(200).json({
       status: "Successfull",
-      message: "Login Successfull",
+      message: "Login Successful",
       token: token,
     });
   } catch (error) {
@@ -79,7 +79,7 @@ router.get("/me", adminAuth, async (req, res) => {
   console.log(req.user);
   try {
     res.status(200).json({
-      status: "Successfull",
+      status: "Successful",
       user: req.user,
     });
   } catch (error) {

@@ -1253,7 +1253,7 @@ exports.addDining = async (req, res) => {
 exports.getDiningsLength = async (req, res) => {
   try {
     const dinings = await Dining.find({});
-    res.status(200).send({ status: "Successfull", count: dinings.length });
+    res.status(200).send({ status: "Successful", count: dinings.length });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
@@ -1262,7 +1262,7 @@ exports.getDiningsLength = async (req, res) => {
 exports.getOutingsLength = async (req, res) => {
   try {
     const outings = await Outing.find({});
-    res.status(200).send({ status: "Successfull", count: outings.length });
+    res.status(200).send({ status: "Successful", count: outings.length });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
@@ -1272,7 +1272,7 @@ exports.getAllDinings = async (req, res) => {
   try {
     const dinings = await Dining.find({});
 
-    res.status(200).send({ status: "Successfull", dinings });
+    res.status(200).send({ status: "Successful", dinings });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
@@ -1282,7 +1282,7 @@ exports.getAllOutings = async (req, res) => {
   try {
     const outings = await Outing.find({});
 
-    res.status(200).send({ status: "Successfull", outings });
+    res.status(200).send({ status: "Successful", outings });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
@@ -1419,8 +1419,6 @@ exports.getAllPlans = async (req, res) => {
     // Fetch all plans from the database
     const cachedData = cache.get("allPlans");
     if (cachedData) {
-      console.log("Cache hit");
-
       let cachedPlans = JSON.parse(cachedData);
 
       // const updatedCachedPlans = [];
@@ -1432,8 +1430,6 @@ exports.getAllPlans = async (req, res) => {
         );
         return { ...plan, likeness };
       });
-
-      console.log(cachedPlans);
 
       // updatedCachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
 
@@ -1913,7 +1909,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
 
     res
       .status(200)
-      .json({ status: "Successfull", final_plan_details: planDetails });
+      .json({ status: "Successful", final_plan_details: planDetails });
   } catch (error) {
     res.status(500).json({
       status: "Failed",
