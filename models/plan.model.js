@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const planSchema = {
-  plan_id: { type: String, required: true, unique: true },
+  plan_id: { type: String, required: true, unique: true, index: true },
 
   plan_start_time: {
     type: Number,
