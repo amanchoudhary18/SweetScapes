@@ -1416,25 +1416,25 @@ exports.getAllPlans = async (req, res) => {
     // Assuming you have the user's preferences available
     const userPreferences = req.user.preferences;
 
-    // Fetch all plans from the database
-    const cachedData = cache.get("allPlans");
-    if (cachedData) {
-      console.log("Cache hit");
+    // // Fetch all plans from the database
+    // const cachedData = cache.get("allPlans");
+    // if (cachedData) {
+    //   console.log("Cache hit");
 
-      let cachedPlans = JSON.parse(cachedData);
+    //   let cachedPlans = JSON.parse(cachedData);
 
-      const updatedCachedPlans = cachedPlans.map((plan) => ({
-        ...plan,
-        likeness: calculateLikeness(plan.plan_preferences, userPreferences),
-      }));
+    //   const updatedCachedPlans = cachedPlans.map((plan) => ({
+    //     ...plan,
+    //     likeness: calculateLikeness(plan.plan_preferences, userPreferences),
+    //   }));
 
-      updatedCachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
+    //   updatedCachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
 
-      return res.status(200).send({
-        status: "Successful",
-        completedAllPlans: updatedCachedPlans[0],
-      });
-    }
+    //   return res.status(200).send({
+    //     status: "Successful",
+    //     completedAllPlans: updatedCachedPlans[0],
+    //   });
+    // }
 
     const allPlans = await PlanModel.find({}).exec();
 
