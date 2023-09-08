@@ -251,35 +251,21 @@ function findClosestTimeSlots(time, timeSlots) {
       milliseconds: 0,
     });
 
-    const openingTimeDifference = Math.abs(
-      istDatetime.diff(openingProvidedDatetime)
-    );
     if (
-      openingTimeDifference > 0 &&
-      openingTimeDifference < minOpeningTimeDifference
+      istDatetime.isBetween(openingProvidedDatetime, closingProvidedDatetime)
     ) {
-      minOpeningTimeDifference = openingTimeDifference;
-      closestOpeningTime = timeSlot.opening_time;
-      closestOpeningDate = openingProvidedDatetime;
-    }
-
-    const closingTimeDifference = Math.abs(
-      istDatetime.diff(closingProvidedDatetime)
-    );
-    if (
-      closingTimeDifference > 0 &&
-      closingTimeDifference < minClosingTimeDifference
-    ) {
-      minClosingTimeDifference = closingTimeDifference;
-      closestClosingTime = timeSlot.closing_time;
-      closestClosingDate = closingProvidedDatetime;
+      return {
+        opening_time: timeSlot.opening_time,
+        closing_time: timeSlot.closing_time,
+        isWithin: true,
+      };
     }
   }
 
   return {
-    opening_time: closestOpeningTime,
-    closing_time: closestClosingTime,
-    isWithin: istDatetime.isBetween(closestOpeningDate, closestClosingDate),
+    opening_time: null,
+    closing_time: null,
+    isWithin: false,
   };
 }
 
@@ -467,25 +453,34 @@ const getTransport = async (req, res, getDistance) => {
     let currTwoTravel;
     let totalDistance = 0;
 
+    let closestOpeningTime;
+
     for (let i = 0; i < allDistancesandDurations.length; i++) {
       if (i != 0) {
         time.setTime(
           time.getTime() + components[i - 1].details.duration * 60 * 1000
         );
 
-        let closestClosingTime = findClosestTimeSlots(
-          time,
-          components[i - 1].details.time_slots
-        );
-        if (!closestClosingTime.isWithin) {
-          throw {
-            message: `${
-              components[i - 1].type === "Outing"
-                ? components[i - 1].details.place_name
-                : components[i - 1].details.hotel_name
-            } gets closed at ${closestClosingTime.closing_time}`,
-            componentId: components[i - 1].id,
-          };
+        const istTimezone = "Asia/Kolkata";
+        const istDatetime = moment.tz(time, istTimezone);
+        const [closingProvidedHours, closingProvidedMinutes] =
+          closestOpeningTime.closing_time.split(":").map(Number);
+
+        const currentISTTime = moment.tz(istTimezone);
+        const epochDate = new Date(time);
+
+        const closingProvidedDatetime = currentISTTime.clone().set({
+          year: epochDate.getFullYear(),
+          month: epochDate.getMonth(),
+          date: epochDate.getDate(),
+          hours: closingProvidedHours,
+          minutes: closingProvidedMinutes,
+          seconds: 0,
+          milliseconds: 0,
+        });
+
+        if (closingProvidedDatetime.isBefore(istDatetime)) {
+          time = closingProvidedDatetime.toDate();
         }
       }
 
@@ -512,7 +507,7 @@ const getTransport = async (req, res, getDistance) => {
       };
 
       if (i !== allDistancesandDurations.length - 1) {
-        let closestOpeningTime = findClosestTimeSlots(
+        closestOpeningTime = findClosestTimeSlots(
           time,
           components[i].details.time_slots
         );
@@ -523,7 +518,7 @@ const getTransport = async (req, res, getDistance) => {
               components[i].type === "Outing"
                 ? components[i].details.place_name
                 : components[i].details.hotel_name
-            } gets closed at ${closestOpeningTime.closing_time}`,
+            } is closed at this time`,
             componentId: components[i].id,
           };
         }
@@ -744,6 +739,22 @@ const getTransport = async (req, res, getDistance) => {
               ),
       };
 
+      closestOpeningTime = findClosestTimeSlots(
+        time,
+        components[0].details.time_slots
+      );
+
+      if (!closestOpeningTime.isWithin) {
+        throw {
+          message: `${
+            components[0].type === "Outing"
+              ? components[0].details.place_name
+              : components[0].details.hotel_name
+          } is closed at this time`,
+          componentId: components[0].id,
+        };
+      }
+
       busTravel.push(currBusTravel);
       time = time + res.duration * 60 * 1000;
     } else {
@@ -762,6 +773,22 @@ const getTransport = async (req, res, getDistance) => {
         ),
       };
 
+      closestOpeningTime = findClosestTimeSlots(
+        time,
+        components[0].details.time_slots
+      );
+
+      if (!closestOpeningTime.isWithin) {
+        throw {
+          message: `${
+            components[0].type === "Outing"
+              ? components[0].details.place_name
+              : components[0].details.hotel_name
+          } is closed at this time`,
+          componentId: components[0].id,
+        };
+      }
+
       busTravel.push(startAuto);
       time = time.getTime() + completeScooty.route[0].duration * 60 * 1000;
     }
@@ -769,6 +796,27 @@ const getTransport = async (req, res, getDistance) => {
     for (let i = 1; i < allDistancesandDurations.length; i++) {
       if (i !== 0) {
         time = time + components[i - 1].details.duration * 60 * 1000;
+        const istTimezone = "Asia/Kolkata";
+        const istDatetime = moment.tz(time, istTimezone);
+        const [closingProvidedHours, closingProvidedMinutes] =
+          closestOpeningTime.closing_time.split(":").map(Number);
+
+        const currentISTTime = moment.tz(istTimezone);
+        const epochDate = new Date(time);
+
+        const closingProvidedDatetime = currentISTTime.clone().set({
+          year: epochDate.getFullYear(),
+          month: epochDate.getMonth(),
+          date: epochDate.getDate(),
+          hours: closingProvidedHours,
+          minutes: closingProvidedMinutes,
+          seconds: 0,
+          milliseconds: 0,
+        });
+
+        if (closingProvidedDatetime.isBefore(istDatetime)) {
+          time = closingProvidedDatetime.valueOf();
+        }
       }
 
       if (i === allDistancesandDurations.length - 1) {
@@ -820,6 +868,24 @@ const getTransport = async (req, res, getDistance) => {
                 ? 100
                 : 0),
       };
+
+      if (i !== allDistancesandDurations.length - 1) {
+        closestOpeningTime = findClosestTimeSlots(
+          time,
+          components[i].details.time_slots
+        );
+
+        if (!closestOpeningTime.isWithin) {
+          throw {
+            message: `${
+              components[i].type === "Outing"
+                ? components[i].details.place_name
+                : components[i].details.hotel_name
+            } is closed at this time`,
+            componentId: components[i].id,
+          };
+        }
+      }
 
       busTravel.push(currBusTravel);
 
@@ -1087,9 +1153,32 @@ const getTransport = async (req, res, getDistance) => {
     time = new Date(date).getTime();
 
     totalDistance = 0;
+
     for (let i = 0; i < allDistancesandDurations.length; i++) {
       if (i !== 0) {
         time = time + components[i - 1].details.duration * 60 * 1000;
+
+        const istTimezone = "Asia/Kolkata";
+        const istDatetime = moment.tz(time, istTimezone);
+        const [closingProvidedHours, closingProvidedMinutes] =
+          closestOpeningTime.closing_time.split(":").map(Number);
+
+        const currentISTTime = moment.tz(istTimezone);
+        const epochDate = new Date(time);
+
+        const closingProvidedDatetime = currentISTTime.clone().set({
+          year: epochDate.getFullYear(),
+          month: epochDate.getMonth(),
+          date: epochDate.getDate(),
+          hours: closingProvidedHours,
+          minutes: closingProvidedMinutes,
+          seconds: 0,
+          milliseconds: 0,
+        });
+
+        if (closingProvidedDatetime.isBefore(istDatetime)) {
+          time = closingProvidedDatetime.valueOf();
+        }
       }
 
       let checkDistance = allDistancesandDurations[i].walking.distance.includes(
@@ -1149,6 +1238,24 @@ const getTransport = async (req, res, getDistance) => {
                 ) / 50
               ) * 50,
       };
+
+      if (i !== allDistancesandDurations.length - 1) {
+        closestOpeningTime = findClosestTimeSlots(
+          time,
+          components[i].details.time_slots
+        );
+
+        if (!closestOpeningTime.isWithin) {
+          throw {
+            message: `${
+              components[i].type === "Outing"
+                ? components[i].details.place_name
+                : components[i].details.hotel_name
+            } is closed at this time`,
+            componentId: components[i].id,
+          };
+        }
+      }
 
       autoTravel.push(currAutoTravel);
 
