@@ -1423,21 +1423,21 @@ exports.getAllPlans = async (req, res) => {
 
       let cachedPlans = JSON.parse(cachedData);
 
-      const updatedCachedPlans = [];
+      // const updatedCachedPlans = [];
 
-      cachedPlans.forEach((plan) => {
-        const likeness = calculateLikeness(
-          plan.plan_preferences,
-          userPreferences
-        );
-        updatedCachedPlans.push({ ...plan, likeness });
-      });
+      // cachedPlans.forEach((plan) => {
+      //   const likeness = calculateLikeness(
+      //     plan.plan_preferences,
+      //     userPreferences
+      //   );
+      //   updatedCachedPlans.push({ ...plan, likeness });
+      // });
 
-      updatedCachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
+      // updatedCachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
 
       return res.status(200).send({
         status: "Successful",
-        completedAllPlans: updatedCachedPlans[0],
+        completedAllPlans: cachedPlans,
       });
     }
 
@@ -1578,7 +1578,7 @@ exports.getAllPlans = async (req, res) => {
       })
     );
 
-    completedAllPlans.sort((a, b) => b.likeness - a.likeness);
+    completedAllPlans.sort((a, b) => (a.likeness > b.likeness ? -1 : 1));
 
     // Cache the data for future requests
 
