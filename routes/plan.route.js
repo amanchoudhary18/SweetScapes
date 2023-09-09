@@ -41,6 +41,9 @@ router.post("/savePlan", adminAuth, PlanController.savePlan);
 // Get all plans
 router.get("/getAllPlans", userAuth, PlanController.getAllPlans);
 
+// Get all plans component names
+router.get("/getAllPlanNames", adminAuth, PlanController.getAllPlanNames);
+
 // Get plan by id
 router.get("/getPlanDetails/:id", userAuth, PlanController.getParticularPlan);
 

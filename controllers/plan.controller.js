@@ -1538,7 +1538,7 @@ exports.getAllPlans = async (req, res) => {
         return { ...plan, likeness };
       });
 
-      // updatedCachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
+      cachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
 
       return res.status(200).send({
         status: "Successful",
@@ -2022,5 +2022,62 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
       status: "Failed",
       message: error.message,
     });
+  }
+};
+
+exports.getAllPlanNames = async (req, res) => {
+  try {
+    // Fetch all plans from the database
+
+    const allPlans = await PlanModel.find({}).exec();
+
+    const completedAllPlans = await Promise.all(
+      allPlans.map(async (plan) => {
+        const populatedComponents = [];
+
+        await Promise.all(
+          plan.components.map(async (component) => {
+            let componentModel;
+            if (component.type === "Outing") {
+              componentModel = Outing;
+            } else if (component.type === "Dining") {
+              componentModel = Dining;
+            }
+
+            if (componentModel) {
+              const curr_component = await componentModel
+                .findById(component.component_id)
+                .exec();
+
+              const componentWithHighlight = {
+                is_highlight: component.is_highlight,
+                order: component.order,
+                name:
+                  curr_component.type === "Dining"
+                    ? curr_component.hotel_name
+                    : curr_component.place_name,
+              };
+
+              if (curr_component) {
+                populatedComponents.push(componentWithHighlight);
+              }
+
+              populatedComponents.sort((a, b) => a.order - b.order);
+            }
+          })
+        );
+
+        return {
+          components: populatedComponents,
+        };
+      })
+    );
+
+    res
+      .status(200)
+      .send({ status: "Successful", components: completedAllPlans });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ status: "Failed", message: error.message });
   }
 };
