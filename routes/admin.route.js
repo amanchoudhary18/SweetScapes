@@ -6,7 +6,7 @@ const express = require("express");
 const router = express.Router();
 const generateRandomPassword = require("../utils/generateRandomPassword");
 const adminAuth = require("../middleware/adminAuth");
-
+const jwt = require("jsonwebtoken");
 //register
 router.post("/register", async (req, res) => {
   try {
@@ -84,6 +84,28 @@ router.get("/me", adminAuth, async (req, res) => {
     });
   } catch (error) {
     consolee.log(error);
+  }
+});
+
+router.get("/check-super-admin", async (req, res, next) => {
+  try {
+    const token = req.headers.authorization.replace("Bearer ", "");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const admin = await Admin.findOne({
+      _id: decoded._id,
+      "tokens.token": token,
+      super: true,
+    });
+
+    if (!admin) {
+      return res.status(403).send(false);
+    }
+
+    res.status(200).send(true);
+  } catch (error) {
+    console.error(error.message);
+    res.status(401).send(false);
   }
 });
 

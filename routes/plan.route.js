@@ -4,6 +4,7 @@ require("dotenv").config({ path: "../.env" });
 const userAuth = require("../middleware/userAuth");
 const adminAuth = require("../middleware/adminAuth");
 const PlanController = require("../controllers/plan.controller");
+const superAuth = require("../middleware/superAdminAuth");
 
 // Get co-ordinates of a component
 router.post("/getMap", PlanController.getMap);
@@ -42,7 +43,7 @@ router.post("/savePlan", adminAuth, PlanController.savePlan);
 router.get("/getAllPlans", userAuth, PlanController.getAllPlans);
 
 // Get all plans component names
-router.get("/getAllPlanNames", adminAuth, PlanController.getAllPlanNames);
+router.get("/getAllPlansAdmin", adminAuth, PlanController.getAllPlansAdmin);
 
 // Get plan by id
 router.get("/getPlanDetails/:id", userAuth, PlanController.getParticularPlan);
@@ -63,5 +64,7 @@ router.get(
   userAuth,
   PlanController.getSavedUserCreatedPlan
 );
+
+router.post("/approvePlan/:id", superAuth, PlanController.approvePlan);
 
 module.exports = router;

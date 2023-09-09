@@ -32,6 +32,11 @@ const adminSchema = new mongoose.Schema(
       },
     ],
 
+    super: {
+      type: Boolean,
+      default: false,
+    },
+
     tokens: [
       {
         token: {

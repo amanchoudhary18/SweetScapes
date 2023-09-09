@@ -39,7 +39,10 @@ const planSchema = {
   tile_content: {
     type: String,
   },
-
+  approved: {
+    type: Boolean,
+    default: false,
+  },
   created_at: { type: Date, required: true, default: Date.now },
 };
 

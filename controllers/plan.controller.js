@@ -1702,7 +1702,7 @@ exports.getParticularPlan = async (req, res) => {
 
   try {
     const plan = await PlanModel.findOne({
-      plan_id: "64b3e0e9702372d2582a01e164bd746ddcc20bbdfa61dcde",
+      plan_id,
     });
 
     const populatedComponents = [];
@@ -2025,10 +2025,14 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
   }
 };
 
-exports.getAllPlanNames = async (req, res) => {
-  try {
-    // Fetch all plans from the database
+function convertEpochToIndianTime(epoch) {
+  const indianTime = moment(epoch).tz("Asia/Kolkata");
+  const formattedTime = indianTime.format("hh:mm A");
+  return formattedTime;
+}
 
+exports.getAllPlansAdmin = async (req, res) => {
+  try {
     const allPlans = await PlanModel.find({}).exec();
 
     const completedAllPlans = await Promise.all(
@@ -2049,35 +2053,57 @@ exports.getAllPlanNames = async (req, res) => {
                 .findById(component.component_id)
                 .exec();
 
-              const componentWithHighlight = {
-                is_highlight: component.is_highlight,
-                order: component.order,
-                name:
-                  curr_component.type === "Dining"
-                    ? curr_component.hotel_name
-                    : curr_component.place_name,
-              };
-
               if (curr_component) {
+                for (const time_slots of curr_component.time_slots) {
+                  time_slots.opening_time = moment
+                    .tz(time_slots.opening_time, "HH:mm", "Asia/Kolkata")
+                    .format("h:mm A");
+
+                  time_slots.closing_time = moment
+                    .tz(time_slots.closing_time, "HH:mm", "Asia/Kolkata")
+                    .format("h:mm A");
+                }
+
+                const componentWithHighlight = {
+                  is_highlight: component.is_highlight,
+                  order: component.order,
+                  details: curr_component,
+                };
+
                 populatedComponents.push(componentWithHighlight);
               }
-
-              populatedComponents.sort((a, b) => a.order - b.order);
             }
           })
         );
 
         return {
-          components: populatedComponents,
+          id: plan.plan_id,
+          plan_start_time: plan.plan_start_time,
+          components: populatedComponents.sort((a, b) => a.order - b.order),
+          approved: plan.approved,
         };
       })
     );
 
-    res
-      .status(200)
-      .send({ status: "Successful", components: completedAllPlans });
+    res.status(200).send({ status: "Successful", completedAllPlans });
   } catch (error) {
     console.error(error);
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+};
+
+exports.approvePlan = async (req, res) => {
+  const plan_id = req.params.id;
+
+  try {
+    const plan = await PlanModel.updateOne(
+      {
+        plan_id,
+      },
+      { approved: true }
+    );
+    res.status(200).send({ status: "Successful", message: "Approved" });
+  } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }
 };
