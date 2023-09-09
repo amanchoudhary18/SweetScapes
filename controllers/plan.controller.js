@@ -1546,7 +1546,7 @@ exports.getAllPlans = async (req, res) => {
       });
     }
 
-    const allPlans = await PlanModel.find({}).exec();
+    const allPlans = await PlanModel.find({ approved: true }).exec();
 
     const completedAllPlans = await Promise.all(
       allPlans.map(async (plan) => {
