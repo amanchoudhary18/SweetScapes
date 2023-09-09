@@ -2081,6 +2081,7 @@ exports.getAllPlansAdmin = async (req, res) => {
           plan_start_time: plan.plan_start_time,
           components: populatedComponents.sort((a, b) => a.order - b.order),
           approved: plan.approved,
+          owner_name: plan.owner_name,
         };
       })
     );

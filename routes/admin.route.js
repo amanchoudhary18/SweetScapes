@@ -16,8 +16,6 @@ router.post("/register", async (req, res) => {
     const admin = new Admin({ name, email, password: hashedPassword });
     await admin.save();
 
-    const token = await admin.generateAuthToken();
-
     // Send the random password to the user's email
     sgMail.setApiKey(process.env.SG_GRID_API);
     const msg = {
@@ -25,11 +23,7 @@ router.post("/register", async (req, res) => {
       from: "sweetscapes.organization@gmail.com",
       subject: "Your Registration Details",
       text: `Welcome, ${name}! Your password: ${randomPassword}`,
-      cc: [
-        "sweetscapes.organization@gmail.com",
-        "aman.choudhary9785@gmail.com",
-        "srivastavarahul088@gmail.com",
-      ],
+      cc: ["sweetscapes.organization@gmail.com"],
     };
 
     await sgMail.send(msg);
@@ -38,7 +32,7 @@ router.post("/register", async (req, res) => {
       .status(200)
       .json({ status: "Successful", message: "Registration successful." });
   } catch (error) {
-    console.error(error);
+    console.log(error.response.body);
     res.status(500).json({ status: "Failed", message: "Registration failed" });
   }
 });
