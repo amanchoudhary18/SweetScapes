@@ -67,4 +67,9 @@ router.get(
 
 router.post("/approvePlan/:id", superAuth, PlanController.approvePlan);
 
+router.get(
+  "/searchRestaurant/:restaurantName",
+  PlanController.searchRestaurant
+);
+
 module.exports = router;

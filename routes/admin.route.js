@@ -7,6 +7,7 @@ const router = express.Router();
 const generateRandomPassword = require("../utils/generateRandomPassword");
 const adminAuth = require("../middleware/adminAuth");
 const jwt = require("jsonwebtoken");
+const Pending = require("../models/pending.model");
 //register
 router.post("/register", async (req, res) => {
   try {
@@ -70,7 +71,6 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/me", adminAuth, async (req, res) => {
-  console.log(req.user);
   try {
     res.status(200).json({
       status: "Successful",
@@ -100,6 +100,38 @@ router.get("/check-super-admin", async (req, res, next) => {
   } catch (error) {
     console.error(error.message);
     res.status(401).send(false);
+  }
+});
+
+router.post("/addPendingPlace", adminAuth, async (req, res) => {
+  try {
+    const pending = new Pending(req.body);
+    await pending.save();
+
+    res.status(200).send({ status: "Successful", pending });
+  } catch (error) {
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+});
+
+router.get("/getPendingPlaces", adminAuth, async (req, res) => {
+  try {
+    const pending = await Pending.find();
+
+    res.status(200).send({ status: "Successful", pending });
+  } catch (error) {
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+});
+
+router.post("/getPendingPlaces/:id", adminAuth, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const pending = await Pending.updateOne({ _id: id }, { added: true });
+
+    res.status(200).send({ status: "Successful", pending });
+  } catch (error) {
+    res.status(500).send({ status: "Failed", message: error.message });
   }
 });
 

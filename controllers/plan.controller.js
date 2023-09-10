@@ -2108,3 +2108,39 @@ exports.approvePlan = async (req, res) => {
     res.status(500).send({ status: "Failed", message: error.message });
   }
 };
+
+exports.searchRestaurant = async (req, res) => {
+  const { restaurantName } = req.params;
+  const encodedRestaurantName = encodeURIComponent(restaurantName);
+  const apiUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodedRestaurantName}+Ranchi,India&key=${API_KEY}`;
+
+  try {
+    const response = await axios.get(apiUrl);
+
+    if (response.status === 200) {
+      const data = response.data;
+      if (data.results && data.results.length > 0) {
+        const firstResult = data.results[0];
+        const name = firstResult.name;
+        const address = firstResult.formatted_address;
+        const rating = firstResult.rating || "N/A";
+
+        const restaurantInfo = {
+          name,
+          address,
+          rating,
+        };
+
+        res.json(restaurantInfo);
+      } else {
+        res
+          .status(404)
+          .json({ error: "No results found for the specific restaurant." });
+      }
+    } else {
+      res.status(500).json({ error: "Error making API request." });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error making API request." });
+  }
+};
