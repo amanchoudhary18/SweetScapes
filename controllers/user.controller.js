@@ -22,6 +22,7 @@ exports.register = async (req, res) => {
       const otp = generateOTP(4);
 
       sgMail.setApiKey(process.env.SG_GRID_API);
+      console.log(process.env.SG_GRID_API);
 
       const msg = {
         to: userBody.email,

@@ -261,7 +261,7 @@ function findClosestTimeSlots(time, timeSlots) {
       };
     }
   }
-
+  console.log(istDatetime);
   return {
     opening_time: null,
     closing_time: null,
@@ -1688,6 +1688,7 @@ exports.getAllPlans = async (req, res) => {
     // Cache the data for future requests
 
     const serializedData = JSON.stringify(completedAllPlans);
+
     cache.set("allPlans", serializedData);
 
     res.status(200).send({ status: "Successful", completedAllPlans });
