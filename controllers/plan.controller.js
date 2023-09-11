@@ -1472,7 +1472,7 @@ exports.savePlan = async (req, res) => {
 
       res.status(200).send({ status: "Successful", plan });
     } else {
-      res.status(500).send({
+      res.status(200).send({
         status: "Failed",
         message: "This plan already exists!!",
         existingPlan,
@@ -1480,7 +1480,7 @@ exports.savePlan = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send({ status: "Failed", message: error.message });
+    res.status(200).send({ status: "Failed", message: error.message });
   }
 };
 

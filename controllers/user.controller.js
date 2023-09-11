@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
 
   if (!userBody.email.includes("@bitmesra.ac.in")) {
     res
-      .status(400)
+      .status(200)
       .send({ status: "Failed", message: "Enter your institute email id" });
   } else {
     try {
@@ -56,9 +56,9 @@ exports.register = async (req, res) => {
         })
         .catch((error) => {
           console.error(error);
-          res.status(500).send({
+          res.status(200).send({
             status: "Failed",
-            message: "Failed to send OTP email",
+            message: "Failed to send OTP",
           });
         });
     } catch (err) {
@@ -154,14 +154,17 @@ exports.loginotpverification = async (req, res) => {
         token,
       });
     } else {
-      res.status(400).send({
+      res.status(200).send({
         status: "Failed",
         message: "Incorrect OTP entered. Please try again.",
       });
     }
   } catch (error) {
     console.log(error);
-    res.status(400).send({ status: "Failed", message: "Wrong OTP entered" });
+    res.status(200).send({
+      status: "Failed",
+      message: "Incorrect OTP entered. Please try again.",
+    });
   }
 };
 
@@ -186,7 +189,7 @@ exports.update = async (req, res) => {
 
   const user = await User.findById(req.user._id);
   if (!user) {
-    res.status(404);
+    res.status(200);
     throw new Error("User Not Found");
   } else {
     try {
@@ -285,9 +288,9 @@ exports.update = async (req, res) => {
       }
 
       user.save();
-      res.send({ status: "Successful", user });
+      res.status(200).send({ status: "Successful", user });
     } catch (error) {
-      res.send({ status: "Failed", message: error.message });
+      res.status(200).send({ status: "Failed", message: error.message });
       console.log(error);
     }
   }
@@ -299,7 +302,7 @@ exports.updateInitial = async (req, res) => {
 
   const user = await User.findById(req.user._id);
   if (!user) {
-    res.status(404);
+    res.status(200);
     throw new Error("User Not Found");
   } else {
     try {
@@ -327,7 +330,7 @@ exports.updateInitial = async (req, res) => {
         "Window Shopping",
       ];
       user.save();
-      res.send({ status: "Successful", dining, outing });
+      res.status(200).send({ status: "Successful", dining, outing });
     } catch (error) {
       res.send({ status: "Failed", message: error.message });
       console.log(error);
@@ -341,7 +344,7 @@ exports.setInitialPreferences = async (req, res) => {
 
   const user = await User.findById(req.user._id);
   if (!user) {
-    res.status(404);
+    res.status(200);
     throw new Error("User Not Found");
   } else {
     try {
@@ -419,9 +422,9 @@ exports.setInitialPreferences = async (req, res) => {
       //   user.username = generateUsername(user);
       // }
       user.save();
-      res.send({ status: "Successful", user });
+      res.status(200).Errorsend({ status: "Successful", user });
     } catch (error) {
-      res.send({ status: "Failed", message: error.message });
+      res.status(200).send({ status: "Failed", message: error.message });
       console.log(error);
     }
   }
@@ -464,7 +467,7 @@ exports.otpverification = async (req, res) => {
       }
     }
   } else {
-    res.status(400).send({ status: "Failed", message: "Wrong OTP entered" });
+    res.status(200).send({ status: "Failed", message: "Wrong OTP entered" });
   }
 };
 
@@ -548,7 +551,9 @@ exports.googlelogin = async (req, res) => {
         token,
       });
     } else {
-      res.send({ status: "Failed", message: "Enter your institute email id" });
+      res
+        .status(200)
+        .send({ status: "Failed", message: "Enter your institute email id" });
     }
   }
 };
