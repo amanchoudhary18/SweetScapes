@@ -1546,7 +1546,7 @@ exports.getAllPlans = async (req, res) => {
       });
     }
 
-    const allPlans = await PlanModel.find({ approved: true }).exec();
+    const allPlans = await PlanModel.find({ approved: 1 }).exec();
 
     const completedAllPlans = await Promise.all(
       allPlans.map(async (plan) => {
@@ -2101,9 +2101,25 @@ exports.approvePlan = async (req, res) => {
       {
         plan_id,
       },
-      { approved: true }
+      { approved: 1 }
     );
     res.status(200).send({ status: "Successful", message: "Approved" });
+  } catch (error) {
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+};
+
+exports.rejectPlan = async (req, res) => {
+  const plan_id = req.params.id;
+
+  try {
+    const plan = await PlanModel.updateOne(
+      {
+        plan_id,
+      },
+      { approved: 2 }
+    );
+    res.status(200).send({ status: "Successful", message: "Rejected" });
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
   }

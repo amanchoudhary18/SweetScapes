@@ -40,8 +40,8 @@ const planSchema = {
     type: String,
   },
   approved: {
-    type: Boolean,
-    default: false,
+    type: Number,
+    default: 0,
   },
   created_at: { type: Date, required: true, default: Date.now },
 };
