@@ -1294,14 +1294,14 @@ const getTransport = async (req, res, getDistance) => {
     });
   } catch (error) {
     if (error.componentId)
-      res.status(500).json({
+      res.status(200).json({
         status: "Failed",
         message: error.message,
         componentId: error.componentId,
       });
     else {
       console.log(error);
-      res.status(500).json({ status: "Failed", message: error.message });
+      res.status(200).json({ status: "Failed", message: error.message });
     }
   }
 };
