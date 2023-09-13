@@ -74,4 +74,7 @@ router.get(
   PlanController.searchRestaurant
 );
 
+// Plan Component Tag
+router.get("/getAllPlansNamesTags", PlanController.getAllPlansNamesTags);
+
 module.exports = router;

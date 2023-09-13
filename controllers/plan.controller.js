@@ -2161,3 +2161,61 @@ exports.searchRestaurant = async (req, res) => {
     res.status(500).json({ error: "Error making API request." });
   }
 };
+
+exports.getAllPlansNamesTags = async (req, res) => {
+  try {
+    const allPlans = await PlanModel.find({}).exec();
+
+    const completedAllPlans = await Promise.all(
+      allPlans.map(async (plan) => {
+        const populatedComponents = [];
+
+        await Promise.all(
+          plan.components.map(async (component) => {
+            let componentModel;
+            if (component.type === "Outing") {
+              componentModel = Outing;
+            } else if (component.type === "Dining") {
+              componentModel = Dining;
+            }
+
+            if (componentModel) {
+              const curr_component = await componentModel
+                .findById(component.component_id)
+                .exec();
+
+              if (curr_component) {
+                for (const time_slots of curr_component.time_slots) {
+                  time_slots.opening_time = moment
+                    .tz(time_slots.opening_time, "HH:mm", "Asia/Kolkata")
+                    .format("h:mm A");
+
+                  time_slots.closing_time = moment
+                    .tz(time_slots.closing_time, "HH:mm", "Asia/Kolkata")
+                    .format("h:mm A");
+                }
+
+                populatedComponents.push({
+                  name:
+                    curr_component.type === "Dining"
+                      ? curr_component.hotel_name
+                      : curr_component.place_name,
+                  tags: curr_component.tags,
+                });
+              }
+            }
+          })
+        );
+
+        return {
+          components: populatedComponents,
+        };
+      })
+    );
+
+    res.status(200).send({ status: "Successful", completedAllPlans });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+};
