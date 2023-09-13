@@ -213,13 +213,6 @@ function findClosestTimeSlots(time, timeSlots) {
   const istTimezone = "Asia/Kolkata";
   const istDatetime = moment.tz(time, istTimezone);
 
-  let closestOpeningTime = null;
-  let closestClosingTime = null;
-  let minOpeningTimeDifference = Infinity;
-  let minClosingTimeDifference = Infinity;
-  let closestOpeningDate = null;
-  let closestClosingDate = null;
-
   for (const timeSlot of timeSlots) {
     const [openingProvidedHours, openingProvidedMinutes] = timeSlot.opening_time
       .split(":")
@@ -231,7 +224,7 @@ function findClosestTimeSlots(time, timeSlots) {
     const currentISTTime = moment.tz(istTimezone);
     const epochDate = new Date(time);
 
-    const openingProvidedDatetime = currentISTTime.clone().set({
+    let openingProvidedDatetime = currentISTTime.clone().set({
       year: epochDate.getFullYear(),
       month: epochDate.getMonth(),
       date: epochDate.getDate(),
@@ -240,6 +233,8 @@ function findClosestTimeSlots(time, timeSlots) {
       seconds: 0,
       milliseconds: 0,
     });
+
+    openingProvidedDatetime = openingProvidedDatetime.subtract(15, "minutes");
 
     const closingProvidedDatetime = currentISTTime.clone().set({
       year: epochDate.getFullYear(),
@@ -1520,15 +1515,11 @@ const calculateLikeness = (plan_preferences, userPreferences) => {
 
 exports.getAllPlans = async (req, res) => {
   try {
-    // Assuming you have the user's preferences available
     const userPreferences = req.user.preferences;
 
-    // Fetch all plans from the database
     const cachedData = cache.get("allPlans");
     if (cachedData) {
       let cachedPlans = JSON.parse(cachedData);
-
-      // const updatedCachedPlans = [];
 
       cachedPlans.map((plan) => {
         const likeness = calculateLikeness(
@@ -1591,16 +1582,14 @@ exports.getAllPlans = async (req, res) => {
 
         await Promise.all(
           plan.components.map(async (component) => {
-            // Determine the model to populate based on the component type
             let componentModel;
             if (component.type === "Outing") {
-              componentModel = Outing; // Use the Outing model for Outing components
+              componentModel = Outing;
             } else if (component.type === "Dining") {
-              componentModel = Dining; // Use the Dining model for Dining components
+              componentModel = Dining;
             }
 
             if (componentModel) {
-              // Use `populate` with `match` to specify the model to populate
               const curr_component = await componentModel
                 .findById(component.component_id)
                 .exec();
