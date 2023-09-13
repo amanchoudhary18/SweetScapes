@@ -452,12 +452,9 @@ const getTransport = async (req, res, getDistance) => {
 
     for (let i = 0; i < allDistancesandDurations.length; i++) {
       if (i != 0) {
-        time.setTime(
-          time.getTime() + components[i - 1].details.duration * 60 * 1000
-        );
-
         const istTimezone = "Asia/Kolkata";
-        const istDatetime = moment.tz(time, istTimezone);
+        const reachingIstDatetime = moment.tz(time, istTimezone);
+
         const [closingProvidedHours, closingProvidedMinutes] =
           closestOpeningTime.closing_time.split(":").map(Number);
 
@@ -474,9 +471,32 @@ const getTransport = async (req, res, getDistance) => {
           milliseconds: 0,
         });
 
-        if (closingProvidedDatetime.isBefore(istDatetime)) {
+        const timeLeft = closingProvidedDatetime.diff(
+          reachingIstDatetime,
+          "minutes"
+        );
+
+        const placeDuration = components[i - 1].details.duration;
+        if (timeLeft >= placeDuration) {
+          time.setTime(
+            time.getTime() + components[i - 1].details.duration * 60 * 1000
+          );
+        } else if (placeDuration >= 120 && timeLeft >= 0.5 * placeDuration) {
           time = closingProvidedDatetime.toDate();
+        } else if (timeLeft >= 0.75 * placeDuration) {
+          time = closingProvidedDatetime.toDate();
+        } else {
+          throw {
+            message: `${
+              components[i].type === "Outing"
+                ? components[i].details.place_name
+                : components[i].details.hotel_name
+            } is closed at this time`,
+            componentId: components[i].id,
+          };
         }
+
+        console.log(reachingIstDatetime, placeDuration, timeLeft, time);
       }
 
       currTwoTravel = {
