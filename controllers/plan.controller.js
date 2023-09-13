@@ -249,6 +249,7 @@ function findClosestTimeSlots(time, timeSlots) {
     if (
       istDatetime.isBetween(openingProvidedDatetime, closingProvidedDatetime)
     ) {
+      console.log(timeSlot);
       return {
         opening_time: timeSlot.opening_time,
         closing_time: timeSlot.closing_time,
@@ -256,7 +257,7 @@ function findClosestTimeSlots(time, timeSlots) {
       };
     }
   }
-  console.log(istDatetime);
+
   return {
     opening_time: null,
     closing_time: null,
