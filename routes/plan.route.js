@@ -77,4 +77,6 @@ router.get(
 // Plan Component Tag
 router.get("/getAllPlansNamesTags", PlanController.getAllPlansNamesTags);
 
+router.get("/getTime", PlanController.getTime);
+
 module.exports = router;
