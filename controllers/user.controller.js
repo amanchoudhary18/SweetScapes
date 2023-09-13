@@ -419,11 +419,9 @@ exports.setInitialPreferences = async (req, res) => {
 
         user.isNew = false;
       }
-      // if (user.name && user.mobileNumber && user.birthday) {
-      //   user.username = generateUsername(user);
-      // }
+
       user.save();
-      res.status(200).Errorsend({ status: "Successful", user });
+      res.status(200).send({ status: "Successful", user });
     } catch (error) {
       res.status(200).send({ status: "Failed", message: error.message });
       console.log(error);
