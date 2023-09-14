@@ -136,7 +136,7 @@ router.post("/getPendingPlaces/:id", adminAuth, async (req, res) => {
 });
 
 //Delete Pending
-router.post("/delete-pending", async (req, res) => {
+router.get("/delete-pending", async (req, res) => {
   try {
     const filter = { added: true };
     const result = await Pending.deleteMany(filter);
