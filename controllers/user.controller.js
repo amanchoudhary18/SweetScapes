@@ -51,7 +51,7 @@ exports.register = async (req, res) => {
 
           res.status(200).send({
             status: "Successful",
-            message: "OTP sent to email",
+            message: "OTP sent",
             otpId: otpsave._id,
           });
         })
