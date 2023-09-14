@@ -65,10 +65,13 @@ router.get(
   PlanController.getSavedUserCreatedPlan
 );
 
+// Approve a plan
 router.post("/approvePlan/:id", superAuth, PlanController.approvePlan);
 
+// Reject a plan
 router.post("/rejectPlan/:id", superAuth, PlanController.rejectPlan);
 
+// Get A component Details
 router.get(
   "/searchRestaurant/:restaurantName",
   PlanController.searchRestaurant
@@ -77,6 +80,7 @@ router.get(
 // Plan Component Tag
 router.get("/getAllPlansNamesTags", PlanController.getAllPlansNamesTags);
 
-// router.get("/getTime", PlanController.getTime);
+// Get Time of Place
+router.post("/getTime", PlanController.getTime);
 
 module.exports = router;

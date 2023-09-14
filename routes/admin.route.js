@@ -135,4 +135,17 @@ router.post("/getPendingPlaces/:id", adminAuth, async (req, res) => {
   }
 });
 
+//Delete Pending
+router.post("/delete-pending", async (req, res) => {
+  try {
+    const filter = { added: true };
+    const result = await Pending.deleteMany(filter);
+    res
+      .status(200)
+      .json({ status: "Successful", message: "Pending deleted", result });
+  } catch (error) {
+    res.status(500).json({ status: "Failed", message: error.message });
+  }
+});
+
 module.exports = router;

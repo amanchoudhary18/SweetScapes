@@ -556,3 +556,16 @@ exports.googlelogin = async (req, res) => {
     }
   }
 };
+
+exports.deleteInactiveOtps = async (req, res) => {
+  try {
+    const filter = { status: false };
+    const result = await OtpModel.deleteMany(filter);
+    res
+      .status(200)
+      .json({ status: "Successful", message: "OTPs deleted", result });
+  } catch (error) {
+    console.error("Error deleting inactive OTPs:", error);
+    res.status(500).json({ status: "Failed", message: error.message });
+  }
+};

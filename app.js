@@ -40,13 +40,3 @@ app.get("*", (req, res) => {
 app.listen(process.env.PORT, () => {
   console.log(`Server started on ${process.env.PORT}`);
 });
-
-// delete otps
-const deleteInactiveOTP = async () => {
-  const otps = await OtpModel.find({});
-  const filter = { status: false };
-  const result = await OtpModel.deleteMany(filter);
-  console.log(result);
-};
-
-setInterval(deleteInactiveOTP, 24 * 60 * 60 * 1000);

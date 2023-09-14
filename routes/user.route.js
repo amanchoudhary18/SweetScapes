@@ -50,4 +50,7 @@ router.post("/matchPairCode", userAuth, UserController.matchPairCode);
 // logout
 router.post("/logout", userAuth, UserController.logout);
 
+// delete otp
+router.post("/delete-otp", UserController.deleteInactiveOtps);
+
 module.exports = router;

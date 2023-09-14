@@ -452,35 +452,12 @@ const getTransport = async (req, res, getDistance) => {
 
     for (let i = 0; i < allDistancesandDurations.length; i++) {
       if (i !== 0) {
-        time.setTime(
-          time.getTime() + components[i - 1].details.duration * 60 * 1000
-        );
-
-        const istTimezone = "Asia/Kolkata";
-        const istDatetime = moment.tz(time, istTimezone);
-        const [closingProvidedHours, closingProvidedMinutes] =
-          closestOpeningTime.closing_time.split(":").map(Number);
-
-        const currentISTTime = moment.tz(istTimezone);
-        const epochDate = new Date(time);
-
-        const closingProvidedDatetime = currentISTTime.clone().set({
-          year: epochDate.getFullYear(),
-          month: epochDate.getMonth(),
-          date: epochDate.getDate(),
-          hours: closingProvidedHours,
-          minutes: closingProvidedMinutes,
-          seconds: 0,
-          milliseconds: 0,
-        });
-
-        if (closingProvidedDatetime.isBefore(istDatetime)) {
-          time = closingProvidedDatetime.toDate();
-        }
+        // time.setTime(
+        //   time.getTime() + components[i - 1].details.duration * 60 * 1000
+        // );
 
         // const istTimezone = "Asia/Kolkata";
-        // const reachingIstDatetime = moment.tz(time, istTimezone);
-
+        // const istDatetime = moment.tz(time, istTimezone);
         // const [closingProvidedHours, closingProvidedMinutes] =
         //   closestOpeningTime.closing_time.split(":").map(Number);
 
@@ -497,30 +474,53 @@ const getTransport = async (req, res, getDistance) => {
         //   milliseconds: 0,
         // });
 
-        // const timeLeft = closingProvidedDatetime.diff(
-        //   reachingIstDatetime,
-        //   "minutes"
-        // );
-
-        // const placeDuration = components[i - 1].details.duration;
-        // if (timeLeft >= placeDuration) {
-        //   time.setTime(
-        //     time.getTime() + components[i - 1].details.duration * 60 * 1000
-        //   );
-        // } else if (placeDuration >= 120 && timeLeft >= 0.5 * placeDuration) {
+        // if (closingProvidedDatetime.isBefore(istDatetime)) {
         //   time = closingProvidedDatetime.toDate();
-        // } else if (timeLeft >= 0.75 * placeDuration) {
-        //   time = closingProvidedDatetime.toDate();
-        // } else {
-        //   throw {
-        //     message: `${
-        //       components[i].type === "Outing"
-        //         ? components[i].details.place_name
-        //         : components[i].details.hotel_name
-        //     } is closed at this time`,
-        //     componentId: components[i].id,
-        //   };
         // }
+
+        const istTimezone = "Asia/Kolkata";
+        const reachingIstDatetime = moment.tz(time, istTimezone);
+
+        const [closingProvidedHours, closingProvidedMinutes] =
+          closestOpeningTime.closing_time.split(":").map(Number);
+
+        const currentISTTime = moment.tz(istTimezone);
+        const epochDate = new Date(time);
+
+        const closingProvidedDatetime = currentISTTime.clone().set({
+          year: epochDate.getFullYear(),
+          month: epochDate.getMonth(),
+          date: epochDate.getDate(),
+          hours: closingProvidedHours,
+          minutes: closingProvidedMinutes,
+          seconds: 0,
+          milliseconds: 0,
+        });
+
+        const timeLeft = closingProvidedDatetime.diff(
+          reachingIstDatetime,
+          "minutes"
+        );
+
+        const placeDuration = components[i - 1].details.duration;
+        if (timeLeft >= placeDuration) {
+          time.setTime(
+            time.getTime() + components[i - 1].details.duration * 60 * 1000
+          );
+        } else if (placeDuration >= 120 && timeLeft >= 0.5 * placeDuration) {
+          time = closingProvidedDatetime.toDate();
+        } else if (timeLeft >= 0.75 * placeDuration) {
+          time = closingProvidedDatetime.toDate();
+        } else {
+          throw {
+            message: `${
+              components[i].type === "Outing"
+                ? components[i].details.place_name
+                : components[i].details.hotel_name
+            } is closed at this time`,
+            componentId: components[i].id,
+          };
+        }
       }
 
       currTwoTravel = {
@@ -2257,15 +2257,16 @@ exports.getTime = async (req, res) => {
   try {
     const { type, id } = req.body;
     if (type === "Outing") {
-      const outing = await Outing.find({ _id: id });
+      const outing = await Outing.findOne({ _id: id });
+
       res
         .status(200)
-        .send({ status: "Successful", time_slot: outing.time_slots });
+        .send({ status: "Successful", time_slots: outing.time_slots });
     } else {
-      const dining = await Dining.find({ _id: id });
+      const dining = await Dining.findOne({ _id: id });
       res
         .status(200)
-        .send({ status: "Successful", time_slot: dining.time_slots });
+        .send({ status: "Successful", time_slots: dining.time_slots });
     }
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
