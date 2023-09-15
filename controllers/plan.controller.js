@@ -1595,6 +1595,11 @@ const calculateLikeness = (plan_preferences, userPreferences) => {
   const dinePlanPreferences = plan_preferences.Dine;
   const outingPlanPreferences = plan_preferences.Outing;
 
+  console.log("dinePreferences", dinePreferences);
+  console.log("outingPreferences", outingPreferences);
+  console.log("dinePlanPreferences", dinePlanPreferences);
+  console.log("outingPlanPreferences", outingPlanPreferences);
+
   const dineLikeness =
     dinePlanPreferences.Fine_Dining * dinePreferences.Fine_Dining +
     dinePlanPreferences.Foodcourt * dinePreferences.Foodcourt +
