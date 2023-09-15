@@ -1595,11 +1595,6 @@ const calculateLikeness = (plan_preferences, userPreferences) => {
   const dinePlanPreferences = plan_preferences.Dine;
   const outingPlanPreferences = plan_preferences.Outing;
 
-  console.log("dinePreferences", dinePreferences);
-  console.log("outingPreferences", outingPreferences);
-  console.log("dinePlanPreferences", dinePlanPreferences);
-  console.log("outingPlanPreferences", outingPlanPreferences);
-
   const dineLikeness =
     dinePlanPreferences.Fine_Dining * dinePreferences.Fine_Dining +
     dinePlanPreferences.Foodcourt * dinePreferences.Foodcourt +
@@ -1644,7 +1639,7 @@ exports.getAllPlans = async (req, res) => {
       });
 
       cachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
-
+      console.log(cachedPlans);
       return res.status(200).send({
         status: "Successful",
         completedAllPlans: cachedPlans,
