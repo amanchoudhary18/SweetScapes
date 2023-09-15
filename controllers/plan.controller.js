@@ -1523,6 +1523,71 @@ exports.savePlan = async (req, res) => {
   }
 };
 
+exports.updatePlan = async (req, res) => {
+  const idString = req.params.id;
+  const { plan_start_time, components, tile_content, preferred_transport } =
+    req.body;
+
+  try {
+    // Create an array to store populated components
+    const populatedComponents = [];
+
+    // Populate the component_id field based on the type
+    for (const component of components) {
+      let componentModel;
+      if (component.type === "Outing") {
+        componentModel = Outing; // Use the Outing model for Outing components
+      } else if (component.type === "Dining") {
+        componentModel = Dining; // Use the Dining model for Dining components
+      }
+
+      if (componentModel) {
+        // Create and save the component document if it doesn't exist
+        let populatedComponent = await componentModel
+          .findById(component.component_id)
+          .exec();
+        if (!populatedComponent) {
+          populatedComponent = new componentModel({
+            _id: component.component_id, // Set the _id to the provided component_id
+            // Other properties specific to the component
+          });
+          await populatedComponent.save();
+        }
+
+        populatedComponents.push({
+          order: component.order,
+          type: component.type,
+          is_highlight: component.is_highlight,
+          component_id: populatedComponent._id, // Use the populated component's _id
+        });
+      }
+    }
+
+    const existingPlan = await PlanModel.findOneAndDelete({
+      plan_id: idString,
+    });
+
+    const admin = req.user;
+
+    const plan = new PlanModel({
+      plan_start_time,
+      components: populatedComponents,
+      plan_id: idString,
+      tile_content,
+      preferred_transport,
+      owner: admin._id,
+      owner_name: admin.name,
+    });
+
+    await plan.save();
+
+    res.status(200).send({ status: "Successful", plan });
+  } catch (error) {
+    console.error(error);
+    res.status(200).send({ status: "Failed", message: error.message });
+  }
+};
+
 const calculateLikeness = (plan_preferences, userPreferences) => {
   // console.log(plan_preferences, userPreferences);
   const dinePreferences = userPreferences.Dine;
@@ -1560,7 +1625,7 @@ const calculateLikeness = (plan_preferences, userPreferences) => {
 exports.getAllPlans = async (req, res) => {
   try {
     const userPreferences = req.user.preferences;
-
+    console.log(req.user);
     const cachedData = cache.get("allPlans");
     if (cachedData) {
       let cachedPlans = JSON.parse(cachedData);
@@ -2072,7 +2137,7 @@ exports.getAllPlansAdmin = async (req, res) => {
     const completedAllPlans = await Promise.all(
       allPlans.map(async (plan) => {
         const populatedComponents = [];
-
+        const tile_content = plan.tile_content;
         await Promise.all(
           plan.components.map(async (component) => {
             let componentModel;
@@ -2114,6 +2179,7 @@ exports.getAllPlansAdmin = async (req, res) => {
           id: plan.plan_id,
           plan_start_time: plan.plan_start_time,
           components: populatedComponents.sort((a, b) => a.order - b.order),
+          tile_content,
           approved: plan.approved,
           owner_name: plan.owner_name,
         };

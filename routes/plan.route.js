@@ -39,6 +39,9 @@ router.post("/createPlan", PlanController.getGoogleTravelOptions);
 // Save a plan
 router.post("/savePlan", adminAuth, PlanController.savePlan);
 
+// Update a plan
+router.post("/updatePlan/:id", adminAuth, PlanController.updatePlan);
+
 // Get all plans
 router.get("/getAllPlans", userAuth, PlanController.getAllPlans);
 
