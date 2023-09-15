@@ -1625,24 +1625,25 @@ const calculateLikeness = (plan_preferences, userPreferences) => {
 exports.getAllPlans = async (req, res) => {
   try {
     const userPreferences = req.user.preferences;
-    console.log(req.user);
+
     const cachedData = cache.get("allPlans");
     if (cachedData) {
       let cachedPlans = JSON.parse(cachedData);
 
-      cachedPlans.map((plan) => {
-        const likeness = calculateLikeness(
+      const updatedPlans = cachedPlans.map((plan) => {
+        const updatedLikeness = calculateLikeness(
           plan.plan_preferences,
           userPreferences
         );
-        return { ...plan, likeness };
+
+        return { ...plan, likeness: updatedLikeness };
       });
 
-      cachedPlans.sort((a, b) => (a.likness > b.likeness ? -1 : 1));
-      console.log(cachedPlans);
+      updatedPlans.sort((a, b) => (a.likeness > b.likeness ? -1 : 1));
+
       return res.status(200).send({
         status: "Successful",
-        completedAllPlans: cachedPlans,
+        completedAllPlans: updatedPlans,
       });
     }
 
@@ -1786,7 +1787,7 @@ exports.getAllPlans = async (req, res) => {
     // Cache the data for future requests
 
     const serializedData = JSON.stringify(completedAllPlans);
-
+    console.log(completedAllPlans);
     cache.set("allPlans", serializedData);
 
     res.status(200).send({ status: "Successful", completedAllPlans });
