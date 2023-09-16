@@ -61,6 +61,19 @@ router.post(
   PlanController.saveUserCreatedPlan
 );
 
+// Get all upcoming saved user created plans
+router.get(
+  "/getUpcomingSavedUserCreatedPlans",
+  userAuth,
+  PlanController.getUpcomingSavedUserCreatedPlans
+);
+
+// Get all recent saved user created plans
+router.get(
+  "/getRecentSavedUserCreatedPlans",
+  userAuth,
+  PlanController.getRecentSavedUserCreatedPlans
+);
 // Get saved user created plan
 router.get(
   "/getSavedUserCreatedPlan/:id",

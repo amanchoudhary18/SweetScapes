@@ -1995,7 +1995,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
     }
 
     if (plan.createdBy._id.toString() !== userId.toString()) {
-      return res.status(403).json({
+      return res.status(200).json({
         status: "Failed",
         message: "You do not have permission to access this plan.",
       });
@@ -2337,5 +2337,134 @@ exports.getTime = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({ status: "Failed", message: error.message });
+  }
+};
+
+exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
+  const userId = req.user._id;
+  const currentDate = new Date();
+  try {
+    const userPlans = await CreatedPlanModel.find({
+      createdBy: userId,
+      plan_date: { $gte: currentDate },
+    })
+      .sort({ plan_date: 1 })
+      .exec();
+
+    if (!userPlans || userPlans.length === 0) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "No upcoming plans found for this user.",
+      });
+    }
+
+    const plansDetails = [];
+
+    for (const plan of userPlans) {
+      const tags = [];
+
+      const tile_content = plan.tile_content;
+
+      for (const component of plan.components) {
+        let curr_component;
+
+        if (component.type === "Outing") {
+          curr_component = await Outing.findOne({
+            _id: component.component_id,
+          });
+        } else if (component.type === "Dining") {
+          curr_component = await Dining.findOne({
+            _id: component.component_id,
+          });
+        }
+
+        tags.push({ order: component.order, tag: curr_component.tags[0] });
+      }
+
+      const planDetails = {
+        plan_start_time: plan.plan_date,
+        id: plan._id,
+        tile_content,
+        tags,
+      };
+
+      plansDetails.push(planDetails);
+    }
+
+    console.log(plansDetails);
+
+    res
+      .status(200)
+      .send({ status: "Successful", user_upcoming_plans: plansDetails });
+  } catch (error) {
+    res.status(500).send({
+      status: "Failed",
+      message: error.message,
+    });
+  }
+};
+
+exports.getRecentSavedUserCreatedPlans = async (req, res) => {
+  const userId = req.user._id;
+  const currentDate = new Date();
+
+  try {
+    const userPlans = await CreatedPlanModel.find({
+      createdBy: userId,
+      plan_date: { $lt: currentDate },
+    })
+      .sort({ plan_date: -1 })
+      .exec();
+
+    if (!userPlans || userPlans.length === 0) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "No recent plans found for this user.",
+      });
+    }
+
+    const plansDetails = [];
+
+    for (const plan of userPlans) {
+      const tags = [];
+
+      const tile_content = plan.tile_content;
+
+      for (const component of plan.components) {
+        let curr_component;
+
+        if (component.type === "Outing") {
+          curr_component = await Outing.findOne({
+            _id: component.component_id,
+          });
+        } else if (component.type === "Dining") {
+          curr_component = await Dining.findOne({
+            _id: component.component_id,
+          });
+        }
+
+        tags.push({ order: component.order, tag: curr_component.tags[0] });
+      }
+
+      const planDetails = {
+        plan_start_time: plan.plan_date,
+        id: plan._id,
+        tile_content,
+        tags,
+      };
+
+      plansDetails.push(planDetails);
+    }
+
+    console.log(plansDetails);
+
+    res
+      .status(200)
+      .send({ status: "Successful", user_recent_plans: plansDetails });
+  } catch (error) {
+    res.status(500).send({
+      status: "Failed",
+      message: error.message,
+    });
   }
 };
