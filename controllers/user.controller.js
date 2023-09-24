@@ -171,7 +171,11 @@ exports.loginotpverification = async (req, res) => {
 
 // my data function
 exports.mydata = async (req, res) => {
-  res.send(req.user);
+  try {
+    res.status(200).send({ status: "Successful", userData: req.user });
+  } catch (error) {
+    res.status(200).send({ status: "Failed", message: "User not found" });
+  }
 };
 
 // update user data function
