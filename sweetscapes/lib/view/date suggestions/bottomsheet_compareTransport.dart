@@ -104,7 +104,9 @@ class _BottomSheetCompareTransportState
               future: widget.model.compareTransport(context),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator(
+                                            color: AppColor.primary,
+                  ));
                 } else if (snapshot.hasData) {
                   route = snapshot.data!;
                   modes = Map.from(widget.model.modesOfTransport);
@@ -132,7 +134,7 @@ class _BottomSheetCompareTransportState
   Padding CompareTransportPage(
       double screenWidth, double screenheight, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24.0),
+      padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
       child: SingleChildScrollView(
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,7 +365,7 @@ class _BottomSheetCompareTransportState
                   child: PrimaryButton(
                       title: 'View Plan',
                       onPress: () {
-                        widget.model.gotoViewPlan(context, numberofPeople);
+                        widget.model.gotoViewPlan(context, numberofPeople, travelAmount);
                         Navigator.pop(context);
                       }),
                 ),

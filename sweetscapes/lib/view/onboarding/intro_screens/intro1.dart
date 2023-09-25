@@ -81,9 +81,11 @@ class IntroScreen1 extends StatelessWidget {
                         )
                       ],
                     ),
-                    PrimaryButton(title: 'Next', onPress: () {
-                      AutoRouter.of(context).push(IntroScreen2Route());
-                    })
+                    PrimaryButton(
+                        title: 'Next',
+                        onPress: () {
+                          AutoRouter.of(context).push(IntroScreen2Route());
+                        })
                   ],
                 ),
               ],

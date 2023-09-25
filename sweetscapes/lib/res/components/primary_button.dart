@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sweetscapes/res/color.dart';
-import 'package:sweetscapes/res/components/AppText.dart';
-import 'package:sweetscapes/res/enums/Fonts.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton(
@@ -19,8 +17,6 @@ class PrimaryButton extends StatelessWidget {
     return InkWell(
       onTap: onPress,
       child: Container(
-        // height: 40,
-        // width: 200,
         decoration: BoxDecoration(
           color: AppColor.primary,
           borderRadius: BorderRadius.circular(12),
@@ -32,12 +28,17 @@ class PrimaryButton extends StatelessWidget {
                 ? const CircularProgressIndicator(
                     color: Colors.white,
                   )
-                : AppText(
-                    text: title,
-                    size: 20,
-                    font: Fonts.BUTTON,
-                    weight: FontWeight.w600,
-                    color: AppColor.white,
+                : FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'ClashGrotesk',
+                        fontWeight: FontWeight.w600,
+                        color: AppColor.white,
+                      ),
+                    ),
                   ),
           ),
         ),

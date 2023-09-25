@@ -7,21 +7,21 @@ import 'package:stacked/stacked.dart';
 import 'package:sweetscapes/model/body/saveUserCreatedPlan_body.dart';
 import 'package:sweetscapes/model/response/saveUserCreatedPlan_response.dart';
 import 'package:sweetscapes/res/color.dart';
-import 'package:sweetscapes/res/components/AppText.dart';
+import 'package:sweetscapes/res/components/noPlansPlaceHolder.dart';
 import 'package:sweetscapes/res/components/viewPlanComponents.dart';
-import 'package:sweetscapes/res/enums/Fonts.dart';
 import 'package:sweetscapes/res/fonts.dart';
 import 'package:sweetscapes/res/tags_directory.dart';
 import 'package:sweetscapes/view/date%20suggestions/date_viewPlan_viewmodel.dart';
 
 @RoutePage()
 class DateViewPlanView extends StatelessWidget {
-  const DateViewPlanView(this.saveUserCreatedPlanBody);
+  const DateViewPlanView(this.recentUpcomingPlanId, this.saveUserCreatedPlanBody);
 
   // final CompletedAllPlans plan;
   // final int numberOfPeople;
   // final FinalTravel selectedTravel;
 
+  final String recentUpcomingPlanId;
   final SaveUserCreatedPlanBody saveUserCreatedPlanBody;
 
   @override
@@ -30,7 +30,7 @@ class DateViewPlanView extends StatelessWidget {
     FinalPlanDetails? finalPlanDetails;
 
     return ViewModelBuilder.reactive(
-      viewModelBuilder: () => DateViewPlanViewModel(saveUserCreatedPlanBody),
+      viewModelBuilder: () => DateViewPlanViewModel(saveUserCreatedPlanBody, recentUpcomingPlanId),
       builder: (context, model, child) => Scaffold(
         resizeToAvoidBottomInset: false,
         extendBody: true,
@@ -82,20 +82,24 @@ class DateViewPlanView extends StatelessWidget {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
                                     return const Center(
-                                        child: CircularProgressIndicator());
+                                        child: CircularProgressIndicator(
+                                            color: AppColor.primary,
+                                        ));
                                   } else if (snapshot.hasData) {
                                     finalPlanDetails = snapshot.data!;
                                     return ViewPlanPage(
                                         finalPlanDetails!, context, model);
                                   }
-                                  return Center(
-                                    child: AppText(
-                                      text: 'Not able to fetch Final Plan',
-                                      size: 20,
-                                      font: Fonts.TITLE,
-                                      weight: FontWeight.w700,
-                                      color: AppColor.black,
-                                    ),
+                                  return NoPlansPlaceHolder(
+                                    title: 'Not able to generate Plan',
+                                    content:
+                                        'Your final plans should be shown here',
+                                    btnTitle: 'Refresh',
+                                    onPress: () {
+                                      // Provider.of<HomeScreenViewModel>(context,
+                                      //         listen: false)
+                                      //     .updateIndex(0);
+                                    },
                                   );
                                 },
                               )
@@ -171,6 +175,7 @@ class DateViewPlanView extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   CircularProgressIndicator(
+                                            color: AppColor.primary,
                                     value: loadingProgress.expectedTotalBytes !=
                                             null
                                         ? loadingProgress
@@ -320,7 +325,7 @@ class DateViewPlanView extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: AppColor.secondary),
+                color: Color(0xFFEFF3FE)),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -421,10 +426,11 @@ class DateViewPlanView extends StatelessWidget {
                         child: Column(
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 6.0),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     'Transport Expense',
@@ -438,8 +444,8 @@ class DateViewPlanView extends StatelessWidget {
                                   ),
                                   Text(
                                     (model.showIndividualPricing)
-                                    ? '₹ ${(model.finalPlanDetails.travelPrice!/model.finalPlanDetails.peopleCount!).ceil()}'
-                                    : '₹ ${model.finalPlanDetails.travelPrice}',
+                                        ? '₹ ${(model.finalPlanDetails.travelPrice! / model.finalPlanDetails.peopleCount!).ceil()}'
+                                        : '₹ ${model.finalPlanDetails.travelPrice}',
                                     style: const TextStyle(
                                       fontSize: 12,
                                       fontFamily: AppFonts.subtitle,
@@ -452,10 +458,11 @@ class DateViewPlanView extends StatelessWidget {
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 6.0),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     'Other Expense',
@@ -469,8 +476,8 @@ class DateViewPlanView extends StatelessWidget {
                                   ),
                                   Text(
                                     (model.showIndividualPricing)
-                                    ? '₹ ${(model.finalPlanDetails.componentPrice!/model.finalPlanDetails.peopleCount!).ceil()}'
-                                    : '₹ ${model.finalPlanDetails.componentPrice}',
+                                        ? '₹ ${(model.finalPlanDetails.componentPrice! / model.finalPlanDetails.peopleCount!).ceil()}'
+                                        : '₹ ${model.finalPlanDetails.componentPrice}',
                                     style: const TextStyle(
                                       fontSize: 12,
                                       fontFamily: AppFonts.subtitle,
@@ -482,15 +489,19 @@ class DateViewPlanView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const Divider(
-                              thickness: 1,
-                              color: AppColor.secondary,
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 6.0),
+                              child: Divider(
+                                thickness: 2,
+                                color: AppColor.secondary,
+                              ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 6.0),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     'Total Expense',
@@ -504,8 +515,8 @@ class DateViewPlanView extends StatelessWidget {
                                   ),
                                   Text(
                                     (model.showIndividualPricing)
-                                    ? '₹ ${((model.finalPlanDetails.travelPrice! + model.finalPlanDetails.componentPrice!)/model.finalPlanDetails.peopleCount!).ceil()}'
-                                    : '₹ ${model.finalPlanDetails.travelPrice! + model.finalPlanDetails.componentPrice!}',
+                                        ? '₹ ${((model.finalPlanDetails.travelPrice! + model.finalPlanDetails.componentPrice!) / model.finalPlanDetails.peopleCount!).ceil()}'
+                                        : '₹ ${model.finalPlanDetails.travelPrice! + model.finalPlanDetails.componentPrice!}',
                                     style: const TextStyle(
                                       fontSize: 12,
                                       fontFamily: AppFonts.subtitle,

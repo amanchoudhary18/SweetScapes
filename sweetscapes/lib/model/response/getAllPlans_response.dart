@@ -35,6 +35,7 @@ class CompletedAllPlans {
   String? tileContent;
   double? likeness;
   List<Components>? components;
+  String? preferredTransport;
 
   CompletedAllPlans(
       {this.id,
@@ -45,7 +46,8 @@ class CompletedAllPlans {
       this.price,
       this.tileContent,
       this.likeness,
-      this.components});
+      this.components,
+      this.preferredTransport});
 
   CompletedAllPlans.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -69,6 +71,7 @@ class CompletedAllPlans {
         components!.add(new Components.fromJson(v));
       });
     }
+    preferredTransport = json['preferred_transport'];
   }
 
   Map<String, dynamic> toJson() {
@@ -88,19 +91,25 @@ class CompletedAllPlans {
     if (this.components != null) {
       data['components'] = this.components!.map((v) => v.toJson()).toList();
     }
+    data['preferred_transport'] = this.preferredTransport;
     return data;
   }
 
   CompletedAllPlans.copy(CompletedAllPlans other)
-      : id = other.id,
-        tags = List.from(other.tags as Iterable),
-        images = List.from(other.images as Iterable),
-        availability = Availability.copy(other.availability!),
-        planStartTime = other.planStartTime,
-        price = other.price,
-        tileContent = other.tileContent,
-        likeness = other.likeness,
-        components = List.from(other.components as Iterable);
+    : id = other.id,
+      tags = List<String>.from(other.tags ?? []),
+      images = other.images != null
+          ? List<Images>.from(other.images!.map((image) => Images.copy(image)))
+          : [],
+      availability = Availability.copy(other.availability!),
+      planStartTime = other.planStartTime,
+      price = other.price,
+      tileContent = other.tileContent,
+      likeness = other.likeness,
+      components = other.components != null
+          ? List<Components>.from(other.components!.map((component) => Components.copy(component)))
+          : [],
+      preferredTransport = other.preferredTransport;
 }
 
 class Images {
@@ -123,6 +132,11 @@ class Images {
     data['order'] = this.order;
     return data;
   }
+
+  Images.copy(Images other)
+      : imgLink = other.imgLink,
+        imgName = other.imgName,
+        order = other.order;
 }
 
 class Availability {
@@ -177,129 +191,210 @@ class Availability {
 
 class Components {
   bool? isHighlight;
-  Details? details;
   int? order;
+  Details? details;
 
-  Components({this.isHighlight, this.details, this.order});
+  Components({this.isHighlight, this.order, this.details});
 
   Components.fromJson(Map<String, dynamic> json) {
     isHighlight = json['is_highlight'];
+    order = json['order'];
     details =
         json['details'] != null ? new Details.fromJson(json['details']) : null;
-    order = json['order'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['is_highlight'] = this.isHighlight;
+    data['order'] = this.order;
     if (this.details != null) {
       data['details'] = this.details!.toJson();
     }
-    data['order'] = this.order;
     return data;
   }
+
+  Components.copy(Components other)
+      : isHighlight = other.isHighlight,
+        order = other.order,
+        details = other.details != null ? Details.copy(other.details!) : null;
 }
 
 class Details {
-  Contact? contact;
-  MapLocation? map;
-  Availability? availability;
   String? sId;
   String? type;
   List<String>? tags;
-  String? hotelName;
-  String? menu;
+  String? placeName;
   String? description;
   double? rating;
   int? pricePerHead;
+  MapLocation? map;
   String? busNodalPoint;
   List<String>? busRouteType;
   int? duration;
-  String? openingTime;
-  String? closingTime;
+  List<TimeSlots>? timeSlots;
   String? img;
-  int? iV;
-  String? placeName;
+  Availability? availability;
+  String? hotelName;
+  Contact? contact;
+  String? menu;
   String? websiteLink;
 
   Details(
-      {this.contact,
-      this.map,
-      this.availability,
-      this.sId,
+      {this.sId,
       this.type,
       this.tags,
-      this.hotelName,
-      this.menu,
+      this.placeName,
       this.description,
       this.rating,
       this.pricePerHead,
+      this.map,
       this.busNodalPoint,
       this.busRouteType,
       this.duration,
-      this.openingTime,
-      this.closingTime,
+      this.timeSlots,
       this.img,
-      this.iV,
-      this.placeName,
+      this.availability,
+      this.hotelName,
+      this.contact,
+      this.menu,
       this.websiteLink});
 
   Details.fromJson(Map<String, dynamic> json) {
-    contact =
-        json['contact'] != null ? new Contact.fromJson(json['contact']) : null;
-    map = json['map'] != null ? new MapLocation.fromJson(json['map']) : null;
-    availability = json['availability'] != null
-        ? new Availability.fromJson(json['availability'])
-        : null;
     sId = json['_id'];
     type = json['type'];
     tags = json['tags'].cast<String>();
-    hotelName = json['hotel_name'];
-    menu = json['menu'];
+    placeName = json['place_name'];
     description = json['description'];
     rating = json['rating'].toDouble();
     pricePerHead = json['price_per_head'];
+    map = json['map'] != null ? new MapLocation.fromJson(json['map']) : null;
     busNodalPoint = json['bus_nodal_point'];
-    busRouteType = json['bus_route_type'].cast<String>();
+    final busRouteTypeList = json['bus_route_type'];
+    busRouteType = (busRouteTypeList is List) ? busRouteTypeList.cast<String>() : [];
     duration = json['duration'];
-    openingTime = json['opening_time'];
-    closingTime = json['closing_time'];
+    if (json['time_slots'] != null) {
+      timeSlots = <TimeSlots>[];
+      json['time_slots'].forEach((v) {
+        timeSlots!.add(new TimeSlots.fromJson(v));
+      });
+    }
     img = json['img'];
-    iV = json['__v'];
-    placeName = json['place_name'];
+    availability = json['availability'] != null
+        ? new Availability.fromJson(json['availability'])
+        : null;
+    hotelName = json['hotel_name'];
+    contact =
+        json['contact'] != null ? new Contact.fromJson(json['contact']) : null;
+    menu = json['menu'];
     websiteLink = json['website_link'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.contact != null) {
-      data['contact'] = this.contact!.toJson();
-    }
-    if (this.map != null) {
-      data['map'] = this.map!.toJson();
-    }
-    if (this.availability != null) {
-      data['availability'] = this.availability!.toJson();
-    }
     data['_id'] = this.sId;
     data['type'] = this.type;
     data['tags'] = this.tags;
-    data['hotel_name'] = this.hotelName;
-    data['menu'] = this.menu;
+    data['place_name'] = this.placeName;
     data['description'] = this.description;
     data['rating'] = this.rating;
     data['price_per_head'] = this.pricePerHead;
+    if (this.map != null) {
+      data['map'] = this.map!.toJson();
+    }
     data['bus_nodal_point'] = this.busNodalPoint;
     data['bus_route_type'] = this.busRouteType;
     data['duration'] = this.duration;
-    data['opening_time'] = this.openingTime;
-    data['closing_time'] = this.closingTime;
+    if (this.timeSlots != null) {
+      data['time_slots'] = this.timeSlots!.map((v) => v.toJson()).toList();
+    }
     data['img'] = this.img;
-    data['__v'] = this.iV;
-    data['place_name'] = this.placeName;
+    if (this.availability != null) {
+      data['availability'] = this.availability!.toJson();
+    }
+    data['hotel_name'] = this.hotelName;
+    if (this.contact != null) {
+      data['contact'] = this.contact!.toJson();
+    }
+    data['menu'] = this.menu;
     data['website_link'] = this.websiteLink;
     return data;
   }
+
+  Details.copy(Details other)
+      : sId = other.sId,
+        type = other.type,
+        tags = List<String>.from(other.tags ?? []),
+        placeName = other.placeName,
+        description = other.description,
+        rating = other.rating,
+        pricePerHead = other.pricePerHead,
+        map = other.map != null ? MapLocation.copy(other.map!) : null,
+        busNodalPoint = other.busNodalPoint,
+        busRouteType = List<String>.from(other.busRouteType ?? []),
+        duration = other.duration,
+        timeSlots = other.timeSlots != null
+            ? List<TimeSlots>.from(other.timeSlots!.map((slot) => TimeSlots.copy(slot)))
+            : null,
+        img = other.img,
+        availability = other.availability != null
+            ? Availability.copy(other.availability!)
+            : null,
+        hotelName = other.hotelName,
+        contact = other.contact != null
+            ? Contact.copy(other.contact!)
+            : null,
+        menu = other.menu,
+        websiteLink = other.websiteLink;
+}
+
+class TimeSlots {
+  String? sId;
+  String? openingTime;
+  String? closingTime;
+
+  TimeSlots({this.sId, this.openingTime, this.closingTime});
+
+  TimeSlots.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    openingTime = json['opening_time'];
+    closingTime = json['closing_time'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['opening_time'] = this.openingTime;
+    data['closing_time'] = this.closingTime;
+    return data;
+  }
+
+  TimeSlots.copy(TimeSlots other)
+      : sId = other.sId,
+        openingTime = other.openingTime,
+        closingTime = other.closingTime;
+}
+
+class MapLocation {
+  String? lat;
+  String? lng;
+
+  MapLocation({this.lat, this.lng});
+
+  MapLocation.fromJson(Map<String, dynamic> json) {
+    lat = json['lat'].toString();
+    lng = json['lng'].toString();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['lat'] = this.lat;
+    data['lng'] = this.lng;
+    return data;
+  }
+
+  MapLocation.copy(MapLocation other)
+      : lat = other.lat,
+        lng = other.lng;
 }
 
 class Contact {
@@ -319,23 +414,8 @@ class Contact {
     data['number'] = this.number;
     return data;
   }
-}
 
-class MapLocation {
-  String? lat;
-  String? lng;
-
-  MapLocation({this.lat, this.lng});
-
-  MapLocation.fromJson(Map<String, dynamic> json) {
-    lat = json['lat'];
-    lng = json['lng'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['lat'] = this.lat;
-    data['lng'] = this.lng;
-    return data;
-  }
+  Contact.copy(Contact other)
+      : name = other.name,
+        number = other.number;
 }

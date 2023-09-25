@@ -3,8 +3,12 @@ class TagsDirectory {
     String tagIcon = '';
     if (query == 'Fine_Dining' || query == 'Fine Dining' )
       tagIcon = 'assets/tagIcons/icons=fineDining.svg';
-    else if (query == 'Decent_Dining' || query == 'Decent Dining')
-      tagIcon = 'assets/tagIcons/icons=decentDining.svg';
+    else if (query == 'Classic_Dine_In' || query == 'Classic Dine-In')
+      tagIcon = 'assets/tagIcons/icons=classicDineIn.svg';
+    else if (query == 'Restro-Bar' || query == 'RestroBar')
+      tagIcon = 'assets/tagIcons/icons=RestroBar.svg';
+    else if (query == 'Food-Court' || query == 'FoodCourt')
+      tagIcon = 'assets/tagIcons/icons=FoodCourt.svg';
     else if (query == 'Dhaba' || query == 'Dhabas')
       tagIcon = 'assets/tagIcons/icons=dhabas.svg';
     else if (query == 'Cafe' || query == 'Cafes')
@@ -15,16 +19,16 @@ class TagsDirectory {
       tagIcon = 'assets/tagIcons/icons=hills.svg';
     else if (query == 'Lakes' || query == 'Lake')
       tagIcon = 'assets/tagIcons/icons=Lakes.svg';
-    else if (query == 'Dams_Waterfalls' || query == 'Dams Waterfalls')
+    else if (query == 'Dams_Waterfalls' || query == 'Dams & Waterfalls')
       tagIcon = 'assets/tagIcons/icons=Dams_Waterfall.svg';
-    else if (query == 'Malls' || query == 'Mall')
-      tagIcon = 'assets/tagIcons/icons=malls.svg';
+    else if (query == 'Arcade' || query == 'Arcade')
+      tagIcon = 'assets/tagIcons/icons=Arcade.svg';
     else if (query == 'Movie_Halls' || query == 'Movie')
       tagIcon = 'assets/tagIcons/icons=movie.svg';
     else if (query == 'Parks' || query == 'Park')
       tagIcon = 'assets/tagIcons/icons=park.svg';
-    else if (query == 'Clubbing' || query == 'Clubbing')
-      tagIcon = 'assets/tagIcons/icons=clubs.svg';
+    else if (query == 'Clubs_Bars' || query == 'Clubs & Bars')
+      tagIcon = 'assets/tagIcons/icons=clubsBars.svg';
     else if (query == 'Night_Out' || query == 'Night Out')
       tagIcon = 'assets/tagIcons/icons=Night out.svg';
     else if (query == 'Shopping')
@@ -43,8 +47,12 @@ class TagsDirectory {
     String tagLabel = '';
     if (query == 'Fine_Dining' || query == 'Fine Dining' )
       tagLabel = 'Fine Dining';
-    else if (query == 'Decent_Dining' || query == 'Decent Dining')
-      tagLabel = 'Decent Dining';
+    else if (query == 'Classic_Dine_In' || query == 'Classic Dine-In')
+      tagLabel = 'Classic Dine-In';
+    else if (query == 'Restro-Bar' || query == 'RestroBar')
+      tagLabel = 'Restro-Bar';
+    else if (query == 'Food-Court' || query == 'FoodCourt')
+      tagLabel = 'Food-Court';
     else if (query == 'Dhaba' || query == 'Dhabas')
       tagLabel = 'Dhaba';
     else if (query == 'Cafe' || query == 'Cafes')
@@ -55,16 +63,16 @@ class TagsDirectory {
       tagLabel = 'Hills';
     else if (query == 'Lakes' || query == 'Lake')
       tagLabel = 'Lakes';
-    else if (query == 'Dams_Waterfalls' || query == 'Dams Waterfalls')
-      tagLabel = 'Dams Waterfalls';
-    else if (query == 'Malls' || query == 'Mall')
-      tagLabel = 'Malls';
+    else if (query == 'Dams_Waterfalls' || query == 'Dams & Waterfalls')
+      tagLabel = 'Dams & Waterfalls';
+    else if (query == 'Arcade' || query == 'Arcade')
+      tagLabel = 'Arcade';
     else if (query == 'Movie_Halls' || query == 'Movie')
       tagLabel = 'Movie';
     else if (query == 'Parks' || query == 'Park')
       tagLabel = 'Parks';
-    else if (query == 'Clubbing' || query == 'Clubbing')
-      tagLabel = 'Clubbing';
+    else if (query == 'Clubs_Bars' || query == 'Clubs & Bars')
+      tagLabel = 'Clubs & Bars';
     else if (query == 'Night_Out' || query == 'Night Out')
       tagLabel = 'Night Out';
     else if (query == 'Shopping')
@@ -83,8 +91,12 @@ class TagsDirectory {
     String tagLabel = '';
     if (query == 'Fine Dining')
       tagLabel = 'Fine_Dining';
-    else if (query == 'Decent Dining')
-      tagLabel = 'Decent_Dining';
+    else if (query == 'Classic Dine-In')
+      tagLabel = 'Classic_Dine_In';
+    else if (query == 'Restro-Bar')
+      tagLabel = 'RestroBar';
+    else if (query == 'Food-Court')
+      tagLabel = 'FoodCourt';
     else if (query == 'Dhaba' || query == 'Dhabas')
       tagLabel = 'Dhabas';
     else if (query == 'Cafe' || query == 'Cafes')
@@ -95,16 +107,16 @@ class TagsDirectory {
       tagLabel = 'Hills';
     else if (query == 'Lakes')
       tagLabel = 'Lakes';
-    else if (query == 'Dams Waterfalls')
+    else if (query == 'Dams & Waterfalls')
       tagLabel = 'Dams_Waterfalls';
-    else if (query == 'Malls')
-      tagLabel = 'Malls';
+    else if (query == 'Arcade')
+      tagLabel = 'Arcade';
     else if (query == 'Movie')
       tagLabel = 'Movie_Halls';
     else if (query == 'Parks')
       tagLabel = 'Parks';
-    else if (query == 'Clubbing')
-      tagLabel = 'Clubbing';
+    else if (query == 'Clubs & Bars')
+      tagLabel = 'Clubs_Bars';
     else if (query == 'Night Out')
       tagLabel = 'Night_Out';
     else if (query == 'Shopping')

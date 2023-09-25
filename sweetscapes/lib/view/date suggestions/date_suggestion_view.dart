@@ -1,13 +1,16 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 import 'package:sweetscapes/model/response/getAllPlans_response.dart';
 import 'package:sweetscapes/res/color.dart';
 import 'package:sweetscapes/res/components/AppText.dart';
+import 'package:sweetscapes/res/components/noPlansPlaceHolder.dart';
 import 'package:sweetscapes/res/enums/Fonts.dart';
 import 'package:sweetscapes/res/fonts.dart';
+import 'package:sweetscapes/res/tags_directory.dart';
+import 'package:sweetscapes/utils/textDirectory.dart';
 import 'package:sweetscapes/view/date suggestions/date_suggestion_viewmodel.dart';
 import 'package:sweetscapes/view/date%20suggestions/bottomsheet_tags.dart';
 
@@ -26,6 +29,8 @@ class DateSuggestionView extends StatelessWidget {
 
     final TextEditingController _planDateController = TextEditingController();
     final FocusNode _planDateNode = FocusNode();
+
+    ScrollController _scrollController = ScrollController();
 
     return ViewModelBuilder.reactive(
       viewModelBuilder: () => DateSuggestionViewModel(),
@@ -58,6 +63,13 @@ class DateSuggestionView extends StatelessWidget {
                         color: AppColor.secondary,
                         borderRadius: BorderRadius.circular(8),
                       ),
+                      // decoration: BoxDecoration(
+                      //   borderRadius: BorderRadius.circular(12),
+                      //   border: Border.all(
+                      //     color: AppColor.primary,
+                      //     width: 1,
+                      //   ),
+                      // ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16.0, vertical: 8),
@@ -92,7 +104,8 @@ class DateSuggestionView extends StatelessWidget {
                               context: context,
                               initialDate: model.planDate,
                               firstDate: DateTime.now(),
-                              lastDate: DateTime(DateTime.now().year + 1),
+                              lastDate: DateTime(DateTime.now().year,
+                                  DateTime.now().month + 5),
                             ).then(
                               (value) => {
                                 model.updatePlanDate(value ?? model.planDate),
@@ -119,40 +132,32 @@ class DateSuggestionView extends StatelessWidget {
                   const SizedBox(
                     height: 16,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AppText(
-                            text: 'Suggestions For You',
-                            size: 18,
-                            font: Fonts.TITLE,
-                            weight: FontWeight.w700,
-                            color: AppColor.black,
-                          ),
-                          Text(
-                            '${model.plans.length} exciting plans waiting to happen',
-                            style: TextStyle(
-                              height: 1.14,
-                              fontSize: 14,
-                              fontFamily: AppFonts.subtitle,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.grey.shade600,
-                              letterSpacing: 0.21,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText(
+                              text: 'Suggestions For You',
+                              size: 18,
+                              font: Fonts.TITLE,
+                              weight: FontWeight.w700,
+                              color: AppColor.black,
                             ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColor.secondary,
-                          borderRadius: BorderRadius.circular(8),
+                            TextDirectory.bodySmall(context,
+                                '${model.plans.length} exciting plans waiting to happen'),
+                          ],
                         ),
-                        child: Padding(
+                        Container(
                           padding: const EdgeInsets.all(8.0),
-                          child: GestureDetector(
+                          decoration: BoxDecoration(
+                            color: AppColor.secondary,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: InkWell(
                             onTap: () {
                               showModalBottomSheet(
                                 context: context,
@@ -161,8 +166,15 @@ class DateSuggestionView extends StatelessWidget {
                                     BottomSheetTags(model.allTags),
                               ).then(
                                 (value) => {
-                                  model.selectedTags = List<String>.from(value),
+                                  model.selectedTags =
+                                      List<String>.from(value),
                                   model.filterPlans(value ?? []),
+                                  _scrollController.animateTo(
+                                    0.0,
+                                    duration:
+                                        const Duration(milliseconds: 3000),
+                                    curve: Curves.easeInOut,
+                                  ),
                                 },
                               );
                               ;
@@ -170,13 +182,80 @@ class DateSuggestionView extends StatelessWidget {
                             child: Icon(Icons.filter_alt_outlined),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        (model.selectedTags.isNotEmpty)
+                            ? Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    model.clearTags();
+                                    _scrollController.animateTo(
+                                      0.0,
+                                      duration:
+                                          const Duration(milliseconds: 3000),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  },
+                                  child: Chip(
+                                    shape: StadiumBorder(),
+                                    backgroundColor: AppColor.secondary,
+                                    label: Wrap(
+                                      spacing: 4,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: [
+                                        TextDirectory.labelSmall(
+                                            context, 'Clear All'),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                        ...model.selectedTags.map((String entry) {
+                          String label = TagsDirectory().getTagLabel(entry);
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Chip(
+                              shape: StadiumBorder(),
+                              backgroundColor: AppColor.black,
+                              label: Wrap(
+                                spacing: 4,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Container(
+                                    child: SvgPicture.asset(
+                                      TagsDirectory().getTagIcon(entry),
+                                      color: AppColor.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    label,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: AppFonts.subtitle,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColor.white,
+                                      letterSpacing: 0.14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
                   ),
                   Expanded(
                     child: Container(
                       width: screenWidth,
-                      // color: AppColor.secondary,
                       child: (model.plans.isEmpty)
                           ? FutureBuilder(
                               future: model.fetchPlans(context),
@@ -184,7 +263,9 @@ class DateSuggestionView extends StatelessWidget {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
                                   return const Center(
-                                      child: CircularProgressIndicator());
+                                      child: CircularProgressIndicator(
+                                    color: AppColor.primary,
+                                  ));
                                 } else if (snapshot.hasData) {
                                   List<CompletedAllPlans> plans =
                                       snapshot.data!;
@@ -197,17 +278,30 @@ class DateSuggestionView extends StatelessWidget {
                                       model.filterPlans(model.selectedTags);
                                     },
                                     child: ListView.builder(
+                                      controller: _scrollController,
                                       itemCount: plans.length,
                                       itemBuilder: (context, index) =>
                                           SuggestionTile(
                                         plan: plans[index],
                                         isActive:
                                             model.isPlanAvailable(plans[index]),
+                                        planDate: model.planDate,
                                       ),
                                     ),
                                   );
                                 }
-                                return const Text('Not able to fetch plans');
+                                return NoPlansPlaceHolder(
+                                  title: 'No Current Plans',
+                                  content:
+                                      'Please refresh/restart the app to view plans',
+                                  btnTitle: 'Refresh',
+                                  onPress: () async {
+                                    List<CompletedAllPlans> refreshedPlans =
+                                        await model.fetchPlans(context);
+                                    model.refreshPlan(refreshedPlans);
+                                    model.filterPlans(model.selectedTags);
+                                  },
+                                );
                               },
                             )
                           : RefreshIndicator(
@@ -218,11 +312,13 @@ class DateSuggestionView extends StatelessWidget {
                                 model.filterPlans(model.selectedTags);
                               },
                               child: ListView.builder(
+                                controller: _scrollController,
                                 itemCount: model.plans.length,
                                 itemBuilder: (context, index) => SuggestionTile(
                                   plan: model.plans[index],
                                   isActive:
                                       model.isPlanAvailable(model.plans[index]),
+                                  planDate: model.planDate,
                                 ),
                               ),
                             ),

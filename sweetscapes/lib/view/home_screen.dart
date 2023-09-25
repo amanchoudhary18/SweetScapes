@@ -1,10 +1,11 @@
 import 'package:auto_route/annotations.dart';
-import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:sweetscapes/view/bookings/bookings_view.dart';
+import 'package:sweetscapes/res/color.dart';
+import 'package:sweetscapes/res/fonts.dart';
+import 'package:sweetscapes/view/savedPlans/savedPlans_view.dart';
 import 'package:sweetscapes/view/date%20suggestions/date_suggestion_view.dart';
-import 'package:sweetscapes/view/gifts/gift_suggestion_view.dart';
 import 'package:sweetscapes/view/profile/user_profile_view.dart';
 import 'package:sweetscapes/view_model/home_screen_view_model.dart';
 
@@ -14,29 +15,71 @@ class HomeScreen extends StatelessWidget {
     super.key,
   });
 
-  final List<DotNavigationBarItem> navbarItems = [
+  final List<BottomNavigationBarItem> navbarItems = [
     /// Home
-    DotNavigationBarItem(
-      icon: Icon(Icons.home),
-      selectedColor: Colors.purple,
+    BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: SvgPicture.asset('assets/svgFiles/explore.svg',
+            height: 24,
+            // theme: const SvgTheme(currentColor: Color.fromRGBO(158, 158, 158, 1)),
+            // color: Color.fromRGBO(158, 158, 158, 1),
+            colorFilter: ColorFilter.mode(
+                Color.fromRGBO(158, 158, 158, 1), BlendMode.srcIn)),
+      ),
+      activeIcon: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: SvgPicture.asset('assets/svgFiles/explore.svg',
+            height: 24,
+            // theme: const SvgTheme(currentColor: AppColor.primary),
+            // color: AppColor.primary,
+            colorFilter: ColorFilter.mode(AppColor.primary, BlendMode.srcIn)),
+      ),
+      label: 'Explore',
     ),
 
-    /// Likes
-    DotNavigationBarItem(
-      icon: Icon(Icons.collections_bookmark_outlined),
-      selectedColor: Colors.purple,
-    ),
-
-    /// Search
-    DotNavigationBarItem(
-      icon: Icon(Icons.wallet_giftcard_outlined),
-      selectedColor: Colors.purple,
+    /// Saved
+    BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: SvgPicture.asset('assets/svgFiles/saved.svg',
+            height: 24,
+            // theme: const SvgTheme(currentColor: Color.fromRGBO(158, 158, 158, 1)),
+            // color: Color.fromRGBO(158, 158, 158, 1),
+            colorFilter: ColorFilter.mode(
+                Color.fromRGBO(158, 158, 158, 1), BlendMode.srcIn)),
+      ),
+      activeIcon: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: SvgPicture.asset('assets/svgFiles/saved.svg',
+            height: 24,
+            // theme: const SvgTheme(currentColor: AppColor.primary),
+            // color: AppColor.primary,
+            colorFilter: ColorFilter.mode(AppColor.primary, BlendMode.srcIn)),
+      ),
+      label: 'Plans',
     ),
 
     /// Profile
-    DotNavigationBarItem(
-      icon: Icon(Icons.person),
-      selectedColor: Colors.purple,
+    BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: SvgPicture.asset('assets/svgFiles/profile.svg',
+            height: 24,
+            // theme: const SvgTheme(currentColor: Color.fromRGBO(158, 158, 158, 1)),
+            // color: Color.fromRGBO(158, 158, 158, 1),
+            colorFilter: ColorFilter.mode(
+                Color.fromRGBO(158, 158, 158, 1), BlendMode.srcIn)),
+      ),
+      activeIcon: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: SvgPicture.asset('assets/svgFiles/profile.svg',
+            height: 24,
+            // theme: const SvgTheme(currentColor: AppColor.primary),
+            // color: AppColor.primary,
+            colorFilter: ColorFilter.mode(AppColor.primary, BlendMode.srcIn)),
+      ),
+      label: 'Profile',
     ),
   ];
 
@@ -46,30 +89,34 @@ class HomeScreen extends StatelessWidget {
 
     final Screens = [
       DateSuggestionView(),
-      BookingsView(),
-      GiftSuggestionView(),
+      SavedPlansView(),
       UserProfileView(),
     ];
 
     return Scaffold(
       extendBody: true,
       body: Screens[model.currentScreenIndex],
-      bottomNavigationBar: DotNavigationBar(
-        marginR: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-        borderRadius: 10,
+      bottomNavigationBar: BottomNavigationBar(
         currentIndex: model.currentScreenIndex,
         onTap: model.updateIndex,
-        dotIndicatorColor: Colors.purple,
-        curve: Curves.linear,
-        duration: const Duration(milliseconds: 5),
-        boxShadow: const [
-          BoxShadow(
-              color: Colors.grey,
-              spreadRadius: 1,
-              blurRadius: 7,
-              offset: Offset(0, 5))
-        ],
         items: navbarItems,
+        selectedItemColor: AppColor.black,
+        selectedLabelStyle: const TextStyle(
+          height: 1.14,
+          fontSize: 14,
+          fontFamily: AppFonts.title,
+          fontWeight: FontWeight.w500,
+          color: AppColor.primary,
+          letterSpacing: 0.21,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          height: 1.14,
+          fontSize: 14,
+          fontFamily: AppFonts.title,
+          fontWeight: FontWeight.w500,
+          color: AppColor.secondary,
+          letterSpacing: 0.21,
+        ),
       ),
     );
   }

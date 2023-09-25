@@ -143,6 +143,19 @@ class AuthViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  int _remainingSeconds = 180;
+  int get remainingSeconds => _remainingSeconds;
+
+  void startCountdown() {
+    Future.delayed(const Duration(seconds: 1), () {
+      if (_remainingSeconds > 0) {
+        _remainingSeconds--;
+        notifyListeners();
+        startCountdown();
+      }
+    });
+  }
+
   Future<void> signUp(String email, BuildContext context) async {
     isResendVisible = false;
     notifyListeners();
@@ -152,10 +165,6 @@ class AuthViewModel with ChangeNotifier {
     dynamic data = signupBody.toJson();
     signUpOTPData = ApiResponse.loading();
 
-    if (kDebugMode) {
-      print("Here after button press");
-    }
-
     setSignUpLoading(true);
     _myrepo
         .signupUrl(data)
@@ -164,16 +173,15 @@ class AuthViewModel with ChangeNotifier {
               if (value.message.toString() == 'otp sent')
                 {
                   signUpOTPData = ApiResponse.completed(value),
-                  if (kDebugMode)
-                    {
-                      print("Here after SignUp"),
-                    },
                   Utils.goFlushBar('OTP Sent', context),
                   incorrectEmail = false,
                   errorMessageMail = "",
                   notifyListeners(),
+                  incorrectOTPmessage = '',
                   AutoRouter.of(context).push(VerifyOTPViewRoute()),
-                  Timer(const Duration(seconds: 60), () {
+                  _remainingSeconds = 180,
+                  startCountdown(),
+                  Timer(const Duration(seconds: 180), () {
                     isResendVisible = true;
                     notifyListeners();
                   }),
@@ -184,10 +192,6 @@ class AuthViewModel with ChangeNotifier {
                   incorrectEmail = true,
                   errorMessageMail = value.message.toString(),
                   notifyListeners(),
-                },
-              if (kDebugMode)
-                {
-                  print(value.toString()),
                 },
             })
         .onError(
@@ -201,6 +205,8 @@ class AuthViewModel with ChangeNotifier {
 
   VOTP.VerifyOtpBody verifyOtpBody = VOTP.VerifyOtpBody();
   VOTP.User verifyOtpUserBody = VOTP.User();
+
+  String incorrectOTPmessage = '';
 
   Future<void> verifyOtp(String otp, BuildContext context) async {
     verifyOtpBody.otpEntered = otp;
@@ -230,6 +236,7 @@ class AuthViewModel with ChangeNotifier {
                           ),
                         ),
                       ),
+                      incorrectOTPmessage = '',
                       userData = ApiResponse.completed(value),
                       // Utils.goFlushBar('SignUp Successful', context),
                       AutoRouter.of(context).push(SetUpDetailsViewRoute()),
@@ -244,6 +251,7 @@ class AuthViewModel with ChangeNotifier {
                           ),
                         ),
                       ),
+                      incorrectOTPmessage = '',
                       userData = ApiResponse.completed(value),
                       // Utils.goFlushBar('LogIn Successful', context),
                       AutoRouter.of(context).push(HomeScreenRoute()),
@@ -251,7 +259,9 @@ class AuthViewModel with ChangeNotifier {
                 }
               else
                 {
-                  Utils.goErrorFlush('Try Again', context),
+                  incorrectOTPmessage = value.message.toString(),
+                  notifyListeners(),
+                  // Utils.goErrorFlush('Try Again', context),
                 },
             })
         .onError(

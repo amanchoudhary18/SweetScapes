@@ -31,6 +31,22 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
     });
   }
 
+  Future<void> _launchMap(String latitude, String longitude) async {
+    final Uri googleMapsUrl =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
+
+    // final Uri appleMapsUrl =
+    //     Uri.parse('https://maps.apple.com/?q=$latitude,$longitude');
+
+    // if (await canLaunchUrl(googleMapsUrl)) {
+      await launchUrl(googleMapsUrl);
+    // }else if (await canLaunchUrl(appleMapsUrl)) {
+    //   await launchUrl(appleMapsUrl);
+    // } else {
+    //   Utils.goToast('Unable to open Map');
+    // }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -58,7 +74,7 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
                 child: Container(
                   width: 2,
                   color: AppColor.secondary,
-                  height: (showDetails)
+                  height: (showDetails && !widget.isEditable)
                       ? (widget.component.isHighlight!)
                           ? 282
                           : 250
@@ -110,9 +126,12 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
                               ),
                             ),
                           ),
-                          (showDetails)
-                              ? Icon(Icons.keyboard_arrow_up_outlined)
-                              : Icon(Icons.keyboard_arrow_down_outlined)
+                          Visibility(
+                            visible: (!widget.isEditable),
+                            child: (showDetails)
+                                ? Icon(Icons.keyboard_arrow_up_outlined)
+                                : Icon(Icons.keyboard_arrow_down_outlined),
+                          )
                         ],
                       ),
                       Row(
@@ -179,7 +198,7 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
                           ),
                         ),
                       ),
-                      (showDetails)
+                      (showDetails && !widget.isEditable)
                           ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -285,12 +304,15 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
                                                 letterSpacing: 0.21,
                                               ),
                                             ),
-                                            onTap: () async {
-                                              await launchUrl(
-                                                Uri.parse(
-                                                    'https://www.google.com/maps/search/?api=1&query=${widget.component.details!.map!.lat},${widget.component.details!.map!.lng}'),
-                                              );
-                                            }),
+                                            // onTap: () async {
+                                            //   await launchUrl(
+                                            //     Uri.parse(
+                                            //         'https://www.google.com/maps/search/?api=1&query=${widget.component.details!.map!.lat},${widget.component.details!.map!.lng}'),
+                                            //   );
+                                            // },
+                                            // onTap: _launchMap(widget.component.details!.map!.lat!, widget.component.details!.map!.lng!),
+                                            onTap: () async {_launchMap('23.40995726498554','85.44449233778705');},
+                                          ),
                                     Visibility(
                                       visible: widget
                                               .component.details!.websiteLink !=
@@ -344,16 +366,22 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
                                     ),
                                   ),
                                 ),
-                                Text(
-                                  '${widget.component.details!.openingTime} - ${widget.component.details!.closingTime}',
-                                  style: TextStyle(
-                                    height: 16 / 12,
-                                    fontSize: 12,
-                                    fontFamily: AppFonts.subtitle,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.grey.shade600,
-                                    letterSpacing: 0.21,
-                                  ),
+                                Column(
+                                  children: <Widget>[
+                                    for (TimeSlots timeslot
+                                        in widget.component.details!.timeSlots!)
+                                      Text(
+                                        '${timeslot.openingTime} - ${timeslot.closingTime}',
+                                        style: TextStyle(
+                                          height: 16 / 12,
+                                          fontSize: 12,
+                                          fontFamily: AppFonts.subtitle,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.grey.shade600,
+                                          letterSpacing: 0.21,
+                                        ),
+                                      ),
+                                  ],
                                 ),
                                 Visibility(
                                   visible: (widget.component.details!.type ==
@@ -400,7 +428,8 @@ class _PlanComponentTileState extends State<PlanComponentTile> {
                                 ),
                               ],
                             )
-                          : (widget.isEditable)
+                          : (widget.isEditable &&
+                                  !widget.component.isHighlight!)
                               ? GestureDetector(
                                   onTap: () {
                                     widget.onChangePressed(

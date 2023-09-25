@@ -14,9 +14,8 @@ class AppRouter extends $AppRouter {
         /// routes go here
         AutoRoute(page: SplashViewRoute.page, path: '/'),
         AutoRoute(page: HomeScreenRoute.page),
-        AutoRoute(page: BookingsViewRoute.page),
+        AutoRoute(page: SavedPlansViewRoute.page),
         AutoRoute(page: DateSuggestionViewRoute.page),
-        AutoRoute(page: GiftSuggestionViewRoute.page),
         AutoRoute(page: LoginViewRoute.page),
         AutoRoute(page: SetUpDetailsViewRoute.page),
         AutoRoute(page: UpdateTagsViewRoute.page),
@@ -27,6 +26,6 @@ class AppRouter extends $AppRouter {
         AutoRoute(page: IntroScreen3Route.page),
         AutoRoute(page: VerifyEmailViewRoute.page),
         AutoRoute(page: VerifyOTPViewRoute.page),
-        CustomRoute(page: DateViewPlanViewRoute.page, transitionsBuilder: TransitionsBuilders.slideTop),
+        CustomRoute(page: DateViewPlanViewRoute.page, transitionsBuilder: TransitionsBuilders.slideLeft),
       ];
 }

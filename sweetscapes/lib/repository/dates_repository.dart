@@ -1,6 +1,8 @@
 import 'package:sweetscapes/model/response/componentsByTag_response.dart';
 import 'package:sweetscapes/model/response/createPlan_response.dart';
 import 'package:sweetscapes/model/response/getAllPlans_response.dart';
+import 'package:sweetscapes/model/response/getRecentPlans_response.dart';
+import 'package:sweetscapes/model/response/getUpcomingPlans_response.dart';
 import 'package:sweetscapes/model/response/saveUserCreatedPlan_response.dart';
 
 import '../data/network/BaseApiServices.dart';
@@ -16,6 +18,7 @@ class DatesRepository {
           AppUrl.getAllPlans, token);
       return response = GetAllPlans.fromJson(response);
     } catch (e) {
+      print(e);
       rethrow;
     }
   }
@@ -44,6 +47,36 @@ class DatesRepository {
     try {
       dynamic response = await _apiServices.userPostApiResponse(
           AppUrl.saveUserCreatedPlan, data, token);
+      return response = SaveUserCreatedPlanResponse.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<GetRecentPlansResponse> getRecentPlans(String token) async {
+    try {
+      dynamic response = await _apiServices.userGetApiResponse(
+          AppUrl.getRecentSavedUserCreatedPlans, token);
+      return response = GetRecentPlansResponse.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<GetUpcomingPlansResponse> getUpcomingPlans(String token) async {
+    try {
+      dynamic response = await _apiServices.userGetApiResponse(
+          AppUrl.getUpcomingSavedUserCreatedPlans, token);
+      return response = GetUpcomingPlansResponse.fromJson(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<SaveUserCreatedPlanResponse> getSavedUserCreatedPlan(String token, String planId) async {
+    try {
+      dynamic response = await _apiServices.userGetApiResponse(
+          AppUrl.getSavedUserCreatedPlan+planId, token);
       return response = SaveUserCreatedPlanResponse.fromJson(response);
     } catch (e) {
       rethrow;

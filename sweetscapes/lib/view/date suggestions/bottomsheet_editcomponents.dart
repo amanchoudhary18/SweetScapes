@@ -152,7 +152,9 @@ class _BottomSheetEditComponentsState extends State<BottomSheetEditComponents> {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
                                       return const Center(
-                                          child: CircularProgressIndicator());
+                                          child: CircularProgressIndicator(
+                                            color: AppColor.primary,
+                                          ));
                                     } else if (snapshot.hasData) {
                                       componentsByTag = snapshot.data!;
                                       return CupertinoScrollbar(
@@ -245,7 +247,7 @@ class _BottomSheetEditComponentsState extends State<BottomSheetEditComponents> {
                             child: PrimaryButton(
                                 title: 'Save Changes',
                                 onPress: () {
-                                  widget.model.updatePlan();
+                                  widget.model.updatePlan(indexToBeChanged);
                                   Navigator.pop(context);
                                 }),
                           ),

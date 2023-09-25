@@ -19,9 +19,11 @@ import 'package:sweetscapes/view_model/user_view_model.dart';
 class DateDetailsViewModel extends BaseViewModel {
   late CompletedAllPlans plan;
   late CompletedAllPlans originalPlan;
-  DateDetailsViewModel(CompletedAllPlans completePlan) {
+  late DateTime planDate;
+  DateDetailsViewModel(CompletedAllPlans completePlan, DateTime dateOfPlan) {
     plan = CompletedAllPlans.copy(completePlan);
     originalPlan = CompletedAllPlans.copy(completePlan);
+    planDate = dateOfPlan;
     notifyListeners();
   }
 
@@ -45,14 +47,10 @@ class DateDetailsViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  void updatePlan() {
-    plan.price = 0;
-    // int index = 0;
-    for (Components component in editPlanComponents) {
-      plan.price = plan.price! + component.details!.pricePerHead!;
-      // plan.images![index].imgLink = component.details!.img!;
-      // plan.images![index].imgName = (component.details!.type == 'Dining') ? component.details!.hotelName! : component.details!.placeName!;
-    }
+  void updatePlan(int indexToBeChanged) {
+    plan.price = plan.price! - plan.components![indexToBeChanged].details!.pricePerHead! + editPlanComponents[indexToBeChanged].details!.pricePerHead!; 
+    plan.images![indexToBeChanged].imgLink = editPlanComponents[indexToBeChanged].details!.img!;
+    plan.images![indexToBeChanged].imgName = (editPlanComponents[indexToBeChanged].details!.type == 'Dining') ? editPlanComponents[indexToBeChanged].details!.hotelName! : editPlanComponents[indexToBeChanged].details!.placeName!;
     plan.components = List<Components>.from(editPlanComponents);
     notifyListeners();
   }
@@ -242,8 +240,11 @@ class DateDetailsViewModel extends BaseViewModel {
 
   SaveUserCreatedPlanBody saveUserCreatedPlanBody = SaveUserCreatedPlanBody();
 
-  Future<void> gotoViewPlan(BuildContext context, int peopleCount) async {
+  Future<void> gotoViewPlan(BuildContext context, int peopleCount, double travelAmount) async {
     saveUserCreatedPlanBody.peopleCount = peopleCount;
+    DateTime planDateWithTime = DateTime.fromMillisecondsSinceEpoch(plan.planStartTime!);
+    DateTime viewPlanDate = DateTime(planDate.year, planDate.month, planDate.day, planDateWithTime.hour, planDateWithTime.minute);
+    saveUserCreatedPlanBody.planDate = viewPlanDate.millisecondsSinceEpoch;
     saveUserCreatedPlanBody.tileContent = plan.tileContent;
 
     List<FinalComponentsforViewPlan> finalComponentsforViewPlan = [];
@@ -261,59 +262,39 @@ class DateDetailsViewModel extends BaseViewModel {
     if (selectedModeOfTransport == "Bus") {
       finalTravelForViewPlan.distance = busTravel.distance;
       finalTravelForViewPlan.duration = busTravel.duration;
-      finalTravelForViewPlan.price = busTravel.price;
+      finalTravelForViewPlan.price = travelAmount;
       finalTravelForViewPlan.route = busTravel.route;
     } else if (selectedModeOfTransport == "Auto") {
       finalTravelForViewPlan.distance = autoTravel.distance;
       finalTravelForViewPlan.duration = autoTravel.duration;
-      finalTravelForViewPlan.price = autoTravel.price;
+      finalTravelForViewPlan.price = travelAmount;
       finalTravelForViewPlan.route = autoTravel.route;
     } else if (selectedModeOfTransport == "Scooty") {
       finalTravelForViewPlan.distance = scootyTravel.distance;
       finalTravelForViewPlan.duration = scootyTravel.duration;
-      finalTravelForViewPlan.price = scootyTravel.price;
+      finalTravelForViewPlan.price = travelAmount;
       finalTravelForViewPlan.route = scootyTravel.route;
     } else if (selectedModeOfTransport == "Bike") {
       finalTravelForViewPlan.distance = bikeTravel.distance;
       finalTravelForViewPlan.duration = bikeTravel.duration;
-      finalTravelForViewPlan.price = bikeTravel.price;
+      finalTravelForViewPlan.price = travelAmount;
       finalTravelForViewPlan.route = bikeTravel.route;
     } else if (selectedModeOfTransport == "Mid-Size Car") {
       finalTravelForViewPlan.distance = midSizeCarTravel.distance;
       finalTravelForViewPlan.duration = midSizeCarTravel.duration;
-      finalTravelForViewPlan.price = midSizeCarTravel.price;
+      finalTravelForViewPlan.price = travelAmount;
       finalTravelForViewPlan.route = midSizeCarTravel.route;
     } else {
       finalTravelForViewPlan.distance = suvTravel.distance;
       finalTravelForViewPlan.duration = suvTravel.duration;
-      finalTravelForViewPlan.price = suvTravel.price;
+      finalTravelForViewPlan.price = travelAmount;
       finalTravelForViewPlan.route = suvTravel.route;
     }
 
     saveUserCreatedPlanBody.finalTravel = finalTravelForViewPlan;
 
     AutoRouter.of(context).push(DateViewPlanViewRoute(
-        saveUserCreatedPlanBody: saveUserCreatedPlanBody));
-
-    // await _datesRepo
-    //     .saveUserCreatedPlan(token, saveUserCreatedPlanBodyJson)
-    //     .then((value) => {
-    //           if (value.status.toString() == 'Successful')
-    //             {
-    //               print('Here'),
-    //               finalPlanDetails = value.finalPlanDetails!,
-    //             }
-    //           else
-    //             {
-    //               Utils.goErrorFlush('Try Again', context),
-    //             },
-    //         })
-    //     .onError(
-    //       (error, stackTrace) => {
-    //         Utils.goErrorFlush(error.toString(), context),
-    //       },
-    //     );
-
-    // notifyListeners();
+        saveUserCreatedPlanBody: saveUserCreatedPlanBody,
+        recentUpcomingPlanId: ''));
   }
 }

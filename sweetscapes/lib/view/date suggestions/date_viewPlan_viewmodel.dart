@@ -17,9 +17,11 @@ class DateViewPlanViewModel extends BaseViewModel {
   // late FinalTravel selectedTravel;
 
   late SaveUserCreatedPlanBody saveUserCreatedPlanBody;
+  late String recentUpcomingPlanId;
 
-  DateViewPlanViewModel(SaveUserCreatedPlanBody saveUserCreatedPlanBodyProps) {
+  DateViewPlanViewModel(SaveUserCreatedPlanBody saveUserCreatedPlanBodyProps, String recentUpcomingPlanIdProps) {
     saveUserCreatedPlanBody = saveUserCreatedPlanBodyProps;
+    recentUpcomingPlanId = recentUpcomingPlanIdProps;
   }
 
   FinalPlanDetails finalPlanDetails = FinalPlanDetails();
@@ -46,6 +48,10 @@ class DateViewPlanViewModel extends BaseViewModel {
     UserModel loggedInUser = await userPreference.getUser();
     String token = loggedInUser.token.toString();
 
+    print(recentUpcomingPlanId);
+
+    if (recentUpcomingPlanId == '') {
+
     dynamic saveUserCreatedPlanBodyJson = saveUserCreatedPlanBody.toJson();
 
     await _datesRepo
@@ -65,6 +71,26 @@ class DateViewPlanViewModel extends BaseViewModel {
             Utils.goErrorFlush(error.toString(), context),
           },
         );
+    }
+    else {
+      await _datesRepo
+        .getSavedUserCreatedPlan(token, recentUpcomingPlanId)
+        .then((value) => {
+              if (value.status.toString() == 'Successful')
+                {
+                  finalPlanDetails = value.finalPlanDetails!,
+                }
+              else
+                {
+                  Utils.goErrorFlush('Try Again', context),
+                },
+            })
+        .onError(
+          (error, stackTrace) => {
+            Utils.goErrorFlush(error.toString(), context),
+          },
+        );
+    }
 
     return finalPlanDetails;
   }

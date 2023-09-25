@@ -2,18 +2,21 @@ import 'package:sweetscapes/model/response/createPlan_response.dart';
 
 class SaveUserCreatedPlanBody {
   int? peopleCount;
+  int? planDate;
   List<FinalComponentsforViewPlan>? finalComponents;
   FinalTravel? finalTravel;
   String? tileContent;
 
   SaveUserCreatedPlanBody(
       {this.peopleCount,
+      this.planDate,
       this.finalComponents,
       this.finalTravel,
       this.tileContent});
 
   SaveUserCreatedPlanBody.fromJson(Map<String, dynamic> json) {
     peopleCount = json['people_count'];
+    planDate = json['plan_date'];
     if (json['finalComponents'] != null) {
       finalComponents = <FinalComponentsforViewPlan>[];
       json['finalComponents'].forEach((v) {
@@ -29,6 +32,7 @@ class SaveUserCreatedPlanBody {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['people_count'] = this.peopleCount;
+    data['plan_date'] = this.planDate;
     if (this.finalComponents != null) {
       data['finalComponents'] =
           this.finalComponents!.map((v) => v.toJson()).toList();

@@ -14,10 +14,12 @@ class SuggestionTile extends StatelessWidget {
     super.key,
     required this.plan,
     required this.isActive,
+    required this.planDate,
   });
 
   final CompletedAllPlans plan;
   final bool isActive;
+  final DateTime planDate;
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +35,12 @@ class SuggestionTile extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           if (isActive) {
-            AutoRouter.of(context).push(DateDetailsViewRoute(plan: plan));
+            AutoRouter.of(context)
+                .push(DateDetailsViewRoute(plan: plan, planDate: planDate));
           }
         },
         child: Opacity(
-          opacity: (isActive)? 1 : 0.5,
+          opacity: (isActive) ? 1 : 0.5,
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
@@ -85,6 +88,7 @@ class SuggestionTile extends StatelessWidget {
                                             MainAxisAlignment.center,
                                         children: [
                                           CircularProgressIndicator(
+                                            color: AppColor.primary,
                                             value: loadingProgress
                                                         .expectedTotalBytes !=
                                                     null
@@ -111,8 +115,8 @@ class SuggestionTile extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     Container(
-                                      width:
-                                          MediaQuery.of(context).size.width * 0.7,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.7,
                                       child: Text(
                                         'Place ${i.order}: ${i.imgName}',
                                         style: const TextStyle(
@@ -141,9 +145,9 @@ class SuggestionTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        (isActive) ?
-                        'Start At ${formattedTime}'
-                        : 'This Plan is unavailable for the selected date',
+                        (isActive)
+                            ? 'Start At ${formattedTime}'
+                            : 'This Plan is unavailable for the selected date',
                         style: const TextStyle(
                           height: 1.3,
                           fontSize: 12,
@@ -187,10 +191,10 @@ class SuggestionTile extends StatelessWidget {
                         children: plan.tags!.map((String entry) {
                           String iconTag = tagsDirectory.getTagIcon(entry);
                           String iconLabel = tagsDirectory.getTagLabel(entry);
-        
+
                           return Chip(
                             shape: const StadiumBorder(),
-                            backgroundColor: AppColor.secondary,
+                            backgroundColor: AppColor.lightPositive,
                             label: Wrap(
                               spacing: 4,
                               crossAxisAlignment: WrapCrossAlignment.center,

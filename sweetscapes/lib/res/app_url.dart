@@ -5,6 +5,7 @@ class AppUrl {
   static var gAuthUrl = '$baseUrl/api/v1/user/googlelogin';
   static var loginUrl = '$baseUrl/api/v1/user/login';
   static var signupUrl = '$baseUrl/api/v1/user/register';
+  static var getMyData = '$baseUrl/api/v1/user/myData';
   static var verifyOtpUrl = '$baseUrl/api/v1/user/otpVerification';
   static var updateUserDetailsUrl = '$baseUrl/api/v1/user/update';
   static var updateInitialUrl = '$baseUrl/api/v1/user/updateInitial';
@@ -14,4 +15,7 @@ class AppUrl {
   static var getComponentsByTag = '$baseUrl/api/v1/plan/getComponentsByTag';
   static var createPlan = '$baseUrl/api/v1/plan/createPlan';
   static var saveUserCreatedPlan = '$baseUrl/api/v1/plan/saveUserCreatedPlan';
+  static var getRecentSavedUserCreatedPlans = '$baseUrl/api/v1/plan/getRecentSavedUserCreatedPlans';
+  static var getUpcomingSavedUserCreatedPlans = '$baseUrl/api/v1/plan/getUpcomingSavedUserCreatedPlans';
+  static var getSavedUserCreatedPlan = '$baseUrl/api/v1/plan/getSavedUserCreatedPlan/';
 }

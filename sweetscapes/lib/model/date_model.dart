@@ -103,7 +103,9 @@ class Tags {
 }
 
 class Dine {
-  int? decentDining;
+  int? classicDineIn;
+  int? restroBar;
+  int? foodCourt;
   int? streetfood;
   int? fineDining;
   int? dhabas;
@@ -113,7 +115,9 @@ class Dine {
   int? cafes;
 
   Dine(
-      {this.decentDining,
+      {this.classicDineIn,
+      this.restroBar,
+      this.foodCourt,
       this.streetfood,
       this.fineDining,
       this.dhabas,
@@ -123,7 +127,9 @@ class Dine {
       this.cafes});
 
   Dine.fromJson(Map<String, dynamic> json) {
-    decentDining = json['Decent_Dining'];
+    classicDineIn = json['Classic_Dine_In'];
+    restroBar = json['RestroBar'];
+    foodCourt = json['FoodCourt'];
     streetfood = json['Streetfood'];
     fineDining = json['Fine_Dining'];
     dhabas = json['Dhabas'];
@@ -135,7 +141,9 @@ class Dine {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Decent_Dining'] = this.decentDining;
+    data['Classic_Dine_In'] = this.classicDineIn;
+    data['RestroBar'] = this.restroBar;
+    data['FoodCourt'] = this.foodCourt;
     data['Streetfood'] = this.streetfood;
     data['Fine_Dining'] = this.fineDining;
     data['Dhabas'] = this.dhabas;

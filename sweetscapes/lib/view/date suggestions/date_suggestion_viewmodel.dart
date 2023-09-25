@@ -12,7 +12,7 @@ class DateSuggestionViewModel extends BaseViewModel {
 
   List<CompletedAllPlans> plans = [];
 
-  DateTime _planDate = DateTime.now();
+  DateTime _planDate = DateTime.now().add(Duration(days: 1));
   DateTime get planDate => _planDate;
 
   bool _datesLoading = false;
@@ -34,7 +34,9 @@ class DateSuggestionViewModel extends BaseViewModel {
 
   Map<String, bool> diningTags = {
     'Fine Dining': false,
-    'Decent Dining': false,
+    'Classic Dine-In': false,
+    'Restro-Bar': false,
+    'Food-Court': false,
     'Dhaba': false,
     'Cafe': false,
     'Street Food': false,
@@ -42,7 +44,9 @@ class DateSuggestionViewModel extends BaseViewModel {
 
   Map<String, String> diningIcons = {
     'Fine Dining': 'assets/tagIcons/icons=fineDining.svg',
-    'Decent Dining': 'assets/tagIcons/icons=decentDining.svg',
+    'Classic Dine-In': 'assets/tagIcons/icons=classicDineIn.svg',
+    'Restro-Bar': 'assets/tagIcons/icons=RestroBar.svg',
+    'Food-Court': 'assets/tagIcons/icons=FoodCourt.svg',
     'Dhaba': 'assets/tagIcons/icons=dhabas.svg',
     'Cafe': 'assets/tagIcons/icons=cafes.svg',
     'Street Food': 'assets/tagIcons/icons=streetfood.svg',
@@ -56,13 +60,11 @@ class DateSuggestionViewModel extends BaseViewModel {
   Map<String, bool> outingTags = {
     'Hills': false,
     'Lakes': false,
-    'Dams Waterfalls': false,
-    'Malls': false,
+    'Dams & Waterfalls': false,
+    'Arcade': false,
     'Movie': false,
     'Parks': false,
-    // 'Picnics': false,
-    'Clubbing': false,
-    'Night Out': false,
+    'Clubs & Bars': false,
     'Shopping': false,
     'Places of Worship': false,
     'Museum': false,
@@ -71,13 +73,12 @@ class DateSuggestionViewModel extends BaseViewModel {
   Map<String, String> outingIcons = {
     'Hills': 'assets/tagIcons/icons=hills.svg',
     'Lakes': 'assets/tagIcons/icons=Lakes.svg',
-    'Dams Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
-    'Malls': 'assets/tagIcons/icons=malls.svg',
+    'Dams & Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
+    'Arcade': 'assets/tagIcons/icons=Arcade.svg',
     'Movie': 'assets/tagIcons/icons=movie.svg',
     'Parks': 'assets/tagIcons/icons=park.svg',
     // 'Picnics': 'assets/tagIcons/icons=picnic.svg',
-    'Clubbing': 'assets/tagIcons/icons=clubs.svg',
-    'Night Out': 'assets/tagIcons/icons=Night out.svg',
+    'Clubs & Bars': 'assets/tagIcons/icons=clubsBars.svg',
     'Shopping': 'assets/tagIcons/icons=shopping.svg',
     'Places of Worship': 'assets/tagIcons/icons=religious.svg',
     'Museum': 'assets/tagIcons/icons=Museum.svg',
@@ -85,19 +86,19 @@ class DateSuggestionViewModel extends BaseViewModel {
 
   Map<String, bool> allTags = {
     'Fine Dining': false,
-    'Decent Dining': false,
+    'Classic Dine-In': false,
+    'Restro-Bar': false,
+    'Food-Court': false,
     'Dhaba': false,
     'Cafe': false,
     'Street Food': false,
     'Hills': false,
     'Lakes': false,
-    'Dams Waterfalls': false,
-    'Malls': false,
+    'Dams & Waterfalls': false,
+    'Arcade': false,
     'Movie': false,
     'Parks': false,
-    // 'Picnics': false,
-    'Clubbing': false,
-    'Night Out': false,
+    'Clubs & Bars': false,
     'Shopping': false,
     'Places of Worship': false,
     'Museum': false,
@@ -124,6 +125,14 @@ class DateSuggestionViewModel extends BaseViewModel {
     };
 
     return dayAvailabilityMap[planDay] ?? false;
+  }
+
+  void clearTags() {
+    allTags.forEach((key, value) {
+      allTags[key] = false;
+    });
+    selectedTags = [];
+    filterPlans([]);
   }
 
   void filterPlans(List<String> filterTags) async {

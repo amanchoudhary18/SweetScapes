@@ -12,7 +12,9 @@ import '../user_view_model.dart';
 class UpdateTagsViewModel with ChangeNotifier {
   Map<String, bool> diningTags = {
     'Fine Dining': false,
-    'Decent Dining': false,
+    'Classic Dine-In': false,
+    'Restro-Bar': false,
+    'Food-Court': false,
     'Dhaba': false,
     'Cafe': false,
     'Street Food': false,
@@ -20,7 +22,9 @@ class UpdateTagsViewModel with ChangeNotifier {
 
   Map<String, String> diningIcons = {
     'Fine Dining': 'assets/tagIcons/icons=fineDining.svg',
-    'Decent Dining': 'assets/tagIcons/icons=decentDining.svg',
+    'Classic Dine-In': 'assets/tagIcons/icons=classicDineIn.svg',
+    'Restro-Bar': 'assets/tagIcons/icons=RestroBar.svg',
+    'Food-Court': 'assets/tagIcons/icons=FoodCourt.svg',
     'Dhaba': 'assets/tagIcons/icons=dhabas.svg',
     'Cafe': 'assets/tagIcons/icons=cafes.svg',
     'Street Food': 'assets/tagIcons/icons=streetfood.svg',
@@ -34,28 +38,25 @@ class UpdateTagsViewModel with ChangeNotifier {
   Map<String, bool> outingTags = {
     'Hills': false,
     'Lakes': false,
-    'Dams Waterfalls': false,
-    'Malls': false,
+    'Arcade': false,
     'Movie': false,
     'Parks': false,
-    // 'Picnics': false,
-    'Clubbing': false,
-    'Night Out': false,
     'Shopping': false,
-    'Places of Worship': false,
+    'Clubs & Bars': false,
     'Museum': false,
+    'Dams & Waterfalls': false,
+    'Places of Worship': false,
   };
 
   Map<String, String> outingIcons = {
     'Hills': 'assets/tagIcons/icons=hills.svg',
     'Lakes': 'assets/tagIcons/icons=Lakes.svg',
-    'Dams Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
-    'Malls': 'assets/tagIcons/icons=malls.svg',
+    'Dams & Waterfalls': 'assets/tagIcons/icons=Dams_Waterfall.svg',
+    'Arcade': 'assets/tagIcons/icons=Arcade.svg',
     'Movie': 'assets/tagIcons/icons=movie.svg',
     'Parks': 'assets/tagIcons/icons=park.svg',
     // 'Picnics': 'assets/tagIcons/icons=picnic.svg',
-    'Clubbing': 'assets/tagIcons/icons=clubs.svg',
-    'Night Out': 'assets/tagIcons/icons=Night out.svg',
+    'Clubs & Bars': 'assets/tagIcons/icons=clubsBars.svg',
     'Shopping': 'assets/tagIcons/icons=shopping.svg',
     'Places of Worship': 'assets/tagIcons/icons=religious.svg',
     'Museum': 'assets/tagIcons/icons=Museum.svg',
@@ -77,6 +78,13 @@ class UpdateTagsViewModel with ChangeNotifier {
 
   String get userGender => _userGender;
 
+  bool isGenderDropdownExpanded = false;
+
+  void updateIsGenderDropdownExpanded() {
+    isGenderDropdownExpanded = !isGenderDropdownExpanded;
+    notifyListeners();
+  }
+
   void updateBirthday(DateTime value) {
     _userBirthDay = value;
     notifyListeners();
@@ -92,6 +100,14 @@ class UpdateTagsViewModel with ChangeNotifier {
 
   setNextLoading(bool value) {
     _nextLoading = value;
+    notifyListeners();
+  }
+
+  bool _submitLoading = false;
+  bool get submitLoading => _submitLoading;
+
+  setSubmitLoading(bool value) {
+    _submitLoading = value;
     notifyListeners();
   }
 
@@ -128,11 +144,11 @@ class UpdateTagsViewModel with ChangeNotifier {
         );
   }
 
-  // spd.SetPreferences_Body setPreferences_Body = spd.SetPreferences_Body();
-
   spd.Dine dineObject = spd.Dine(
     fineDining: false,
-    decentDining: false,
+    classicDineIn: false,
+    restroBar: false,
+    foodCourt: false,
     dhabas: false,
     cafes: false,
     streetfood: false,
@@ -142,12 +158,10 @@ class UpdateTagsViewModel with ChangeNotifier {
     hills: false,
     lakes: false,
     damsWaterfalls: false,
-    malls: false,
+    arcade: false,
     movieHalls: false,
     parks: false,
-    // picnics: false,
-    clubbing: false,
-    nightOut: false,
+    clubsBars: false,
     shopping: false,
     placesOfWorship: false,
     museum: false,
@@ -162,14 +176,17 @@ class UpdateTagsViewModel with ChangeNotifier {
   }
 
   void submitPreferences(BuildContext context) async {
+    setSubmitLoading(true);
     final userPreference = Provider.of<UserViewModel>(context, listen: false);
     UserModel loggedInUser = await userPreference.getUser();
     String token = loggedInUser.token.toString();
 
     setPreferences_Body.preferences!.dine!.fineDining =
         diningTags['Fine Dining'];
-    setPreferences_Body.preferences!.dine!.decentDining =
-        diningTags['Decent Dining'];
+    setPreferences_Body.preferences!.dine!.classicDineIn =
+        diningTags['Classic Dine-In'];
+    setPreferences_Body.preferences!.dine!.restroBar = diningTags['Restro-Bar'];
+    setPreferences_Body.preferences!.dine!.foodCourt = diningTags['Food-Court'];
     setPreferences_Body.preferences!.dine!.dhabas = diningTags['Dhaba'];
     setPreferences_Body.preferences!.dine!.cafes = diningTags['Cafe'];
     setPreferences_Body.preferences!.dine!.streetfood =
@@ -178,12 +195,12 @@ class UpdateTagsViewModel with ChangeNotifier {
     setPreferences_Body.preferences!.outing!.hills = outingTags['Hills'];
     setPreferences_Body.preferences!.outing!.lakes = outingTags['Lakes'];
     setPreferences_Body.preferences!.outing!.damsWaterfalls =
-        outingTags['Dams, Waterfalls'];
-    setPreferences_Body.preferences!.outing!.malls = outingTags['Malls'];
+        outingTags['Dams & Waterfalls'];
+    setPreferences_Body.preferences!.outing!.arcade = outingTags['Arcade'];
     setPreferences_Body.preferences!.outing!.movieHalls = outingTags['Movie'];
     setPreferences_Body.preferences!.outing!.parks = outingTags['Parks'];
-    setPreferences_Body.preferences!.outing!.clubbing = outingTags['Clubbing'];
-    setPreferences_Body.preferences!.outing!.nightOut = outingTags['Night Out'];
+    setPreferences_Body.preferences!.outing!.clubsBars =
+        outingTags['Clubs & Bars'];
     setPreferences_Body.preferences!.outing!.shopping = outingTags['Shopping'];
     setPreferences_Body.preferences!.outing!.placesOfWorship =
         outingTags['Places of Worship'];
@@ -196,6 +213,7 @@ class UpdateTagsViewModel with ChangeNotifier {
         .then((value) => {
               if (value.status.toString() == 'Successful')
                 {
+                  setSubmitLoading(false),
                   Utils.goFlushBar('Preferences Updated', context),
                   userPreference.saveUser(
                     UserModel(
@@ -209,11 +227,13 @@ class UpdateTagsViewModel with ChangeNotifier {
                 }
               else
                 {
+                  setSubmitLoading(false),
                   Utils.goErrorFlush('Try Again', context),
                 },
             })
         .onError(
           (error, stackTrace) => {
+            setSubmitLoading(false),
             Utils.goErrorFlush(error.toString(), context),
           },
         );

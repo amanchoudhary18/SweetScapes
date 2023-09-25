@@ -53,7 +53,7 @@ class LoginView extends StatelessWidget {
                       weight: FontWeight.w400,
                       color: AppColor.black,
                     ),
-                     const SizedBox(
+                    const SizedBox(
                       height: 58,
                     ),
                     UnconstrainedBox(
@@ -101,7 +101,6 @@ class LoginView extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    
                     // const SizedBox(
                     //   height: 66,
                     // ),
@@ -134,9 +133,11 @@ class LoginView extends StatelessWidget {
                               ),
                               Container(
                                 height: 24,
-                                child: Image.asset(
-                                  'assets/images/google.png',
-                                  fit: BoxFit.cover,
+                                child: SvgPicture.asset(
+                                  'assets/svgFiles/google.svg',
+                                  height: 24,
+                                  colorFilter: const ColorFilter.mode(
+                                      AppColor.white, BlendMode.srcIn),
                                 ),
                               ),
                             ],
@@ -177,9 +178,11 @@ class LoginView extends StatelessWidget {
                               ),
                               Container(
                                 height: 24,
-                                child: Image.asset(
-                                  'assets/images/mail.png',
-                                  fit: BoxFit.cover,
+                                child: SvgPicture.asset(
+                                  'assets/svgFiles/mail.svg',
+                                  height: 24,
+                                  colorFilter: const ColorFilter.mode(
+                                      AppColor.black, BlendMode.srcIn),
                                 ),
                               ),
                             ],

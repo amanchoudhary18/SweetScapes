@@ -16,8 +16,7 @@ class RouteComponentTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        (routeComponent.boardingPoint! == "BIT Mesra" ||
-                routeComponent.boardingPoint! == "PMC Bus Stop")
+        (routeComponent.boardingPoint!.contains('BIT Mesra'))
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -29,7 +28,7 @@ class RouteComponentTile extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Icon(
-                          Icons.location_on_outlined,
+                          Icons.outlined_flag_rounded,
                           size: 12,
                           color: AppColor.white,
                         ),
@@ -95,11 +94,11 @@ class RouteComponentTile extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Icon(
-                        (routeComponent.dropPoint == 'BIT Mesra')
-                            ? Icons.location_on_outlined
+                        (routeComponent.dropPoint!.contains('BIT Mesra'))
+                            ? Icons.outlined_flag_rounded
                             : (routeComponent.dropPoint!.contains('Bus Stop'))
                                 ? Icons.stop
-                                : Icons.outlined_flag_rounded,
+                                : Icons.location_on_outlined,
                         size: 12,
                         color: AppColor.white,
                       ),
@@ -283,8 +282,7 @@ class RouteComponentTile extends StatelessWidget {
             ),
           ],
         ),
-        (routeComponent.dropPoint! == "BIT Mesra" ||
-                routeComponent.dropPoint! == "PMC Bus Stop")
+        (routeComponent.dropPoint!.contains('BIT Mesra'))
             ? Padding(
               padding: const EdgeInsets.fromLTRB(36, 12, 0, 0),
               child: Container(

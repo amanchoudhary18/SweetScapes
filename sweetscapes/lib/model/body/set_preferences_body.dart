@@ -44,21 +44,27 @@ class Preferences {
 
 class Dine {
   bool? fineDining;
-  bool? decentDining;
+  bool? classicDineIn;
+  bool? restroBar;
+  bool? foodCourt;
   bool? dhabas;
   bool? cafes;
   bool? streetfood;
 
   Dine(
       {this.fineDining,
-      this.decentDining,
+      this.classicDineIn,
+      this.restroBar,
+      this.foodCourt,
       this.dhabas,
       this.cafes,
       this.streetfood});
 
   Dine.fromJson(Map<String, dynamic> json) {
     fineDining = json['Fine_Dining'];
-    decentDining = json['Decent_Dining'];
+    classicDineIn = json['Classic_Dine_In'];
+    restroBar = json['RestroBar'];
+    foodCourt = json['FoodCourt'];
     dhabas = json['Dhabas'];
     cafes = json['Cafes'];
     streetfood = json['Streetfood'];
@@ -67,7 +73,9 @@ class Dine {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['Fine_Dining'] = this.fineDining;
-    data['Decent_Dining'] = this.decentDining;
+    data['Classic_Dine_In'] = this.classicDineIn;
+    data['RestroBar'] = this.restroBar;
+    data['FoodCourt'] = this.foodCourt;
     data['Dhabas'] = this.dhabas;
     data['Cafes'] = this.cafes;
     data['Streetfood'] = this.streetfood;
@@ -79,11 +87,10 @@ class Outing {
   bool? hills;
   bool? lakes;
   bool? damsWaterfalls;
-  bool? malls;
+  bool? arcade;
   bool? movieHalls;
   bool? parks;
-  bool? clubbing;
-  bool? nightOut;
+  bool? clubsBars;
   bool? shopping;
   bool? placesOfWorship;
   bool? museum;
@@ -92,11 +99,10 @@ class Outing {
       {this.hills,
       this.lakes,
       this.damsWaterfalls,
-      this.malls,
+      this.arcade,
       this.movieHalls,
       this.parks,
-      this.clubbing,
-      this.nightOut,
+      this.clubsBars,
       this.shopping,
       this.placesOfWorship,
       this.museum});
@@ -105,11 +111,10 @@ class Outing {
     hills = json['Hills'];
     lakes = json['Lakes'];
     damsWaterfalls = json['Dams_Waterfalls'];
-    malls = json['Malls'];
+    arcade = json['Arcade'];
     movieHalls = json['Movie_Halls'];
     parks = json['Parks'];
-    clubbing = json['Clubbing'];
-    nightOut = json['Night_Out'];
+    clubsBars = json['Clubs_Bars'];
     shopping = json['Shopping'];
     placesOfWorship = json['Places_Of_Worship'];
     museum = json['Museum'];
@@ -120,11 +125,10 @@ class Outing {
     data['Hills'] = this.hills;
     data['Lakes'] = this.lakes;
     data['Dams_Waterfalls'] = this.damsWaterfalls;
-    data['Malls'] = this.malls;
+    data['Arcade'] = this.arcade;
     data['Movie_Halls'] = this.movieHalls;
     data['Parks'] = this.parks;
-    data['Clubbing'] = this.clubbing;
-    data['Night_Out'] = this.nightOut;
+    data['Clubs_Bars'] = this.clubsBars;
     data['Shopping'] = this.shopping;
     data['Places_Of_Worship'] = this.placesOfWorship;
     data['Museum'] = this.museum;

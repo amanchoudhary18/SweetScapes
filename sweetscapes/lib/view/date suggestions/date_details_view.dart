@@ -18,16 +18,17 @@ import 'package:sweetscapes/view/date%20suggestions/date_details_viewmodel.dart'
 
 @RoutePage()
 class DateDetailsView extends StatelessWidget {
-  const DateDetailsView(this.plan);
+  const DateDetailsView(this.plan, this.planDate);
 
   final CompletedAllPlans plan;
+  final DateTime planDate;
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return ViewModelBuilder.reactive(
-      viewModelBuilder: () => DateDetailsViewModel(plan),
+      viewModelBuilder: () => DateDetailsViewModel(plan, planDate),
       builder: (context, model, child) => WillPopScope(
         onWillPop: () async {
           model.resetPlan();
@@ -141,6 +142,7 @@ class DateDetailsView extends StatelessWidget {
                                                               .center,
                                                       children: [
                                                         CircularProgressIndicator(
+                                            color: AppColor.primary,
                                                           value: loadingProgress
                                                                       .expectedTotalBytes !=
                                                                   null
