@@ -2468,3 +2468,125 @@ exports.getRecentSavedUserCreatedPlans = async (req, res) => {
     });
   }
 };
+
+exports.getBookmarkedPlans = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId).populate("bookmarks");
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const allPlans = user.bookmarks;
+
+    const completedAllPlans = await Promise.all(
+      allPlans.map(async (plan) => {
+        const populatedComponents = [];
+        const tags = new Set();
+        const images = [];
+        let availability = {
+          sunday: true,
+          monday: true,
+          tuesday: true,
+          wednesday: true,
+          thursday: true,
+          friday: true,
+          saturday: true,
+        };
+        let price = 0;
+        const tile_content = plan.tile_content;
+
+        await Promise.all(
+          plan.components.map(async (component) => {
+            let componentModel;
+            if (component.type === "Outing") {
+              componentModel = Outing;
+            } else if (component.type === "Dining") {
+              componentModel = Dining;
+            }
+
+            if (componentModel) {
+              const curr_component = await componentModel
+                .findById(component.component_id)
+                .exec();
+
+              if (curr_component) {
+                for (const time_slots of curr_component.time_slots) {
+                  time_slots.opening_time = moment
+                    .tz(time_slots.opening_time, "HH:mm", "Asia/Kolkata")
+                    .format("h:mm A");
+
+                  time_slots.closing_time = moment
+                    .tz(time_slots.closing_time, "HH:mm", "Asia/Kolkata")
+                    .format("h:mm A");
+                }
+
+                const componentWithHighlight = {
+                  is_highlight: component.is_highlight,
+                  order: component.order,
+                  details: curr_component,
+                };
+
+                populatedComponents.push(componentWithHighlight);
+                tags.add(curr_component.tags[0]);
+
+                images.push({
+                  img_link: extractIdFromGoogleDriveLink(curr_component.img),
+                  img_name:
+                    curr_component.type === "Outing"
+                      ? curr_component.place_name
+                      : curr_component.hotel_name,
+                  order: component.order,
+                });
+
+                availability = {
+                  sunday:
+                    availability.sunday && curr_component.availability.sunday,
+                  monday:
+                    availability.monday && curr_component.availability.monday,
+                  tuesday:
+                    availability.tuesday && curr_component.availability.tuesday,
+                  wednesday:
+                    availability.wednesday &&
+                    curr_component.availability.wednesday,
+                  thursday:
+                    availability.thursday &&
+                    curr_component.availability.thursday,
+                  friday:
+                    availability.friday && curr_component.availability.friday,
+                  saturday:
+                    availability.saturday &&
+                    curr_component.availability.saturday,
+                };
+
+                price += curr_component.price_per_head;
+              }
+            }
+          })
+        );
+
+        const uniqueTags = Array.from(tags);
+
+        return {
+          id: plan.plan_id,
+          tags: uniqueTags,
+          images: images.sort((a, b) => a.order - b.order),
+          availability,
+          plan_start_time: plan.plan_start_time,
+          price,
+          tile_content,
+          components: populatedComponents.sort((a, b) => a.order - b.order),
+        };
+      })
+    );
+
+    res
+      .status(200)
+      .send({ status: "Successful", bookmarkedPlans: completedAllPlans });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ status: "Failed", message: error.message });
+  }
+};

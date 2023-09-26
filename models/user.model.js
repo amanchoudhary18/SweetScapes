@@ -186,6 +186,8 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
+    bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Plan" }],
+
     pairedWith: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

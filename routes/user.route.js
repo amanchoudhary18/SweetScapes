@@ -9,6 +9,7 @@ const router = express.Router();
 const OtpModel = require("../models/otp.model");
 const generateUsername = require("../utils/generateUsername");
 const UserController = require("../controllers/user.controller");
+const PlanController = require("../controllers/plan.controller");
 
 //google login
 router.post("/googlelogin", UserController.googlelogin);
@@ -52,5 +53,11 @@ router.post("/logout", userAuth, UserController.logout);
 
 // delete otp
 router.get("/delete-otp", UserController.deleteInactiveOtps);
+
+// toggle bookmark
+router.get("/bookmarkPlan/:planId", userAuth, UserController.bookmarkPlan);
+
+// get Bookmark Plans
+router.get("/getBookmarkedPlans", userAuth, PlanController.getBookmarkedPlans);
 
 module.exports = router;

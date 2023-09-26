@@ -7,6 +7,11 @@ const OtpModel = require("../models/otp.model");
 const generateUsername = require("../utils/generateUsername");
 const generateAge = require("../utils/generateAge");
 const sgMail = require("@sendgrid/mail");
+const mongoose = require("mongoose");
+const PlanModel = require("../models/plan.model");
+const Outing = require("../models/outing.model");
+const Dining = require("../models/dining.model");
+const moment = require("moment-timezone");
 require("dotenv").config({ path: "../.env" });
 
 //register function
@@ -571,5 +576,31 @@ exports.deleteInactiveOtps = async (req, res) => {
   } catch (error) {
     console.error("Error deleting inactive OTPs:", error);
     res.status(500).json({ status: "Failed", message: error.message });
+  }
+};
+
+exports.bookmarkPlan = async (req, res) => {
+  const { planId } = req.params;
+  const userId = req.user._id;
+
+  try {
+    const user = await User.findById(userId);
+
+    const plan = await PlanModel.findOne({ plan_id: planId });
+    const isBookmarked = user.bookmarks.includes(plan._id);
+
+    if (isBookmarked) {
+      user.bookmarks.pull(plan._id);
+    } else {
+      user.bookmarks.push(plan._id);
+    }
+
+    await user.save();
+    res.status(200).json({
+      status: "Successful",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: "Failed", error: error.message });
   }
 };
