@@ -15,10 +15,21 @@ const planSchema = {
       type: {
         type: String,
       },
-
       is_highlight: {
         type: Boolean,
         default: false,
+      },
+      name: {
+        type: String,
+      },
+      img: {
+        type: String,
+      },
+      tag: {
+        type: String,
+      },
+      price: {
+        type: Number,
       },
       component_id: {
         type: mongoose.Schema.Types.ObjectId,

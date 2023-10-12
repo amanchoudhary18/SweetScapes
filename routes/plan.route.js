@@ -49,7 +49,7 @@ router.get("/getAllPlans", userAuth, PlanController.getAllPlans);
 router.get("/getAllPlansAdmin", adminAuth, PlanController.getAllPlansAdmin);
 
 // Get plan by id
-router.get("/getPlanDetails/:id", userAuth, PlanController.getParticularPlan);
+router.post("/getPlanDetails/:id", userAuth, PlanController.getParticularPlan);
 
 // Get component by tags
 router.post("/getComponentsByTag", userAuth, PlanController.getComponentsByTag);
@@ -99,4 +99,6 @@ router.get("/getAllPlansNamesTags", PlanController.getAllPlansNamesTags);
 // Get Time of Place
 router.post("/getTime", PlanController.getTime);
 
+// Change Plan Schema
+router.post("/changeSchema", PlanController.changeSchema);
 module.exports = router;
