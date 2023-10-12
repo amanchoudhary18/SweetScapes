@@ -1713,6 +1713,7 @@ exports.getParticularPlan = async (req, res) => {
       const componentWithHighlight = {
         is_highlight: component.is_highlight,
         details: curr_component,
+        order: curr_component.order,
       };
 
       populatedComponents.push(componentWithHighlight);
