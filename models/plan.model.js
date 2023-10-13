@@ -7,6 +7,37 @@ const planSchema = {
     type: Number,
   },
 
+  availability: {
+    sunday: {
+      type: Boolean,
+      default: true,
+    },
+    monday: {
+      type: Boolean,
+      default: true,
+    },
+    tuesday: {
+      type: Boolean,
+      default: true,
+    },
+    wednesday: {
+      type: Boolean,
+      default: true,
+    },
+    thursday: {
+      type: Boolean,
+      default: true,
+    },
+    friday: {
+      type: Boolean,
+      default: true,
+    },
+    saturday: {
+      type: Boolean,
+      default: true,
+    },
+  },
+
   components: [
     {
       order: {

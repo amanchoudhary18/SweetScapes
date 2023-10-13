@@ -1625,15 +1625,44 @@ const calculateLikeness = (plan_preferences, userPreferences) => {
 exports.getAllPlans = async (req, res) => {
   try {
     const allPlans = await PlanModel.find({ approved: 1 });
+    const userPreferences = req.user.preferences;
+    console.log(userPreferences);
 
-    // Iterate through allPlans and update each plan
     const updatedPlans = allPlans.map((plan) => {
       const uniqueTags = new Set();
       const imgArray = [];
       let price = 0;
 
+      let plan_preferences = {
+        Dine: {
+          Fine_Dining: 0,
+          RestroBar: 0,
+          Foodcourt: 0,
+          Classic_Dine_In: 0,
+          Dhabas: 0,
+          Cafes: 0,
+          Streetfood: 0,
+        },
+        Outing: {
+          Hills: 0,
+          Lakes: 0,
+          Dams_Waterfalls: 0,
+          Arcade: 0,
+          Movie_Halls: 0,
+          Parks: 0,
+          Clubs_Bars: 0,
+          Night_Out: 0,
+          Shopping: 0,
+          Places_Of_Worship: 0,
+          Museum: 0,
+        },
+      };
       plan.components.forEach((component, index) => {
         uniqueTags.add(component.tag);
+
+        plan_preferences[component.type === "Dining" ? "Dine" : "Outing"][
+          component.tag
+        ]++;
 
         imgArray.push({
           img_link: component.img,
@@ -1643,7 +1672,7 @@ exports.getAllPlans = async (req, res) => {
 
         price += component.price;
       });
-
+      let likeness = calculateLikeness(plan_preferences, userPreferences);
       const uniqueTagsArray = Array.from(uniqueTags);
 
       return {
@@ -1653,9 +1682,11 @@ exports.getAllPlans = async (req, res) => {
         plan_start_time: plan.plan_start_time,
         price: price,
         _id: plan.plan_id,
+        availability: plan.availability,
+        likeness,
       };
     });
-
+    updatedPlans.sort((a, b) => b.likeness - a.likeness);
     res
       .status(200)
       .send({ status: "Successful", completedAllPlans: updatedPlans });
@@ -2476,6 +2507,16 @@ exports.changeSchema = async (req, res) => {
     for (const oldPlan of oldPlans) {
       const updatedComponents = [];
 
+      let availability = {
+        sunday: true,
+        monday: true,
+        tuesday: true,
+        wednesday: true,
+        thursday: true,
+        friday: true,
+        saturday: true,
+      };
+
       for (const oldComponent of oldPlan.components) {
         let componentModel;
         if (oldComponent.type === "Outing") {
@@ -2489,6 +2530,20 @@ exports.changeSchema = async (req, res) => {
             .findById(oldComponent.component_id)
             .exec();
 
+          availability = {
+            sunday: availability.sunday && curr_component.availability.sunday,
+            monday: availability.monday && curr_component.availability.monday,
+            tuesday:
+              availability.tuesday && curr_component.availability.tuesday,
+            wednesday:
+              availability.wednesday && curr_component.availability.wednesday,
+            thursday:
+              availability.thursday && curr_component.availability.thursday,
+            friday: availability.friday && curr_component.availability.friday,
+            saturday:
+              availability.saturday && curr_component.availability.saturday,
+          };
+
           const updatedComponent = {
             order: oldComponent.order,
             type: oldComponent.type,
@@ -2501,6 +2556,7 @@ exports.changeSchema = async (req, res) => {
             tag: curr_component.tags[0],
             price: curr_component.price_per_head,
             component_id: oldComponent.component_id,
+            availability,
           };
           updatedComponents.push(updatedComponent);
         }
