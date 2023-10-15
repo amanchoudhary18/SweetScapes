@@ -2259,7 +2259,7 @@ exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
       .exec();
 
     if (!userPlans || userPlans.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         status: "Failed",
         message: "No upcoming plans found for this user.",
       });
@@ -2324,7 +2324,7 @@ exports.getRecentSavedUserCreatedPlans = async (req, res) => {
       .exec();
 
     if (!userPlans || userPlans.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         status: "Failed",
         message: "No recent plans found for this user.",
       });
