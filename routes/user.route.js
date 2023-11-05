@@ -55,7 +55,7 @@ router.post("/logout", userAuth, UserController.logout);
 router.get("/delete-otp", UserController.deleteInactiveOtps);
 
 // toggle bookmark
-router.get("/bookmarkPlan/:planId", userAuth, UserController.bookmarkPlan);
+router.post("/bookmarkPlan", userAuth, UserController.bookmarkPlan);
 
 // get Bookmark Plans
 router.get("/getBookmarkedPlans", userAuth, PlanController.getBookmarkedPlans);

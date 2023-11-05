@@ -1973,6 +1973,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
         tag: tags[0], // Assuming tags is an array
         price_per_head,
         duration,
+        contact: component.details.contact,
       };
     });
 
@@ -2372,111 +2373,71 @@ exports.getBookmarkedPlans = async (req, res) => {
     }
 
     const allPlans = user.bookmarks;
+    const userPreferences = user.preferences;
 
-    const completedAllPlans = await Promise.all(
-      allPlans.map(async (plan) => {
-        const populatedComponents = [];
-        const tags = new Set();
-        const images = [];
-        let availability = {
-          sunday: true,
-          monday: true,
-          tuesday: true,
-          wednesday: true,
-          thursday: true,
-          friday: true,
-          saturday: true,
-        };
-        let price = 0;
-        const tile_content = plan.tile_content;
+    const updatedPlans = allPlans.map((plan) => {
+      const uniqueTags = new Set();
+      const imgArray = [];
+      let price = 0;
 
-        await Promise.all(
-          plan.components.map(async (component) => {
-            let componentModel;
-            if (component.type === "Outing") {
-              componentModel = Outing;
-            } else if (component.type === "Dining") {
-              componentModel = Dining;
-            }
+      let plan_preferences = {
+        Dine: {
+          Fine_Dining: 0,
+          RestroBar: 0,
+          Foodcourt: 0,
+          Classic_Dine_In: 0,
+          Dhabas: 0,
+          Cafes: 0,
+          Streetfood: 0,
+        },
+        Outing: {
+          Hills: 0,
+          Lakes: 0,
+          Dams_Waterfalls: 0,
+          Arcade: 0,
+          Movie_Halls: 0,
+          Parks: 0,
+          Clubs_Bars: 0,
+          Night_Out: 0,
+          Shopping: 0,
+          Places_Of_Worship: 0,
+          Museum: 0,
+        },
+      };
+      plan.components.forEach((component, index) => {
+        uniqueTags.add(component.tag);
 
-            if (componentModel) {
-              const curr_component = await componentModel
-                .findById(component.component_id)
-                .exec();
+        plan_preferences[component.type === "Dining" ? "Dine" : "Outing"][
+          component.tag
+        ]++;
 
-              if (curr_component) {
-                for (const time_slots of curr_component.time_slots) {
-                  time_slots.opening_time = moment
-                    .tz(time_slots.opening_time, "HH:mm", "Asia/Kolkata")
-                    .format("h:mm A");
+        imgArray.push({
+          img_link: component.img,
+          name: component.name,
+          order: component.order,
+        });
 
-                  time_slots.closing_time = moment
-                    .tz(time_slots.closing_time, "HH:mm", "Asia/Kolkata")
-                    .format("h:mm A");
-                }
+        price += component.price;
+      });
+      let likeness = calculateLikeness(plan_preferences, userPreferences);
+      const uniqueTagsArray = Array.from(uniqueTags);
 
-                const componentWithHighlight = {
-                  is_highlight: component.is_highlight,
-                  order: component.order,
-                  details: curr_component,
-                };
-
-                populatedComponents.push(componentWithHighlight);
-                tags.add(curr_component.tags[0]);
-
-                images.push({
-                  img_link: extractIdFromGoogleDriveLink(curr_component.img),
-                  img_name:
-                    curr_component.type === "Outing"
-                      ? curr_component.place_name
-                      : curr_component.hotel_name,
-                  order: component.order,
-                });
-
-                availability = {
-                  sunday:
-                    availability.sunday && curr_component.availability.sunday,
-                  monday:
-                    availability.monday && curr_component.availability.monday,
-                  tuesday:
-                    availability.tuesday && curr_component.availability.tuesday,
-                  wednesday:
-                    availability.wednesday &&
-                    curr_component.availability.wednesday,
-                  thursday:
-                    availability.thursday &&
-                    curr_component.availability.thursday,
-                  friday:
-                    availability.friday && curr_component.availability.friday,
-                  saturday:
-                    availability.saturday &&
-                    curr_component.availability.saturday,
-                };
-
-                price += curr_component.price_per_head;
-              }
-            }
-          })
-        );
-
-        const uniqueTags = Array.from(tags);
-
-        return {
-          id: plan.plan_id,
-          tags: uniqueTags,
-          images: images.sort((a, b) => a.order - b.order),
-          availability,
-          plan_start_time: plan.plan_start_time,
-          price,
-          tile_content,
-          components: populatedComponents.sort((a, b) => a.order - b.order),
-        };
-      })
-    );
+      return {
+        tags: uniqueTagsArray,
+        img: imgArray,
+        tile_content: plan.tile_content,
+        plan_start_time: plan.plan_start_time,
+        price: price,
+        _id: plan.plan_id,
+        availability: plan.availability,
+        likeness,
+      };
+    });
+    updatedPlans.sort((a, b) => b.likeness - a.likeness);
 
     res
       .status(200)
-      .send({ status: "Successful", bookmarkedPlans: completedAllPlans });
+      .send({ status: "Successful", bookmarkedPlans: updatedPlans });
   } catch (error) {
     console.error(error);
     res.status(500).send({ status: "Failed", message: error.message });

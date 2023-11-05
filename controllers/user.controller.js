@@ -580,19 +580,18 @@ exports.deleteInactiveOtps = async (req, res) => {
 };
 
 exports.bookmarkPlan = async (req, res) => {
-  const { planId } = req.params;
+  const { planId, bookmark } = req.body;
   const userId = req.user._id;
 
   try {
     const user = await User.findById(userId);
 
     const plan = await PlanModel.findOne({ plan_id: planId });
-    const isBookmarked = user.bookmarks.includes(plan._id);
 
-    if (isBookmarked) {
-      user.bookmarks.pull(plan._id);
-    } else {
+    if (bookmark && !user.bookmarks.includes(plan._id)) {
       user.bookmarks.push(plan._id);
+    } else if (!bookmark && user.bookmarks.includes(plan._id)) {
+      user.bookmarks.pull(plan._id);
     }
 
     await user.save();
