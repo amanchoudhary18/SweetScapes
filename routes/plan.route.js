@@ -99,6 +99,10 @@ router.get("/getAllPlansNamesTags", PlanController.getAllPlansNamesTags);
 // Get Time of Place
 router.post("/getTime", PlanController.getTime);
 
+// // Change Plan Schema
+// router.post("/changeSchema", PlanController.changeSchema);
+
 // Change Plan Schema
-router.post("/changeSchema", PlanController.changeSchema);
+router.post("/removeUpcomingPlan", userAuth, PlanController.removeUpcomingPlan);
+
 module.exports = router;

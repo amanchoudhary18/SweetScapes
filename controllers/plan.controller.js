@@ -2519,3 +2519,31 @@ exports.changeSchema = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+exports.removeUpcomingPlan = async (req, res) => {
+  try {
+    const { planId } = req.body;
+
+    const deletedPlan = await CreatedPlanModel.findByIdAndDelete(planId);
+
+    if (!deletedPlan) {
+      return res.status(404).json({ error: "Plan not found" });
+    }
+    const user = await User.findOne({ _id: req.user._id });
+    if (user) {
+      user.createdPlans = user.createdPlans.filter((planId) =>
+        planId.equals(planId)
+      );
+
+      await user.save();
+    }
+
+    res.json({
+      status: "Successful",
+      message: "Upcoming plan deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: "Failed", message: error });
+  }
+};
