@@ -2281,19 +2281,7 @@ exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
       const tile_content = plan.tile_content;
 
       for (const component of plan.components) {
-        let curr_component;
-
-        if (component.type === "Outing") {
-          curr_component = await Outing.findOne({
-            _id: component.component_id,
-          });
-        } else if (component.type === "Dining") {
-          curr_component = await Dining.findOne({
-            _id: component.component_id,
-          });
-        }
-
-        tags.push({ order: component.order, tag: curr_component.tags[0] });
+        tags.push({ order: component.order, tag: component.tag });
       }
 
       const planDetails = {
