@@ -16,6 +16,9 @@ const createdPlanSchema = {
       type: {
         type: String,
       },
+      tag: {
+        type: String,
+      },
       is_highlight: {
         type: Boolean,
         default: false,
