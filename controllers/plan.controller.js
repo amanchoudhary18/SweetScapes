@@ -1859,7 +1859,6 @@ exports.saveUserCreatedPlan = async (req, res) => {
     } = {
       ...req.body,
     };
-    console.log("final", finalComponents);
 
     const createdPlanBody = {
       travel: finalTravel,
@@ -1869,6 +1868,8 @@ exports.saveUserCreatedPlan = async (req, res) => {
       createdBy: req.user._id,
       plan_date,
     };
+
+    console.log("final", createdPlanBody);
     const userCreatedPlan = new CreatedPlanModel(createdPlanBody);
     await userCreatedPlan.save();
     await User.findByIdAndUpdate(req.user._id, {
