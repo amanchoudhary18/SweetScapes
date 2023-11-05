@@ -1859,6 +1859,7 @@ exports.saveUserCreatedPlan = async (req, res) => {
     } = {
       ...req.body,
     };
+    console.log("final", finalComponents);
 
     const createdPlanBody = {
       travel: finalTravel,
