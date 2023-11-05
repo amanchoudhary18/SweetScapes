@@ -1447,17 +1447,20 @@ exports.savePlan = async (req, res) => {
     req.body;
 
   try {
+    // Create an array to store populated components
     const populatedComponents = [];
 
+    // Populate the component_id field based on the type
     for (const component of components) {
       let componentModel;
       if (component.type === "Outing") {
-        componentModel = Outing;
+        componentModel = Outing; // Use the Outing model for Outing components
       } else if (component.type === "Dining") {
-        componentModel = Dining;
+        componentModel = Dining; // Use the Dining model for Dining components
       }
 
       if (componentModel) {
+        // Create and save the component document if it doesn't exist
         let populatedComponent = await componentModel
           .findById(component.component_id)
           .exec();
@@ -1468,6 +1471,7 @@ exports.savePlan = async (req, res) => {
           });
           await populatedComponent.save();
         }
+
         populatedComponents.push({
           order: component.order,
           type: component.type,
@@ -1493,6 +1497,7 @@ exports.savePlan = async (req, res) => {
     const existingPlan = await PlanModel.findOne({ plan_id: idString });
 
     if (!existingPlan) {
+      // Find the authenticated admin based on the token (assuming req.user contains the authenticated admin)
       const admin = req.user;
 
       // Create a new plan and set the owner reference
@@ -1501,6 +1506,7 @@ exports.savePlan = async (req, res) => {
         components: populatedComponents,
         plan_id: idString,
         tile_content,
+        preferred_transport,
         owner: admin._id,
         owner_name: admin.name,
       });
@@ -1626,15 +1632,44 @@ const calculateLikeness = (plan_preferences, userPreferences) => {
 exports.getAllPlans = async (req, res) => {
   try {
     const allPlans = await PlanModel.find({ approved: 1 });
+    const userPreferences = req.user.preferences;
+    console.log(userPreferences);
 
-    // Iterate through allPlans and update each plan
     const updatedPlans = allPlans.map((plan) => {
       const uniqueTags = new Set();
       const imgArray = [];
       let price = 0;
 
+      let plan_preferences = {
+        Dine: {
+          Fine_Dining: 0,
+          RestroBar: 0,
+          Foodcourt: 0,
+          Classic_Dine_In: 0,
+          Dhabas: 0,
+          Cafes: 0,
+          Streetfood: 0,
+        },
+        Outing: {
+          Hills: 0,
+          Lakes: 0,
+          Dams_Waterfalls: 0,
+          Arcade: 0,
+          Movie_Halls: 0,
+          Parks: 0,
+          Clubs_Bars: 0,
+          Night_Out: 0,
+          Shopping: 0,
+          Places_Of_Worship: 0,
+          Museum: 0,
+        },
+      };
       plan.components.forEach((component, index) => {
         uniqueTags.add(component.tag);
+
+        plan_preferences[component.type === "Dining" ? "Dine" : "Outing"][
+          component.tag
+        ]++;
 
         imgArray.push({
           img_link: component.img,
@@ -1644,7 +1679,7 @@ exports.getAllPlans = async (req, res) => {
 
         price += component.price;
       });
-
+      let likeness = calculateLikeness(plan_preferences, userPreferences);
       const uniqueTagsArray = Array.from(uniqueTags);
 
       return {
@@ -1654,9 +1689,11 @@ exports.getAllPlans = async (req, res) => {
         plan_start_time: plan.plan_start_time,
         price: price,
         _id: plan.plan_id,
+        availability: plan.availability,
+        likeness,
       };
     });
-
+    updatedPlans.sort((a, b) => b.likeness - a.likeness);
     res
       .status(200)
       .send({ status: "Successful", completedAllPlans: updatedPlans });
@@ -1836,8 +1873,6 @@ exports.saveUserCreatedPlan = async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, {
       $push: { createdPlans: userCreatedPlan._id },
     });
-
-    console.log(userCreatedPlan);
 
     const response = await axios.get(
       `https://date-form-prod.onrender.com/api/v1/plan/getSavedUserCreatedPlan/${userCreatedPlan._id}`,
@@ -2231,7 +2266,7 @@ exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
       .exec();
 
     if (!userPlans || userPlans.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         status: "Failed",
         message: "No upcoming plans found for this user.",
       });
@@ -2296,7 +2331,7 @@ exports.getRecentSavedUserCreatedPlans = async (req, res) => {
       .exec();
 
     if (!userPlans || userPlans.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         status: "Failed",
         message: "No recent plans found for this user.",
       });
@@ -2335,7 +2370,7 @@ exports.getRecentSavedUserCreatedPlans = async (req, res) => {
       plansDetails.push(planDetails);
     }
 
-    console.log(plansDetails);
+    console.log("recent", plansDetails);
 
     res
       .status(200)
@@ -2479,6 +2514,16 @@ exports.changeSchema = async (req, res) => {
     for (const oldPlan of oldPlans) {
       const updatedComponents = [];
 
+      let availability = {
+        sunday: true,
+        monday: true,
+        tuesday: true,
+        wednesday: true,
+        thursday: true,
+        friday: true,
+        saturday: true,
+      };
+
       for (const oldComponent of oldPlan.components) {
         let componentModel;
         if (oldComponent.type === "Outing") {
@@ -2492,6 +2537,20 @@ exports.changeSchema = async (req, res) => {
             .findById(oldComponent.component_id)
             .exec();
 
+          availability = {
+            sunday: availability.sunday && curr_component.availability.sunday,
+            monday: availability.monday && curr_component.availability.monday,
+            tuesday:
+              availability.tuesday && curr_component.availability.tuesday,
+            wednesday:
+              availability.wednesday && curr_component.availability.wednesday,
+            thursday:
+              availability.thursday && curr_component.availability.thursday,
+            friday: availability.friday && curr_component.availability.friday,
+            saturday:
+              availability.saturday && curr_component.availability.saturday,
+          };
+
           const updatedComponent = {
             order: oldComponent.order,
             type: oldComponent.type,
@@ -2504,6 +2563,7 @@ exports.changeSchema = async (req, res) => {
             tag: curr_component.tags[0],
             price: curr_component.price_per_head,
             component_id: oldComponent.component_id,
+            availability,
           };
           updatedComponents.push(updatedComponent);
         }
