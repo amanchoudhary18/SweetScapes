@@ -1694,7 +1694,6 @@ exports.getAllPlans = async (req, res) => {
           ({ _id }) => _id.toString() === component.component_id.toString()
         );
 
-        console.log(diningOffer, outingOffer);
         if (diningOffer) {
           offersArray.push(diningOffer.offers.text);
         } else if (outingOffer) {
@@ -2288,6 +2287,15 @@ exports.getTime = async (req, res) => {
 exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
   const userId = req.user._id;
   const currentDate = new Date();
+
+  // Fetch dining and outing documents with offers
+  const diningWithOffers = await Dining.find({
+    "offers.status": true,
+  }).select("_id offers hotel_name");
+  const outingWithOffers = await Outing.find({
+    "offers.status": true,
+  }).select("_id offers place_name");
+
   try {
     const userPlans = await CreatedPlanModel.find({
       createdBy: userId,
@@ -2304,14 +2312,34 @@ exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
     }
 
     const plansDetails = [];
-
     for (const plan of userPlans) {
       const tags = [];
 
       const tile_content = plan.tile_content;
+      const offersArray = [];
 
       for (const component of plan.components) {
         tags.push({ order: component.order, tag: component.tag });
+
+        console.log(component);
+        const diningOffer = diningWithOffers.find(
+          ({ _id }) => _id.toString() === component.component_id.toString()
+        );
+        const outingOffer = outingWithOffers.find(
+          ({ _id }) => _id.toString() === component.component_id.toString()
+        );
+
+        if (diningOffer) {
+          offersArray.push({
+            text: diningOffer.offers.text,
+            name: diningOffer.hotel_name,
+          });
+        } else if (outingOffer) {
+          offersArray.push({
+            text: outingOffer.offers.text,
+            name: outingOffer.place_name,
+          });
+        }
       }
 
       const planDetails = {
@@ -2319,6 +2347,10 @@ exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
         id: plan._id,
         tile_content,
         tags,
+        offers: {
+          status: offersArray.length > 0 ? true : false,
+          details: offersArray,
+        },
       };
 
       plansDetails.push(planDetails);
