@@ -1743,8 +1743,6 @@ exports.getParticularPlan = async (req, res) => {
       res.send(404).send({ status: "Failed", message: "No plan found" });
     }
 
-    console.log(plan);
-
     const populatedComponents = [];
     const tags = new Set();
     const images = [];
@@ -1808,7 +1806,7 @@ exports.getParticularPlan = async (req, res) => {
     }
 
     const uniqueTags = Array.from(tags);
-
+    console.log(req.user.bookmarks, plan._id);
     const planDetails = {
       id: plan_id,
       tags: uniqueTags,
@@ -1818,6 +1816,7 @@ exports.getParticularPlan = async (req, res) => {
       price,
       tile_content,
       components: populatedComponents,
+      isBookmarked: req.user.bookmarks.includes(plan._id.toString()),
     };
 
     res.status(200).send({ status: "Successful", planDetails });
