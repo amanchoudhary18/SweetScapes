@@ -12,6 +12,8 @@ const PlanModel = require("../models/plan.model");
 const Outing = require("../models/outing.model");
 const Dining = require("../models/dining.model");
 const moment = require("moment-timezone");
+const FeedbackModel = require("../models/feedback.model");
+const CreatedPlanModel = require("../models/created_plan.model");
 require("dotenv").config({ path: "../.env" });
 
 //register function
@@ -601,5 +603,26 @@ exports.bookmarkPlan = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ status: "Failed", error: error.message });
+  }
+};
+
+exports.feedback = async (req, res) => {
+  try {
+    const feedbackBody = { ...req.body, user: req.user._id };
+    const feedback = new FeedbackModel(feedbackBody);
+
+    const planId = req.body.plan;
+
+    const updatedPlan = await CreatedPlanModel.findOneAndUpdate(
+      { _id: planId },
+      { $set: { feedback_given: true } },
+      { new: true } // to get the updated document
+    );
+
+    await feedback.save();
+
+    res.status(200).send({ status: "Successful", feedback });
+  } catch (error) {
+    res.status(500).send({ status: "Failed", message: error.message });
   }
 };

@@ -60,4 +60,7 @@ router.post("/bookmarkPlan", userAuth, UserController.bookmarkPlan);
 // get Bookmark Plans
 router.get("/getBookmarkedPlans", userAuth, PlanController.getBookmarkedPlans);
 
+// feedback
+router.post("/feedback", userAuth, UserController.feedback);
+
 module.exports = router;

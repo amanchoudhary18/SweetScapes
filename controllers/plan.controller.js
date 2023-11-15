@@ -2404,6 +2404,7 @@ exports.getRecentSavedUserCreatedPlans = async (req, res) => {
         id: plan._id,
         tile_content,
         tags,
+        feedback_given: plan.feedback_given,
       };
 
       plansDetails.push(planDetails);
