@@ -1633,7 +1633,13 @@ exports.getAllPlans = async (req, res) => {
   try {
     const allPlans = await PlanModel.find({ approved: 1 });
     const userPreferences = req.user.preferences;
-    console.log(userPreferences);
+    // Fetch dining and outing documents with offers
+    const diningWithOffers = await Dining.find({
+      "offers.status": true,
+    }).select("_id offers");
+    const outingWithOffers = await Outing.find({
+      "offers.status": true,
+    }).select("_id offers");
 
     const updatedPlans = allPlans.map((plan) => {
       const uniqueTags = new Set();
@@ -1664,6 +1670,8 @@ exports.getAllPlans = async (req, res) => {
           Museum: 0,
         },
       };
+
+      const offersArray = [];
       plan.components.forEach((component, index) => {
         uniqueTags.add(component.tag);
 
@@ -1678,10 +1686,24 @@ exports.getAllPlans = async (req, res) => {
         });
 
         price += component.price;
+
+        const diningOffer = diningWithOffers.find(
+          ({ _id }) => _id.toString() === component.component_id.toString()
+        );
+        const outingOffer = outingWithOffers.find(
+          ({ _id }) => _id.toString() === component.component_id.toString()
+        );
+
+        console.log(diningOffer, outingOffer);
+        if (diningOffer) {
+          offersArray.push(diningOffer.offers.text);
+        } else if (outingOffer) {
+          offersArray.push(outingOffer.offers.text);
+        }
       });
       let likeness = calculateLikeness(plan_preferences, userPreferences);
       const uniqueTagsArray = Array.from(uniqueTags);
-
+      const isBookmarked = req.user.bookmarks.includes(plan.id.toString());
       return {
         tags: uniqueTagsArray,
         img: imgArray,
@@ -1691,12 +1713,18 @@ exports.getAllPlans = async (req, res) => {
         _id: plan.plan_id,
         availability: plan.availability,
         likeness,
+        isBookmarked,
+        offers: {
+          status: offersArray.length > 0 ? true : false,
+          text: offersArray,
+        },
       };
     });
     updatedPlans.sort((a, b) => b.likeness - a.likeness);
-    res
-      .status(200)
-      .send({ status: "Successful", completedAllPlans: updatedPlans });
+    res.status(200).send({
+      status: "Successful",
+      completedAllPlans: updatedPlans,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({ status: "Failed", message: error.message });

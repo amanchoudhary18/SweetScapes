@@ -101,6 +101,15 @@ const diningModel = new mongoose.Schema({
       default: true,
     },
   },
+
+  offers: {
+    status: {
+      type: Boolean,
+    },
+    text: {
+      type: String,
+    },
+  },
 });
 
 const Dining = mongoose.model("dining", diningModel);

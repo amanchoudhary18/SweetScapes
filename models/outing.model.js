@@ -62,6 +62,14 @@ const outingModel = new mongoose.Schema({
       },
     },
   ],
+  offers: {
+    status: {
+      type: Boolean,
+    },
+    text: {
+      type: String,
+    },
+  },
   img: {
     type: String,
   },
