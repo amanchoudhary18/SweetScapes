@@ -67,11 +67,6 @@ const createdPlanSchema = {
     ref: "User",
     required: true,
   },
-
-  feedback_given: {
-    type: Boolean,
-    default: false,
-  },
 };
 
 const CreatedPlanModel = mongoose.model("CreatedPlan", createdPlanSchema);

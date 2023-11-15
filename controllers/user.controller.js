@@ -611,14 +611,6 @@ exports.feedback = async (req, res) => {
     const feedbackBody = { ...req.body, user: req.user._id };
     const feedback = new FeedbackModel(feedbackBody);
 
-    const planId = req.body.plan;
-
-    const updatedPlan = await CreatedPlanModel.findOneAndUpdate(
-      { _id: planId },
-      { $set: { feedback_given: true } },
-      { new: true } // to get the updated document
-    );
-
     await feedback.save();
 
     res.status(200).send({ status: "Successful", feedback });
