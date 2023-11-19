@@ -2035,8 +2035,6 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
       } = routeItem;
 
       const contact = contacts[mode];
-      console.log(contact["bus"]);
-
       const update = {
         mode,
         duration,
@@ -2075,6 +2073,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
       .status(200)
       .json({ status: "Successful", final_plan_details: planDetails });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       status: "Failed",
       message: error.message,
