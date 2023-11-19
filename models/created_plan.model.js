@@ -26,6 +26,17 @@ const createdPlanSchema = {
       component_id: {
         type: mongoose.Schema.Types.ObjectId,
       },
+      offers: {
+        status: {
+          type: Boolean,
+        },
+        percent: {
+          type: Number,
+        },
+        text: {
+          type: String,
+        },
+      },
     },
   ],
   travel: {

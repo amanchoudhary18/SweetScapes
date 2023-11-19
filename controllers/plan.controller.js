@@ -11,7 +11,7 @@ const CreatedPlanModel = require("../models/created_plan.model");
 const User = require("../models/user.model");
 const NodeCache = require("node-cache");
 const cache = new NodeCache({ stdTTL: 300 });
-
+const extractCodeFromEmail = require("../utils/extractCodeFromEmail.js");
 const BIT_LOCATION = {
   map: {
     lat: "23.41656964288303",
@@ -1806,7 +1806,6 @@ exports.getParticularPlan = async (req, res) => {
     }
 
     const uniqueTags = Array.from(tags);
-    console.log(req.user.bookmarks, plan._id);
     const planDetails = {
       id: plan_id,
       tags: uniqueTags,
@@ -1885,7 +1884,6 @@ exports.saveUserCreatedPlan = async (req, res) => {
     } = {
       ...req.body,
     };
-    console.log("final", finalComponents);
 
     const createdPlanBody = {
       travel: finalTravel,
@@ -1949,7 +1947,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
 
     let component_price = 0;
     const tile_content = plan.tile_content;
-
+    let discounts = 0;
     for (const component of plan.components) {
       let curr_component;
 
@@ -1965,7 +1963,13 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
 
       const componentWithHighlight = {
         is_highlight: component.is_highlight,
-        details: curr_component,
+        details: {
+          ...curr_component,
+          offers: component.offers,
+          discount: component.offers.status
+            ? (curr_component.price_per_head * component.offers.percent) / 100
+            : 0,
+        },
       };
 
       populatedComponents.push(componentWithHighlight);
@@ -1981,6 +1985,9 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
       });
 
       component_price += curr_component.price_per_head;
+      if (component.offers.status)
+        discounts +=
+          (curr_component.price_per_head * component.offers.percent) / 100;
     }
 
     const uniqueTags = Array.from(tags);
@@ -2054,6 +2061,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
       complete_travel: updatedTravel.route,
       component_price: component_price * plan.people_count,
       travel_price: updatedTravel.price,
+      discount_price: discounts * plan.people_count,
       people_count: plan.people_count,
     };
 
@@ -2287,6 +2295,8 @@ exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
   const userId = req.user._id;
   const currentDate = new Date();
 
+  const code = extractCodeFromEmail(req.user.email);
+
   // Fetch dining and outing documents with offers
   const diningWithOffers = await Dining.find({
     "offers.status": true,
@@ -2320,7 +2330,6 @@ exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
       for (const component of plan.components) {
         tags.push({ order: component.order, tag: component.tag });
 
-        console.log(component);
         const diningOffer = diningWithOffers.find(
           ({ _id }) => _id.toString() === component.component_id.toString()
         );
@@ -2332,11 +2341,13 @@ exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
           offersArray.push({
             text: diningOffer.offers.text,
             name: diningOffer.hotel_name,
+            percent: diningOffer.offers.percent,
           });
         } else if (outingOffer) {
           offersArray.push({
             text: outingOffer.offers.text,
             name: outingOffer.place_name,
+            percent: outingOffer.offers.percent,
           });
         }
       }
@@ -2355,11 +2366,11 @@ exports.getUpcomingSavedUserCreatedPlans = async (req, res) => {
       plansDetails.push(planDetails);
     }
 
-    console.log(plansDetails);
-
-    res
-      .status(200)
-      .send({ status: "Successful", user_upcoming_plans: plansDetails });
+    res.status(200).send({
+      status: "Successful",
+      user_upcoming_plans: plansDetails,
+      user_code: code,
+    });
   } catch (error) {
     res.status(500).send({
       status: "Failed",
@@ -2408,8 +2419,6 @@ exports.getRecentSavedUserCreatedPlans = async (req, res) => {
 
       plansDetails.push(planDetails);
     }
-
-    console.log("recent", plansDetails);
 
     res
       .status(200)

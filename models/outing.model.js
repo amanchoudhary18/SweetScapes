@@ -66,6 +66,9 @@ const outingModel = new mongoose.Schema({
     status: {
       type: Boolean,
     },
+    percent: {
+      type: Number,
+    },
     text: {
       type: String,
     },

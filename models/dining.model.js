@@ -106,6 +106,9 @@ const diningModel = new mongoose.Schema({
     status: {
       type: Boolean,
     },
+    percent: {
+      type: Number,
+    },
     text: {
       type: String,
     },
