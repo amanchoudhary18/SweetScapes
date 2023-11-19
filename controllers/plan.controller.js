@@ -1986,7 +1986,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
       component_price += curr_component.price_per_head;
       if (component.offers.status)
         discounts +=
-          (curr_component.price_per_head * component.offers.percent) / 100;
+          (curr_component.price_per_head * component.offers.percent || 0) / 100;
     }
 
     const uniqueTags = Array.from(tags);
