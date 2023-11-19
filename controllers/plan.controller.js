@@ -1963,13 +1963,11 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
 
       const componentWithHighlight = {
         is_highlight: component.is_highlight,
-        details: {
-          ...curr_component,
-          offers: component.offers,
-          discount: component.offers.status
-            ? (curr_component.price_per_head * component.offers.percent) / 100
-            : 0,
-        },
+        details: curr_component,
+        offers: component.offers,
+        discount: component.offers.status
+          ? (curr_component.price_per_head * component.offers.percent) / 100
+          : 0,
       };
 
       populatedComponents.push(componentWithHighlight);
@@ -2006,7 +2004,6 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
         discount,
       } = component.details;
 
-      console.log(component, tags);
       let locationName =
         component.details.type === "Outing" ? place_name : hotel_name;
       return {
