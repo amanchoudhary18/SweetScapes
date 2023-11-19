@@ -1996,8 +1996,15 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
 
     const filteredComponents = populatedComponents.map((component) => {
       const { is_highlight } = component;
-      const { hotel_name, place_name, tags, price_per_head, duration } =
-        component.details;
+      const {
+        hotel_name,
+        place_name,
+        tags,
+        price_per_head,
+        duration,
+        offers,
+        discount,
+      } = component.details;
       let locationName =
         component.details.type === "Outing" ? place_name : hotel_name;
       return {
@@ -2007,6 +2014,8 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
         price_per_head,
         duration,
         contact: component.details.contact,
+        offers,
+        discount,
       };
     });
 
