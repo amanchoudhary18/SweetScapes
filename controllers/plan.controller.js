@@ -1993,7 +1993,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
     const uniqueTags = Array.from(tags);
 
     // Final Component
-
+    console.log(populatedComponents);
     const filteredComponents = populatedComponents.map((component) => {
       const { is_highlight } = component;
       const {
@@ -2006,7 +2006,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
         discount,
       } = component.details;
 
-      console.log(tags);
+      console.log(component, tags);
       let locationName =
         component.details.type === "Outing" ? place_name : hotel_name;
       return {
