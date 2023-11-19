@@ -1,11 +1,10 @@
 function extractCodeFromEmail(email) {
-  const regex = /btech(\d{5})\.(\d{2})@bitmesra\.ac\.in/;
-  const match = email.match(regex);
-  if (match && match.length === 3) {
-    return `BTECH${match[1]}${match[2]}`;
-  } else {
-    return null;
-  }
+  const code = email
+    .substring(0, email.indexOf("@"))
+    .replace(".", "")
+    .toUpperCase();
+  console.log(code);
+  return code;
 }
 
 // const testEmail = "btech12345.20@gmail.com";

@@ -105,12 +105,15 @@ const diningModel = new mongoose.Schema({
   offers: {
     status: {
       type: Boolean,
+      default: false,
     },
     percent: {
       type: Number,
+      default: 0,
     },
     text: {
       type: String,
+      default: "",
     },
   },
 });
