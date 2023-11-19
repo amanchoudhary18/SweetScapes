@@ -1901,7 +1901,7 @@ exports.saveUserCreatedPlan = async (req, res) => {
     });
 
     const response = await axios.get(
-      `https://localhost:5000/api/v1/plan/getSavedUserCreatedPlan/${userCreatedPlan._id}`,
+      `https://date-form-prod.onrender.com/api/v1/plan/getSavedUserCreatedPlan/${userCreatedPlan._id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in the request header
@@ -1940,8 +1940,6 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
         message: "You do not have permission to access this plan.",
       });
     }
-
-    console.log(plan);
 
     const populatedComponents = [];
     const tags = new Set();
@@ -1993,7 +1991,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
     }
 
     const uniqueTags = Array.from(tags);
-    console.log(uniqueTags);
+
     // Final Component
 
     const filteredComponents = populatedComponents.map((component) => {
@@ -2007,6 +2005,8 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
         offers,
         discount,
       } = component.details;
+
+      console.log(tags);
       let locationName =
         component.details.type === "Outing" ? place_name : hotel_name;
       return {
@@ -2080,7 +2080,6 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
       .status(200)
       .json({ status: "Successful", final_plan_details: planDetails });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       status: "Failed",
       message: error.message,
