@@ -2594,7 +2594,7 @@ exports.removeUpcomingPlan = async (req, res) => {
   try {
     const { planId } = req.body;
 
-    const deletedPlan = await CreatedPlanModel.findByIdAndDelete(planId);
+    const deletedPlan = await CreatedPlanModel.findOneAndDelete(planId);
 
     if (!deletedPlan) {
       return res.status(404).json({ error: "Plan not found" });
