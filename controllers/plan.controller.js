@@ -2594,18 +2594,10 @@ exports.removeUpcomingPlan = async (req, res) => {
   try {
     const { planId } = req.body;
 
-    const deletedPlan = await CreatedPlanModel.findOneAndDelete(planId);
+    const deletedPlan = await CreatedPlanModel.findOneAndDelete({ planId });
 
     if (!deletedPlan) {
       return res.status(404).json({ error: "Plan not found" });
-    }
-    const user = await User.findOne({ _id: req.user._id });
-    if (user) {
-      user.createdPlans = user.createdPlans.filter((planId) =>
-        planId.equals(planId)
-      );
-
-      await user.save();
     }
 
     res.json({
@@ -2614,6 +2606,6 @@ exports.removeUpcomingPlan = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: "Failed", message: error });
+    res.status(500).json({ status: "Failed", message: error.message });
   }
 };
