@@ -12,6 +12,7 @@ const User = require("../models/user.model");
 const NodeCache = require("node-cache");
 const cache = new NodeCache({ stdTTL: 300 });
 const extractCodeFromEmail = require("../utils/extractCodeFromEmail.js");
+const contacts = require("../utils/contacts.js");
 const BIT_LOCATION = {
   map: {
     lat: "23.41656964288303",
@@ -2033,6 +2034,9 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
         price,
       } = routeItem;
 
+      const contact = contacts[mode];
+      console.log(contact["bus"]);
+
       const update = {
         mode,
         duration,
@@ -2045,6 +2049,7 @@ exports.getSavedUserCreatedPlan = async (req, res) => {
         drop_time_formatted,
         price,
         drop_point_component: matchingComponent ? matchingComponent : null,
+        contact,
       };
 
       updatedRoute.push(update);
