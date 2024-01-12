@@ -75,7 +75,6 @@
 .open-it {
   animation: fade-in 500ms forwards;
 }
-
 .close-it {
   animation: fade-out 500ms forwards;
 }

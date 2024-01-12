@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import lightLogo from "../assets/images/white-logo.png";
-import darkLogo from "../assets/images/black-logo.png";
+import lightLogo from "../assets/images/light-logo.svg";
+import darkLogo from "../assets/images/dark-logo.svg";
 import icon from "../assets/images/icon.png";
 import "./Navbar.css";
 import { BsInstagram, BsLinkedin } from "react-icons/bs";
